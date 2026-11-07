@@ -7,7 +7,7 @@
     <string name="game_ready_title">Snake</string>
     <string name="game_ready_hint">Swipe or tap to start</string>
     <string name="game_paused_title">Paused</string>
-    <string name="game_paused_hint">Tap to resume</string>
+    <string name="game_paused_hint">Tap to continue</string>
     <string name="game_over_title">Game over</string>
     <string name="game_over_hint">Tap to play again</string>
 </resources>
