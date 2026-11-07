@@ -14,7 +14,8 @@ import kotlinx.coroutines.launch
 class GameViewModel(private val engine: SnakeEngine) : ViewModel() {
 
     private var game = engine.newGame()
-    private var pendingDirection = game.direction
+    /** Swipes waiting for their move, so that two quick swipes (a U-turn) both count. */
+    private val queuedDirections = ArrayDeque<Direction>()
     private var status = GameStatus.Ready
     private var best = 0
     private var loop: Job? = null
@@ -34,7 +35,9 @@ class GameViewModel(private val engine: SnakeEngine) : ViewModel() {
     fun onSwipe(direction: Direction) {
         if (status == GameStatus.Ready) run()
         if (status != GameStatus.Running) return
-        if (!direction.isOppositeOf(game.direction)) pendingDirection = direction
+        val last = queuedDirections.lastOrNull() ?: game.direction
+        if (direction == last || direction.isOppositeOf(last)) return
+        if (queuedDirections.size < MAX_QUEUED_DIRECTIONS) queuedDirections.addLast(direction)
     }
 
     /** The app left the screen. */
@@ -44,7 +47,7 @@ class GameViewModel(private val engine: SnakeEngine) : ViewModel() {
 
     /** One move of the snake. Driven by the loop of [run]; `internal` so that tests need no clock. */
     internal fun tick() {
-        game = engine.step(game, pendingDirection)
+        game = engine.step(game, queuedDirections.removeFirstOrNull() ?: game.direction)
         if (game.isOver) {
             status = GameStatus.GameOver
             best = maxOf(best, game.score)
@@ -73,7 +76,7 @@ class GameViewModel(private val engine: SnakeEngine) : ViewModel() {
 
     private fun restart() {
         game = engine.newGame()
-        pendingDirection = game.direction
+        queuedDirections.clear()
         run()
     }
 
@@ -95,8 +98,9 @@ class GameViewModel(private val engine: SnakeEngine) : ViewModel() {
     )
 
     private companion object {
-        const val START_DELAY_MILLIS = 200L
-        const val SPEED_UP_MILLIS = 5L
-        const val MIN_DELAY_MILLIS = 80L
+        const val START_DELAY_MILLIS = 320L
+        const val SPEED_UP_MILLIS = 4L
+        const val MIN_DELAY_MILLIS = 150L
+        const val MAX_QUEUED_DIRECTIONS = 2
     }
 }

@@ -48,6 +48,18 @@ class GameViewModelTest {
     }
 
     @Test
+    fun twoQuickSwipesAreBothKept() {
+        val start = viewModel.uiState.value.snake.first()
+        viewModel.onSwipe(Direction.Up)
+        viewModel.onSwipe(Direction.Left)
+        viewModel.tick()
+        viewModel.tick()
+        val head = viewModel.uiState.value.snake.first()
+        assertEquals(start.x - 1, head.x)
+        assertEquals(start.y - 1, head.y)
+    }
+
+    @Test
     fun tappingPausesAndResumes() {
         viewModel.onTap()
         assertEquals(GameStatus.Running, viewModel.uiState.value.status)
