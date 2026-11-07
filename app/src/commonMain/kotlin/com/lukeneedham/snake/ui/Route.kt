@@ -3,9 +3,12 @@ package com.lukeneedham.snake.ui
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
-/** The destinations of the app, one per page: [Settings] is `SettingsPage`, and so on. */
+/** The destinations of the app, one per page: [Game] is `GamePage`, and so on. */
 @Serializable
 sealed interface Route : NavKey {
+    @Serializable
+    data object Game : Route
+
     @Serializable
     data object Settings : Route
 

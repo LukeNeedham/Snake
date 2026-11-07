@@ -1,9 +1,10 @@
 # The data of README.md: CI renders it in the standard layout (docs/readme.md in LukeNeedham/ci-workflows). Written by hand, only what is
-# specific to the app; never edit README.md. The text below is a placeholder: replace it, and keep it accurate.
+# specific to the app; never edit README.md.
 
 name: "Snake"
-tagline: "TODO: one line saying what the app does."
+tagline: "The classic snake game, played with swipes."
 
 description: |
-  TODO: what the app is and who it is for, with a few highlights of what it can be used for. A paragraph or two,
-  and no feature list.
+  Snake is the arcade classic: guide a growing snake around the board, eat the food and avoid the walls and your own tail.
+  Swipe anywhere to steer, tap to pause, and watch it speed up with every bite. The game pauses by itself when you leave the app,
+  and the app remembers your best score of the session.

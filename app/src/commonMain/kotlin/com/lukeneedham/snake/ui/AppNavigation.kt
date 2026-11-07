@@ -19,6 +19,7 @@ import kotlinx.serialization.modules.polymorphic
 private val backStackConfig = SavedStateConfiguration {
     serializersModule = SerializersModule {
         polymorphic(NavKey::class) {
+            subclass(Route.Game::class, Route.Game.serializer())
             subclass(Route.Settings::class, Route.Settings.serializer())
             subclass(Route.Debug::class, Route.Debug.serializer())
             subclass(Route.Logs::class, Route.Logs.serializer())
@@ -30,7 +31,7 @@ private val backStackConfig = SavedStateConfiguration {
 /** Owns the back stack and the [NavDisplay]. Called only by [Root]. */
 @Composable
 fun AppNavigation() {
-    val backStack = rememberNavBackStack(backStackConfig, Route.Settings)
+    val backStack = rememberNavBackStack(backStackConfig, Route.Game)
 
     NavDisplay(
         backStack = backStack,

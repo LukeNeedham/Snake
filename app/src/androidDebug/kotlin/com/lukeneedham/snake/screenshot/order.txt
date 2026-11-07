@@ -1,1 +1,3 @@
+GamePage
+GamePageGameOver
 SettingsPage

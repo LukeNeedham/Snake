@@ -15,6 +15,8 @@ fun Router(backStack: NavBackStack<NavKey>, route: Route) {
     fun onBack() { backStack.removeLastOrNull() }
 
     when (route) { // exhaustive: no `else`
+        Route.Game -> GamePage(onOpenSettings = { navigateTo(Route.Settings) })
+
         Route.Settings -> SettingsPage(onOpenDebug = { navigateTo(Route.Debug) })
 
         Route.Debug -> DebugPage(
