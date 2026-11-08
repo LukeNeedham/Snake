@@ -22,3 +22,9 @@
   push (the README, the screenshots), so your local copy of the remote branch is out of date and Git thinks commits are local only. Never amend,
   rebase or force-push to silence the hook, never edit the hook, and do not write about it at length.
 <!-- ci-workflows:end -->
+- **Kotlin and Android naming, even in the game code**: no all-caps names anywhere. Enum entries are upper camel case
+  (`GamePhase.GameOver`), and so are `const val`s and constant-like properties (`SnakeTuning.speed`), which are named like any
+  other property. Do not write `SCREAMING_SNAKE_CASE` for anything.
+- **Small classes with one job**: a game is not an excuse for a God class. Split an engine into collaborators with tight
+  responsibilities (`GameWorld` steps `EffectTracker`, `CritterSpawner`, `Feeding` and `ParticleSystem`; each renderer draws one
+  thing); keep tuning numbers in several small objects, not one.

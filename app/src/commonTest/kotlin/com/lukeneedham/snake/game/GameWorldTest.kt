@@ -53,12 +53,12 @@ class GameWorldTest {
     fun eatingAMouseScoresAndGrowsTheSnake() {
         val world = newWorld()
         world.start()
-        val lengthBefore = world.snake.length
+        val lengthBefore = world.snake.body.length
         world.placeMouseInFrontOfTheMouth()
         repeat(30) { world.update(1f / 60f) }
         assertEquals(1, world.score)
         assertFalse(world.critters.any { it.id == 99 })
-        assertTrue(world.snake.length > lengthBefore)
+        assertTrue(world.snake.body.length > lengthBefore)
     }
 
     @Test

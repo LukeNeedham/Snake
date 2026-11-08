@@ -29,7 +29,7 @@ class FeedingTest {
 
     @Test
     fun aFarawayCritterIsLeftAloneAndTheMouthStaysShut() {
-        val critters = mutableListOf<Critter>(Critter.Mouse(1, 20f, 30f, lifetime = 100f))
+        val critters = mutableListOf<Critter>(Critter.Mouse(1, 54f, 40f, lifetime = 100f))
         val eaten = feeding.update(0.016f, snake, critters)
         assertTrue(eaten.isEmpty())
         assertEquals(1, critters.size)
