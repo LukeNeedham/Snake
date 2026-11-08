@@ -125,7 +125,7 @@ internal fun createFrontGrass(arena: Arena): List<GrassBlade> {
         val x = random.nextInt(width)
         val y = random.nextInt(height)
         val distance = arena.signedDistance(x + 0.5f, y + 0.5f)
-        if (distance in -0.5f..9f) {
+        if (distance in -0.5f..GameTuning.GRASS_DEPTH) {
             blades.add(GrassBlade(x, y, 6 + random.nextInt(6), random.nextFloat() * 2f * PI.toFloat(), random.nextInt(BladeFront.size)))
         }
     }

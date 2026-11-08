@@ -6,11 +6,15 @@ object GameTuning {
     const val WORLD_WIDTH = 108
 
     /** How thick the band of tall grass around the oval is. */
-    const val GRASS_DEPTH = 14f
+    const val GRASS_DEPTH = 8f
 
     const val SNAKE_SPEED = 30f
     const val TURN_RADIUS = 11f
+    /** How wide the head is at its widest, at the back: it narrows to the nose. */
     const val HEAD_RADIUS = 3.6f
+
+    /** How far in front of the head's centre the mouth is, where the snake eats. */
+    const val MOUTH_REACH = 4.6f
     const val BODY_RADIUS = 2.7f
 
     /** The distance between two drawn discs of the body: the skin pattern repeats on discs. */

@@ -159,7 +159,7 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
                 critter.landed = false
                 dust(critter.x, critter.y, 3, Color(0xFFE6D3A0))
             }
-            if (critter.type == CritterType.MOUSE && critter.isMoving && random.nextFloat() < 0.12f) {
+            if (critter is Critter.Mouse && critter.isMoving && random.nextFloat() < 0.12f) {
                 dust(critter.x, critter.y, 1, Color(0xFFE6D3A0))
             }
         }
@@ -172,30 +172,37 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     private fun spawnCritters(dt: Float) {
         mouseTimer -= dt
         toadTimer -= dt
-        val mice = critters.count { it.type == CritterType.MOUSE }
-        val toads = critters.count { it.type == CritterType.TOAD }
+        val mice = critters.count { it is Critter.Mouse }
+        val toads = critters.count { it is Critter.Toad }
         if (mice < min(2 + score / 5, 5) && mouseTimer <= 0f) {
-            spawnCritter(CritterType.MOUSE)
+            spawnCritter(isToad = false)
             mouseTimer = 1f + random.nextFloat() * 1.2f
         }
         if (toads < min(1 + score / 6, 3) && toadTimer <= 0f) {
-            spawnCritter(CritterType.TOAD)
+            spawnCritter(isToad = true)
             toadTimer = 6f + random.nextFloat() * 4f
         }
     }
 
-    private fun spawnCritter(type: CritterType) {
+    private fun spawnCritter(isToad: Boolean) {
         val angle = random.nextFloat() * 2f * PI.toFloat()
         val reach = GameTuning.GRASS_DEPTH * 0.75f
         val x = arena.centerX + (arena.radiusX + reach) * cos(angle)
         val y = arena.centerY + (arena.radiusY + reach) * sin(angle)
-        val kind = if (type == CritterType.TOAD) ToadKind.entries[random.nextInt(ToadKind.entries.size)] else null
-        critters.add(Critter(nextCritterId++, type, kind, x, y, lifetime = 14f + random.nextFloat() * 8f))
+        val lifetime = 14f + random.nextFloat() * 8f
+        val id = nextCritterId++
+        critters.add(
+            if (isToad) {
+                Critter.Toad(id, ToadKind.entries[random.nextInt(ToadKind.entries.size)], x, y, lifetime)
+            } else {
+                Critter.Mouse(id, x, y, lifetime)
+            },
+        )
     }
 
     private fun checkEating(dt: Float) {
-        val mouthX = snake.x + cos(snake.heading) * (GameTuning.HEAD_RADIUS - 0.2f)
-        val mouthY = snake.y + sin(snake.heading) * (GameTuning.HEAD_RADIUS - 0.2f)
+        val mouthX = snake.x + cos(snake.heading) * GameTuning.MOUTH_REACH
+        val mouthY = snake.y + sin(snake.heading) * GameTuning.MOUTH_REACH
         val eatLimit = GameTuning.EAT_RADIUS * GameTuning.EAT_RADIUS
         var nearest = Float.MAX_VALUE
         for (i in critters.indices.reversed()) {
@@ -216,16 +223,16 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     }
 
     private fun eat(critter: Critter) {
-        when (critter.type) {
-            CritterType.MOUSE -> {
+        when (critter) {
+            is Critter.Mouse -> {
                 score++
                 snake.grow(1)
                 snake.addBulge()
                 floatingTexts.add(FloatingText("+1", snake.x, snake.y - 6f, Color(0xFFFFF3B0)))
                 sparkles(critter.x, critter.y - 3f, 9, listOf(Color(0xFFFFFFFF), Color(0xFFF28FA9), Color(0xFFFFF3B0)))
             }
-            CritterType.TOAD -> {
-                val kind = critter.toadKind ?: ToadKind.PURPLE
+            is Critter.Toad -> {
+                val kind = critter.kind
                 applyEffect(kind)
                 sparkles(critter.x, critter.y - 3f, 12, listOf(kind.body, kind.light, Color(0xFFFFFFFF)))
             }

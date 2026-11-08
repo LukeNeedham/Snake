@@ -27,6 +27,8 @@ private val SkinPattern = listOf(
     Color(0xFF2F8F5B),
     Color(0xFF1F6B45),
 )
+/** The head is widest at the back and narrows to the nose: discs of shrinking radius, each as far in front of the centre. */
+private val HeadShape = listOf(-0.4f to GameTuning.HEAD_RADIUS, 1.4f to 3.4f, 3.0f to 2.7f, 4.4f to 1.9f, 5.4f to 1.1f)
 private val HeadColor = Color(0xFF38A866)
 private val DeadColor = Color(0xFF8A908C)
 private val TongueColor = Color(0xFFE8465A)
@@ -75,26 +77,22 @@ private fun DrawScope.drawHead(world: GameWorld, deadAmount: Float) {
     val px = -dy
     val py = dx
     val color = lerp(HeadColor, DeadColor, deadAmount)
-    val radius = GameTuning.HEAD_RADIUS
-
-    pixelDisc(hx, hy, radius + 1f, SnakeOutline)
-    pixelDisc(hx + dx * 2.4f, hy + dy * 2.4f, 3.9f, SnakeOutline)
-    pixelDisc(hx, hy, radius, color)
-    pixelDisc(hx + dx * 2.4f, hy + dy * 2.4f, 2.7f, color)
+    for ((offset, discRadius) in HeadShape) pixelDisc(hx + dx * offset, hy + dy * offset, discRadius + 1f, SnakeOutline)
+    for ((offset, discRadius) in HeadShape) pixelDisc(hx + dx * offset, hy + dy * offset, discRadius, color)
 
     if (snake.mouthOpen > 0.25f) {
-        val mouthX = hx + dx * 4.6f
-        val mouthY = hy + dy * 4.6f
+        val mouthX = hx + dx * GameTuning.MOUTH_REACH
+        val mouthY = hy + dy * GameTuning.MOUTH_REACH
         pixelDisc(mouthX, mouthY, 2.2f * snake.mouthOpen + 0.4f, SnakeOutline)
         pixelDisc(mouthX, mouthY, 1.4f * snake.mouthOpen, Color(0xFFD43A55))
     } else if (deadAmount < 0.5f) {
-        drawTongue(world, hx + dx * 5f, hy + dy * 5f, dx, dy, px, py)
+        drawTongue(world, hx + dx * 6f, hy + dy * 6f, dx, dy, px, py)
     }
 
     val blink = (world.time + 1.3f) % 4.2f < 0.14f
     for (side in listOf(-1f, 1f)) {
-        val ex = (hx + dx * 0.9f + px * side * 2.3f).roundToInt()
-        val ey = (hy + dy * 0.9f + py * side * 2.3f).roundToInt()
+        val ex = (hx + dx * 1.4f + px * side * 2.3f).roundToInt()
+        val ey = (hy + dy * 1.4f + py * side * 2.3f).roundToInt()
         if (deadAmount > 0.5f) {
             val ink = Color(0xFF14261B)
             pixel(ex - 1, ey - 1, ink)

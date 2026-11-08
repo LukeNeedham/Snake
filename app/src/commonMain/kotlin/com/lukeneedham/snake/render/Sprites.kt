@@ -79,6 +79,11 @@ internal enum class SpriteArt(val rows: List<String>) {
 
     val width: Int get() = rows.maxOf { it.length }
     val height: Int get() = rows.size
+
+    companion object {
+        /** What the animals look like while the snake is disguise-blind: never a mouse or a toad. */
+        val disguises: List<SpriteArt> = listOf(BUNNY, CHICK, BEETLE, HEDGEHOG)
+    }
 }
 
 /** [kind] only matters for the toad body letters: `b` body, `d` shade, `l` light. */

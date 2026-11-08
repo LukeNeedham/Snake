@@ -10,7 +10,7 @@ class CritterTest {
 
     @Test
     fun aMouseRunsOutOfTheGrassAndIntoTheOval() {
-        val mouse = Critter(1, CritterType.MOUSE, null, arena.centerX + arena.radiusX + 10f, arena.centerY, lifetime = 100f)
+        val mouse = Critter.Mouse(1, arena.centerX + arena.radiusX + 5f, arena.centerY, lifetime = 100f)
         val random = Random(3)
         var entered = false
         repeat(60 * 10) {
@@ -22,7 +22,7 @@ class CritterTest {
 
     @Test
     fun aMouseGoesBackIntoTheGrassAfterItsVisit() {
-        val mouse = Critter(1, CritterType.MOUSE, null, arena.centerX + arena.radiusX + 10f, arena.centerY, lifetime = 3f)
+        val mouse = Critter.Mouse(1, arena.centerX + arena.radiusX + 5f, arena.centerY, lifetime = 3f)
         val random = Random(5)
         repeat(60 * 60) { if (!mouse.isGone) mouse.update(1f / 60f, arena, random) }
         assertTrue(mouse.isGone)
@@ -30,7 +30,7 @@ class CritterTest {
 
     @Test
     fun aToadHopsInTheAirAndSitsStill() {
-        val toad = Critter(1, CritterType.TOAD, ToadKind.TEAL, arena.centerX, arena.centerY, lifetime = 100f)
+        val toad = Critter.Toad(1, ToadKind.TEAL, arena.centerX, arena.centerY, lifetime = 100f)
         val random = Random(9)
         var hopped = false
         var sat = false

@@ -5,7 +5,7 @@ enum class Effect(val durationSeconds: Float) {
     /** The whole screen turns wavy. */
     HALLUCINATING(9f),
 
-    /** Every animal but the snake looks like a random animal. */
+    /** Every animal but the snake looks like one of a few other animals, and keeps that look for as long as it lasts. */
     DISGUISED(9f),
 
     /** The snake moves faster. */

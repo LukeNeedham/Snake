@@ -11,10 +11,17 @@ class GameWorldTest {
 
     private fun newWorld() = GameWorld(Arena(108f, 234f), seed = 11)
 
-    private fun GameWorld.placeInFrontOfTheMouth(type: CritterType, kind: ToadKind?): Critter {
-        val x = snake.x + cos(snake.heading) * 3.4f
-        val y = snake.y + sin(snake.heading) * 3.4f + 3f
-        return Critter(99, type, kind, x, y, lifetime = 100f).also { critters.add(it) }
+    private fun GameWorld.mouthX() = snake.x + cos(snake.heading) * GameTuning.MOUTH_REACH
+
+    /** Critters are 3 units tall, so their feet are 3 units below the mouth. */
+    private fun GameWorld.mouthY() = snake.y + sin(snake.heading) * GameTuning.MOUTH_REACH + 3f
+
+    private fun GameWorld.placeMouseInFrontOfTheMouth() {
+        critters.add(Critter.Mouse(99, mouthX(), mouthY(), lifetime = 100f))
+    }
+
+    private fun GameWorld.placeToadInFrontOfTheMouth(kind: ToadKind) {
+        critters.add(Critter.Toad(99, kind, mouthX(), mouthY(), lifetime = 100f))
     }
 
     @Test
@@ -47,7 +54,7 @@ class GameWorldTest {
         val world = newWorld()
         world.start()
         val lengthBefore = world.snake.length
-        world.placeInFrontOfTheMouth(CritterType.MOUSE, null)
+        world.placeMouseInFrontOfTheMouth()
         repeat(30) { world.update(1f / 60f) }
         assertEquals(1, world.score)
         assertFalse(world.critters.any { it.id == 99 })
@@ -58,7 +65,7 @@ class GameWorldTest {
     fun eatingAToadStartsItsEffectAndScoresNothing() {
         val world = newWorld()
         world.start()
-        world.placeInFrontOfTheMouth(CritterType.TOAD, ToadKind.PINK)
+        world.placeToadInFrontOfTheMouth(ToadKind.PINK)
         world.update(1f / 60f)
         assertEquals(0, world.score)
         assertTrue(world.effectRemaining(Effect.CONFUSED) > 0f)
