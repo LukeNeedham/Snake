@@ -9,5 +9,5 @@ enum class Effect(val durationSeconds: Float) {
     Disguised(9f),
 
     /** The snake ignores taps. */
-    Confused(3.5f),
+    Confused(2.5f),
 }
