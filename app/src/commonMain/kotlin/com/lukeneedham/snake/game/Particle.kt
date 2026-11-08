@@ -2,7 +2,7 @@ package com.lukeneedham.snake.game
 
 import androidx.compose.ui.graphics.Color
 
-enum class ParticleShape { SQUARE, SPARKLE }
+enum class ParticleShape { Square, Sparkle }
 
 /** A speck of dust, a sparkle or a bubble. It fades out over [maxLife] seconds. */
 class Particle(

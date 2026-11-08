@@ -5,8 +5,11 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 
 /** A tiny font of 3 by 5 pixels per letter: each glyph is its five rows of three pixels, one after the other. */
 internal object PixelFont {
-    const val GLYPH_WIDTH = 3
-    const val GLYPH_HEIGHT = 5
+    const val glyphWidth = 3
+    const val glyphHeight = 5
+
+    /** The colour of the outline that every text has. */
+    val outline = Color(0xFF1B1422)
 
     private val glyphs: Map<Char, String> = mapOf(
         'A' to "010101111101101", 'B' to "110101110101110", 'C' to "011100100100011", 'D' to "110101101101110",
@@ -23,16 +26,14 @@ internal object PixelFont {
         ':' to "000010000010000", '.' to "000000000000010",
     )
 
-    fun width(text: String, scale: Int): Int = if (text.isEmpty()) 0 else text.length * (GLYPH_WIDTH + 1) * scale - scale
-
-    fun height(scale: Int): Int = GLYPH_HEIGHT * scale
+    fun width(text: String, scale: Int): Int = if (text.isEmpty()) 0 else text.length * (glyphWidth + 1) * scale - scale
 
     inline fun forEachPixel(text: String, block: (column: Int, row: Int) -> Unit) {
         text.forEachIndexed { index, char ->
             val glyph = glyph(char) ?: return@forEachIndexed
-            for (row in 0 until GLYPH_HEIGHT) {
-                for (column in 0 until GLYPH_WIDTH) {
-                    if (glyph[row * GLYPH_WIDTH + column] == '1') block(index * (GLYPH_WIDTH + 1) + column, row)
+            for (row in 0 until glyphHeight) {
+                for (column in 0 until glyphWidth) {
+                    if (glyph[row * glyphWidth + column] == '1') block(index * (glyphWidth + 1) + column, row)
                 }
             }
         }
@@ -48,7 +49,7 @@ internal fun DrawScope.drawPixelText(
     y: Int,
     color: Color,
     scale: Int = 1,
-    outline: Color = Color(0xFF1B1422),
+    outline: Color = PixelFont.outline,
 ) {
     PixelFont.forEachPixel(text) { column, row ->
         pixelRect(x + column * scale - 1, y + row * scale - 1, scale + 2, scale + 2, outline)
@@ -64,7 +65,7 @@ internal fun DrawScope.drawCenteredPixelText(
     y: Int,
     color: Color,
     scale: Int = 1,
-    outline: Color = Color(0xFF1B1422),
+    outline: Color = PixelFont.outline,
 ) {
     drawPixelText(text, centerX - PixelFont.width(text, scale) / 2, y, color, scale, outline)
 }

@@ -18,8 +18,8 @@ class SnakeTest {
     fun theBodyHasTheLengthOfTheSnake() {
         val snake = Snake(Arena(108f, 234f))
         repeat(120) { snake.step(1f / 60f, 1f) }
-        val expected = (snake.length / GameTuning.BODY_SPACING).toInt()
-        assertTrue(abs(snake.body.size - expected) <= 2, "body ${snake.body.size}, expected about $expected")
+        val expected = (snake.body.length / SnakeTuning.bodySpacing).toInt()
+        assertTrue(abs(snake.body.points.size - expected) <= 2, "body ${snake.body.points.size}, expected about $expected")
     }
 
     @Test

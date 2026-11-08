@@ -13,21 +13,21 @@ import kotlinx.coroutines.flow.map
 class DataStoreBestScoreStore(context: Context) : BestScoreStore {
 
     private val dataStore = PreferenceDataStoreFactory.create(
-        produceFile = { context.applicationContext.preferencesDataStoreFile(FILE_NAME) },
+        produceFile = { context.applicationContext.preferencesDataStoreFile(fileName) },
     )
 
     override val best: Flow<Int> = dataStore.data
-        .map { it[BEST_SCORE] ?: 0 }
+        .map { it[bestScoreKey] ?: 0 }
         .catch { emit(0) }
 
     override suspend fun save(score: Int) {
         dataStore.edit { preferences ->
-            if (score > (preferences[BEST_SCORE] ?: 0)) preferences[BEST_SCORE] = score
+            if (score > (preferences[bestScoreKey] ?: 0)) preferences[bestScoreKey] = score
         }
     }
 
     private companion object {
-        const val FILE_NAME = "snake"
-        val BEST_SCORE = intPreferencesKey("best_score")
+        const val fileName = "snake"
+        val bestScoreKey = intPreferencesKey("best_score")
     }
 }

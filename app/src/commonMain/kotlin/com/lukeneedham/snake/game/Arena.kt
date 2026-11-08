@@ -9,8 +9,8 @@ import kotlin.math.sqrt
 class Arena(val width: Float, val height: Float) {
     val centerX = width / 2f
     val centerY = height / 2f
-    val radiusX = width / 2f - GameTuning.GRASS_DEPTH
-    val radiusY = height / 2f - GameTuning.GRASS_DEPTH
+    val radiusX = width / 2f - WorldTuning.grassDepth
+    val radiusY = height / 2f - WorldTuning.grassDepth
 
     /** How far the point is from the edge of the oval, along the way out: negative inside, positive in the grass. */
     fun signedDistance(x: Float, y: Float): Float {
