@@ -3,6 +3,7 @@ package com.lukeneedham.snake.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lukeneedham.snake.data.BestScoreStore
+import com.lukeneedham.snake.data.BestScoreTracker
 import com.lukeneedham.snake.game.Arena
 import com.lukeneedham.snake.game.GamePhase
 import com.lukeneedham.snake.game.GameWorld
@@ -10,26 +11,19 @@ import com.lukeneedham.snake.game.WorldTuning
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-class GameViewModel(private val bestScoreStore: BestScoreStore) : ViewModel() {
+/** Connects the game to the page: it steps the world every frame, passes taps on, and publishes what the page shows. */
+class GameViewModel(bestScoreStore: BestScoreStore) : ViewModel() {
 
     private var world = GameWorld(Arena(WorldTuning.width.toFloat(), defaultHeight))
-    private var bestScore = 0
-    private var isNewBest = false
-    private var savedThisGame = false
+    private val bestScores = BestScoreTracker(bestScoreStore, viewModelScope) { publish() }
 
     private val _uiState = MutableStateFlow(buildState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            bestScoreStore.best.collect {
-                bestScore = it
-                publish()
-            }
-        }
+        bestScores.start()
     }
 
     /** The arena is an oval that fills the screen, so the world takes the aspect ratio of the screen. */
@@ -43,12 +37,7 @@ class GameViewModel(private val bestScoreStore: BestScoreStore) : ViewModel() {
     /** Called once per frame with the seconds since the last frame. */
     fun onFrame(seconds: Float) {
         world.update(seconds.coerceIn(0f, maxStep))
-        if (world.phase == GamePhase.GameOver && !savedThisGame) {
-            savedThisGame = true
-            isNewBest = world.score > bestScore
-            val score = world.score
-            viewModelScope.launch { bestScoreStore.save(score) }
-        }
+        if (world.phase == GamePhase.GameOver) bestScores.gameOver(world.score)
         publish()
     }
 
@@ -72,8 +61,7 @@ class GameViewModel(private val bestScoreStore: BestScoreStore) : ViewModel() {
 
     private fun newWorld(height: Float) {
         world = GameWorld(Arena(WorldTuning.width.toFloat(), height), seed = (world.time * 1000f).toInt())
-        savedThisGame = false
-        isNewBest = false
+        bestScores.newGame()
         publish()
     }
 
@@ -86,8 +74,8 @@ class GameViewModel(private val bestScoreStore: BestScoreStore) : ViewModel() {
         world = world,
         phase = world.phase,
         score = world.score,
-        bestScore = maxOf(bestScore, if (world.phase == GamePhase.GameOver) world.score else 0),
-        isNewBest = isNewBest,
+        bestScore = bestScores.best,
+        isNewBest = bestScores.isNewBest,
     )
 
     private companion object {

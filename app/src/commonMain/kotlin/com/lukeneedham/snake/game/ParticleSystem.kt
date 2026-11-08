@@ -8,19 +8,22 @@ import kotlin.random.Random
 
 /** The specks of dust, the sparkles and the floating texts. */
 class ParticleSystem(private val random: Random) {
-    val particles = ArrayList<Particle>()
-    val floatingTexts = ArrayList<FloatingText>()
+    private val mutableParticles = ArrayList<Particle>()
+    private val mutableTexts = ArrayList<FloatingText>()
+
+    val particles: List<Particle> get() = mutableParticles
+    val floatingTexts: List<FloatingText> get() = mutableTexts
 
     fun update(dt: Float) {
-        for (particle in particles) particle.update(dt)
-        particles.removeAll { it.life <= 0f }
-        for (text in floatingTexts) text.update(dt)
-        floatingTexts.removeAll { it.life <= 0f }
-        if (particles.size > maxParticles) particles.subList(0, particles.size - maxParticles).clear()
+        for (particle in mutableParticles) particle.update(dt)
+        mutableParticles.removeAll { it.life <= 0f }
+        for (text in mutableTexts) text.update(dt)
+        mutableTexts.removeAll { it.life <= 0f }
+        if (mutableParticles.size > maxParticles) mutableParticles.subList(0, mutableParticles.size - maxParticles).clear()
     }
 
     fun floatText(text: String, x: Float, y: Float, color: Color) {
-        floatingTexts.add(FloatingText(text, x, y, color))
+        mutableTexts.add(FloatingText(text, x, y, color))
     }
 
     /** Small puffs that fall back to the ground. */
@@ -28,7 +31,7 @@ class ParticleSystem(private val random: Random) {
         repeat(count) {
             val angle = random.nextFloat() * 2f * PI.toFloat()
             val speed = 3f + random.nextFloat() * 8f
-            particles.add(
+            mutableParticles.add(
                 Particle(x, y, cos(angle) * speed, sin(angle) * speed * 0.5f - 3f, 0.5f, color, 1, 8f, ParticleShape.Square),
             )
         }
@@ -39,7 +42,7 @@ class ParticleSystem(private val random: Random) {
         repeat(count) {
             val angle = random.nextFloat() * 2f * PI.toFloat()
             val speed = 6f + random.nextFloat() * 18f
-            particles.add(
+            mutableParticles.add(
                 Particle(
                     x, y, cos(angle) * speed, sin(angle) * speed - 8f, 0.6f + random.nextFloat() * 0.4f,
                     colors[random.nextInt(colors.size)], 1, 18f, ParticleShape.Sparkle,
@@ -53,7 +56,7 @@ class ParticleSystem(private val random: Random) {
         repeat(explosionSize) {
             val angle = random.nextFloat() * 2f * PI.toFloat()
             val speed = 10f + random.nextFloat() * 28f
-            particles.add(
+            mutableParticles.add(
                 Particle(x, y, cos(angle) * speed, sin(angle) * speed, 0.9f, colors[random.nextInt(colors.size)], 2, 30f, ParticleShape.Square),
             )
         }
@@ -61,7 +64,7 @@ class ParticleSystem(private val random: Random) {
 
     /** One speck that stays where it was dropped and fades. */
     fun speck(x: Float, y: Float, color: Color) {
-        particles.add(Particle(x, y, 0f, 0f, 0.4f, color, 1, 0f, ParticleShape.Square))
+        mutableParticles.add(Particle(x, y, 0f, 0f, 0.4f, color, 1, 0f, ParticleShape.Square))
     }
 
     private companion object {

@@ -40,7 +40,10 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
         private set
 
     val snake = Snake(arena)
-    val critters = ArrayList<Critter>()
+    private val mutableCritters = ArrayList<Critter>()
+
+    /** The animals that are out of the grass, in the oval or on their way. */
+    val critters: List<Critter> get() = mutableCritters
     val effects = EffectTracker()
 
     private val random = Random(seed)
@@ -78,6 +81,11 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
 
     fun applyEffect(kind: ToadKind) = effects.apply(kind)
 
+    /** Puts a critter in the world: the tests use it to place one where they need it. */
+    internal fun addCritter(critter: Critter) {
+        mutableCritters.add(critter)
+    }
+
     fun endGame() {
         if (phase != GamePhase.Playing) return
         phase = GamePhase.GameOver
@@ -107,9 +115,9 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     private fun updatePlaying(dt: Float) {
         snake.step(dt, 1f + SnakeTuning.speedyBoost * effects.level(Effect.Speedy))
         dustAtNewBounces()
-        spawner.update(dt, critters, score)
+        spawner.update(dt, mutableCritters, score)
         updateCritters(dt)
-        feeding.update(dt, snake, critters).forEach { eat(it) }
+        feeding.update(dt, snake, mutableCritters).forEach { eat(it) }
         effectParticles.emit(effects, snake, critters)
         if (snake.hitsItself()) endGame()
     }
@@ -131,7 +139,7 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
                 particleSystem.dust(critter.x, critter.y, 1, dustColor)
             }
         }
-        critters.removeAll { it.isGone }
+        mutableCritters.removeAll { it.isGone }
     }
 
     private fun eat(critter: Critter) {

@@ -23,12 +23,13 @@ class SnakeBody(headX: Float, headY: Float, heading: Float) {
     val initialDistance = length
 
     /** Where on the path the snake swallowed a mouse: each one is a bulge that travels down the body. */
-    val bulges = ArrayList<Float>()
+    val bulges: List<Float> get() = mutableBulges
 
     /** The discs of the body from the head to the tail. */
     var points: List<BodyPoint> = emptyList()
         private set
 
+    private val mutableBulges = ArrayList<Float>()
     private var targetLength = length
     private val trail = ArrayDeque<TrailPoint>()
 
@@ -51,14 +52,14 @@ class SnakeBody(headX: Float, headY: Float, heading: Float) {
     }
 
     fun addBulge(totalDistance: Float) {
-        bulges.add(totalDistance)
+        mutableBulges.add(totalDistance)
     }
 
     /** Lets the body grow towards its length, forgets what is behind the tail, and samples the discs again. */
     fun update(dt: Float, totalDistance: Float, heading: Float) {
         if (length < targetLength) length = min(targetLength, length + SnakeTuning.growRate * dt)
         while (trail.size > 2 && trail[1].distance < totalDistance - length - 2f) trail.removeFirst()
-        bulges.removeAll { totalDistance - it > length + 8f }
+        mutableBulges.removeAll { totalDistance - it > length + 8f }
         rebuild(totalDistance, heading)
     }
 

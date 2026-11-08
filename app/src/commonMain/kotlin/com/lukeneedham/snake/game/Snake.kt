@@ -31,6 +31,7 @@ class Snake(arena: Arena) {
 
     /** 0 when the mouth is closed, 1 when it is wide open. */
     var mouthOpen = 0f
+        internal set
 
     /** Counts every bounce off the wall, with where the last one happened. */
     var bounceCount = 0

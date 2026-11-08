@@ -17,11 +17,11 @@ class GameWorldTest {
     private fun GameWorld.mouthY() = snake.y + sin(snake.heading) * SnakeTuning.mouthReach + 3f
 
     private fun GameWorld.placeMouseInFrontOfTheMouth() {
-        critters.add(Critter.Mouse(99, mouthX(), mouthY(), lifetime = 100f))
+        addCritter(Critter.Mouse(99, mouthX(), mouthY(), lifetime = 100f))
     }
 
     private fun GameWorld.placeToadInFrontOfTheMouth(kind: ToadKind) {
-        critters.add(Critter.Toad(99, kind, mouthX(), mouthY(), lifetime = 100f))
+        addCritter(Critter.Toad(99, kind, mouthX(), mouthY(), lifetime = 100f))
     }
 
     @Test
