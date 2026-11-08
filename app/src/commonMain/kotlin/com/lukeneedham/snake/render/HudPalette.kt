@@ -9,6 +9,7 @@ internal object HudPalette {
     val red = Color(0xFFFF6B7D)
     val ice = Color(0xFFBFE3FF)
     val hungerFull = Color(0xFF7AD66B)
+    val hungerGain = Color(0xFFE6FFC2)
     val hungerLow = Color(0xFFB33A4A)
     val barBack = Color(0xFF3A3340)
 }

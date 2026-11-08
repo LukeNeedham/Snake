@@ -13,6 +13,12 @@ object HungerTuning {
     /** A toad is hardly a meal. */
     const val toadFills = 0.05f
 
+    /** What was just eaten shows in its own colour for this long before the bar fills up into it. */
+    const val gainShowSeconds = 0.5f
+
+    /** How much of the bar the new part fills in per second. */
+    const val gainFillPerSecond = 0.6f
+
     /** Below this the bar is low, and warns. */
     const val lowLevel = 0.25f
 }

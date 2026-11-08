@@ -56,4 +56,50 @@ class HungerTest {
         assertTrue(hunger.isLow)
         assertFalse(hunger.isStarving)
     }
+
+    @Test
+    fun aMealShowsAsAGainBeforeTheBarFillsIn() {
+        val hunger = Hunger()
+        hunger.update(20f, sprintLevel = 0f)
+        val before = hunger.level
+        hunger.feed(HungerTuning.mouseFills)
+        assertEquals(before + HungerTuning.mouseFills, hunger.level, 1e-4f)
+        assertEquals(before, hunger.filled, 1e-4f)
+        assertEquals(HungerTuning.mouseFills, hunger.gain, 1e-4f)
+    }
+
+    @Test
+    fun theGainStaysForAMomentAndThenFillsIn() {
+        val hunger = Hunger()
+        hunger.update(20f, sprintLevel = 0f)
+        val before = hunger.filled
+        hunger.feed(HungerTuning.mouseFills)
+        hunger.update(HungerTuning.gainShowSeconds / 2f, sprintLevel = 0f)
+        assertEquals(before, hunger.filled, 1e-3f)
+        hunger.update(HungerTuning.gainShowSeconds, sprintLevel = 0f)
+        hunger.update(0.1f, sprintLevel = 0f)
+        assertTrue(hunger.filled > before)
+        repeat(100) { hunger.update(0.1f, sprintLevel = 0f) }
+        assertEquals(0f, hunger.gain, 1e-4f)
+    }
+
+    @Test
+    fun theFilledPartNeverGoesPastTheRealLevel() {
+        val hunger = Hunger()
+        hunger.update(25f, sprintLevel = 0f)
+        hunger.feed(HungerTuning.toadFills)
+        repeat(100) {
+            hunger.update(0.1f, sprintLevel = 0f)
+            assertTrue(hunger.filled <= hunger.level + 1e-6f)
+        }
+    }
+
+    @Test
+    fun aSecondMealAddsToTheGain() {
+        val hunger = Hunger()
+        hunger.update(25f, sprintLevel = 0f)
+        hunger.feed(0.1f)
+        hunger.feed(0.1f)
+        assertEquals(0.2f, hunger.gain, 1e-4f)
+    }
 }
