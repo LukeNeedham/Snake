@@ -18,8 +18,9 @@ Beware the toads that hop out of the grass: each colour is poisonous in its own 
 one turns every animal into a weird monster, and one makes the snake so dizzy that it ignores your taps for a few seconds.
 
 The snake is always hungry: a bar at the top of the screen runs down, a mouse fills it, a toad hardly does, and the
-snake starves when it is empty. Hold the corner at the bottom right to sprint, which is faster but burns the bar quicker,
-while your other thumb taps anywhere else to turn. A button at the top left pauses the game.
+snake starves when it is empty. Hold the corner at the bottom left to sprint (you can move it to the right in the settings), which is faster but burns
+the bar quicker, while your other thumb taps anywhere else to turn. The button at the top left pauses the game and opens a
+menu with Resume, Restart and Settings.
 The mice run from a snake they see coming, but they cannot see what is behind them.
 
 ## Screenshots
@@ -27,7 +28,8 @@ The mice run from a snake they see coming, but they cannot see what is behind th
 <img src="docs/screenshots/01-GamePageReady.png" width="240" alt="Game Page Ready">
 <img src="docs/screenshots/02-GamePage.png" width="240" alt="Game Page">
 <img src="docs/screenshots/03-GamePageHallucinating.png" width="240" alt="Game Page Hallucinating">
-<img src="docs/screenshots/04-GamePageGameOver.png" width="240" alt="Game Page Game Over">
+<img src="docs/screenshots/04-GamePagePaused.png" width="240" alt="Game Page Paused">
+<img src="docs/screenshots/05-GamePageGameOver.png" width="240" alt="Game Page Game Over">
 
 ## Getting started as a user
 
