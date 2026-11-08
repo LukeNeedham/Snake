@@ -30,6 +30,15 @@ into its own doc when work on it starts.
 - [x] **Several kinds of birds, one power up each.** Small ones (blue tit, robin, sparrow) and large ones (blackbird, crow, pigeon), in
   `BirdKind`, each with its own sprites and colours (`BirdArt`, `BirdPalette`). The small ones are the most skittish.
 
+- [ ] **Fewer, rarer birds.** There are too many birds. At most one bird on the screen at a time (drop `SpawnTuning.mostBirds` and
+  `pointsPerExtraBird`, so the score never brings a second one), and a lot rarer: much longer waits between birds
+  (`firstBirdDelay`, `birdDelayMin` and `birdDelayMax` in `SpawnTuning`). Update the tests in `CritterSpawnerTest` that count two birds.
+- [ ] **The snake does not die from touching itself, except under the lupus curse.** Normally the snake can loop over its own body
+  and nothing happens (so `snake.hitsItself()` no longer ends the game in `GameWorld.updatePlaying`): the only way to die is to starve.
+  The **lupus curse** is a special curse that, while it is active, makes the snake die if it touches itself, as it does now. Decide how a
+  snake catches the curse (an item, a critter or a boss?) and how long it lasts, then show it on the screen like the other effects and
+  power ups. Until it exists, nothing kills the snake but hunger. Check how the snake is drawn when its body crosses itself.
+
 ## Power ups
 
 - [ ] **Bunnies and ducks as real critters.** They were disguises of the vague critters, which are weird monsters now. Their
