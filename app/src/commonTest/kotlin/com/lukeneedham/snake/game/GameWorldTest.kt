@@ -278,4 +278,82 @@ class GameWorldTest {
         world.openMenu()
         assertTrue(world.tick > before)
     }
+
+    private fun GameWorld.placeBirdInFrontOfTheMouth(kind: BirdKind) {
+        // It is on the ground already: it sees the snake in its first step, but crouches before it takes off, and the mouth takes it then
+        addCritter(Critter.Bird(99, kind, mouthX(), mouthY(), mouthX(), mouthY(), staySeconds = 100f, isLanded = true))
+    }
+
+    @Test
+    fun eatingABirdScoresMoreThanAMouseAndGivesItsPowerUp() {
+        val world = newWorld()
+        world.start()
+        repeat(300) { world.update(1f / 60f) }
+        val scoreBefore = world.score
+        val lengthBefore = world.snake.body.length
+        assertFalse(world.powerUps.isOn(PowerUp.ToadRepellent))
+        world.placeBirdInFrontOfTheMouth(BirdKind.Crow)
+        repeat(30) { world.update(1f / 60f) }
+        assertFalse(world.critters.any { it.id == 99 })
+        assertTrue(world.score >= scoreBefore + BirdTuning.score)
+        assertTrue(world.snake.body.length > lengthBefore)
+        assertTrue(world.powerUps.isOn(PowerUp.ToadRepellent))
+        assertTrue(world.powerUps.remaining(PowerUp.ToadRepellent) > PowerUp.ToadRepellent.durationSeconds - 1f)
+    }
+
+    @Test
+    fun aBirdFillsTheBarALittleMoreThanAMouse() {
+        assertTrue(HungerTuning.birdFills > HungerTuning.mouseFills)
+        val world = newWorld()
+        world.start()
+        repeat(300) { world.update(1f / 60f) }
+        val before = world.hunger.level
+        world.placeBirdInFrontOfTheMouth(BirdKind.Robin)
+        repeat(30) { world.update(1f / 60f) }
+        assertTrue(world.hunger.level > before)
+    }
+
+    @Test
+    fun aPowerUpRunsDownWhilePlayingAndNotWhilePaused() {
+        val world = newWorld()
+        world.start()
+        world.powerUps.apply(BirdKind.Sparrow)
+        repeat(60) { world.update(1f / 60f) }
+        val remaining = world.powerUps.remaining(PowerUp.Sneaky)
+        assertTrue(remaining < PowerUp.Sneaky.durationSeconds - 0.9f)
+        world.pause()
+        repeat(120) { world.update(1f / 60f) }
+        assertEquals(remaining, world.powerUps.remaining(PowerUp.Sneaky))
+    }
+
+    @Test
+    fun zoomMakesTheSnakeFaster() {
+        val normal = newWorld().also { it.start() }
+        val zoomed = newWorld().also {
+            it.start()
+            it.powerUps.apply(BirdKind.BlueTit)
+        }
+        repeat(60) {
+            normal.update(1f / 60f)
+            zoomed.update(1f / 60f)
+        }
+        assertTrue(zoomed.snake.totalDistance > normal.snake.totalDistance)
+    }
+
+    @Test
+    fun theFasterSprintGoesFasterAndCostsLessHunger() {
+        val normal = newWorld().also { it.start() }
+        val faster = newWorld().also {
+            it.start()
+            it.powerUps.apply(BirdKind.Robin)
+        }
+        normal.sprintPress(1L)
+        faster.sprintPress(1L)
+        repeat(120) {
+            normal.update(1f / 60f)
+            faster.update(1f / 60f)
+        }
+        assertTrue(faster.snake.totalDistance > normal.snake.totalDistance)
+        assertTrue(faster.hunger.level > normal.hunger.level)
+    }
 }

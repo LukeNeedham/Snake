@@ -19,4 +19,10 @@
     <string name="effect_hallucinating">Trippy!</string>
     <string name="effect_disguised">Mystery!</string>
     <string name="effect_confused">Dizzy!</string>
+    <string name="power_up_zoom">Zoom!</string>
+    <string name="power_up_fast_sprint">Sprinter!</string>
+    <string name="power_up_sneaky">Sneaky!</string>
+    <string name="power_up_bigger_mouth">Big mouth!</string>
+    <string name="power_up_toad_repellent">Toad-free!</string>
+    <string name="power_up_pheromones">Mouse lure!</string>
 </resources>

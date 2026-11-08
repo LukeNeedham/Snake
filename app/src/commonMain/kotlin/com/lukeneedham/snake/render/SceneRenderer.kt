@@ -20,5 +20,6 @@ internal fun DrawScope.drawScene(
     drawSnake(world)
     drawParticles(world)
     drawFrontGrass(frontGrass, world)
+    drawFlyingBirds(world)
     drawHud(world, texts, topInset)
 }

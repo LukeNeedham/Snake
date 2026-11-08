@@ -17,6 +17,11 @@ a skin pattern that repeats as it grows, and the game ends the moment the snake 
 Beware the toads that hop out of the grass: each colour is poisonous in its own way. One makes the whole screen wavy,
 one turns every animal into a weird monster, and one makes the snake so dizzy that it ignores your taps for a few seconds.
 
+Birds fly in from off the screen and land in the oval: blue tits, robins and sparrows, blackbirds, crows and pigeons. Each kind is
+worth a little more than a mouse and gives the snake a different power up for a few seconds: it goes faster, sprints for less, is
+sneakier, eats from further away, keeps the toads away, or brings more mice. Power ups stack with each other and with the toads'
+poison. But birds are extremely skittish and fly off the moment the snake gets close, so catching one takes a sprint.
+
 The snake is always hungry: a bar at the top of the screen runs down, a mouse fills it, a toad hardly does, and the
 snake starves when it is empty. Hold the corner at the bottom left to sprint (you can move it to the right in the settings), which is faster but burns
 the bar quicker, while your other thumb taps anywhere else to turn. The button at the top left pauses the game and opens a
@@ -27,9 +32,10 @@ The mice run from a snake they see coming, but they cannot see what is behind th
 
 <img src="docs/screenshots/01-GamePageReady.png" width="240" alt="Game Page Ready">
 <img src="docs/screenshots/02-GamePage.png" width="240" alt="Game Page">
-<img src="docs/screenshots/03-GamePageHallucinating.png" width="240" alt="Game Page Hallucinating">
-<img src="docs/screenshots/04-GamePagePaused.png" width="240" alt="Game Page Paused">
-<img src="docs/screenshots/05-GamePageGameOver.png" width="240" alt="Game Page Game Over">
+<img src="docs/screenshots/03-GamePageBirds.png" width="240" alt="Game Page Birds">
+<img src="docs/screenshots/04-GamePageHallucinating.png" width="240" alt="Game Page Hallucinating">
+<img src="docs/screenshots/05-GamePagePaused.png" width="240" alt="Game Page Paused">
+<img src="docs/screenshots/06-GamePageGameOver.png" width="240" alt="Game Page Game Over">
 
 ## Getting started as a user
 

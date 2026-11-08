@@ -19,6 +19,35 @@ class FeedingTest {
         return Critter.Mouse(1, x, y, lifetime = 100f)
     }
 
+    /** A bird whose centre is at the mouth: it is on the ground if [isOnTheGround], else it is still in the air. */
+    private fun birdAtTheMouth(isOnTheGround: Boolean): Critter {
+        val x = snake.x + cos(snake.heading) * SnakeTuning.mouthReach
+        val y = snake.y + sin(snake.heading) * SnakeTuning.mouthReach + 3f
+        return Critter.Bird(1, BirdKind.Crow, x, y, x, y, staySeconds = 100f, isLanded = isOnTheGround)
+    }
+
+    @Test
+    fun aBirdInTheAirIsOutOfReach() {
+        val critters = mutableListOf(birdAtTheMouth(isOnTheGround = false))
+        assertTrue(feeding.update(0.016f, snake, critters).isEmpty())
+        assertEquals(1, critters.size)
+    }
+
+    @Test
+    fun aBirdOnTheGroundIsEaten() {
+        val critters = mutableListOf(birdAtTheMouth(isOnTheGround = true))
+        assertEquals(1, feeding.update(0.016f, snake, critters).size)
+        assertTrue(critters.isEmpty())
+    }
+
+    @Test
+    fun aBiggerMouthReachesFurther() {
+        val normal = mutableListOf(mouseAhead(7f))
+        assertTrue(feeding.update(0.016f, snake, normal).isEmpty())
+        val bigger = mutableListOf(mouseAhead(7f))
+        assertEquals(1, feeding.update(0.016f, snake, bigger, reachFactor = PowerUpTuning.biggerMouthFactor).size)
+    }
+
     @Test
     fun theMouthTakesInWhatItReaches() {
         val critters = mutableListOf(mouseAhead(0f))

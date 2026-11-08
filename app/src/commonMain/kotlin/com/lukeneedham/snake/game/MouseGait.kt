@@ -17,14 +17,15 @@ internal class MouseGait(private val course: CritterCourse, private val visit: C
     private var timer = 0.2f
     private var lookTimer = 0f
 
-    fun update(dt: Float, arena: Arena, random: Random, snakeHead: Vec2?) {
+    /** [noticeScale] is how far away the snake is noticed, compared to normal: a sneaky snake is noticed from less far. */
+    fun update(dt: Float, arena: Arena, random: Random, snakeHead: Vec2?, noticeScale: Float) {
         timer -= dt
-        if (!isFleeing && snakeHead != null && noticesTheSnake(snakeHead)) startFleeing(snakeHead)
+        if (!isFleeing && snakeHead != null && noticesTheSnake(snakeHead, noticeScale)) startFleeing(snakeHead)
         if (isRunning) run(dt, arena, random) else standAndLook(dt, arena, random)
     }
 
-    private fun noticesTheSnake(snakeHead: Vec2): Boolean =
-        visit.mode == CritterMode.Roaming && course.sees(snakeHead.x, snakeHead.y, CritterTuning.noticeDistance)
+    private fun noticesTheSnake(snakeHead: Vec2, noticeScale: Float): Boolean =
+        visit.mode == CritterMode.Roaming && course.sees(snakeHead.x, snakeHead.y, CritterTuning.noticeDistance * noticeScale)
 
     private fun startFleeing(snakeHead: Vec2) {
         isFleeing = true

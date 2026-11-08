@@ -1,6 +1,6 @@
 package com.lukeneedham.snake.game
 
-/** The numbers that shape how the mice and the toads move. */
+/** The numbers that shape how the mice and the toads move. (The birds have their own, in [BirdTuning].) */
 object CritterTuning {
     const val mouseSpeed = 26f
     const val hopHeight = 5f
@@ -12,4 +12,7 @@ object CritterTuning {
     /** A mouse that runs from the snake is a little faster than the snake itself, so that it can get away. */
     const val fleeSpeed = 34f
     const val fleeSeconds = 0.9f
+
+    /** A toad hops away from a snake with the repellent power up when it is closer than this. */
+    const val repelDistance = 30f
 }

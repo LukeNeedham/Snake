@@ -22,25 +22,48 @@ into its own doc when work on it starts.
     is held there, and stops as soon as it lets go.
   - Sprinting drains the hunger bar faster.
   - A finger in the sprint corner never turns the snake; a tap anywhere else does. So one thumb sprints while the other turns.
-- [ ] **Birds.** A new kind of critter, with new sprites. Unlike the mice and toads they do not come out of the grass: they fly in
-  from off the screen and land anywhere in the oval (so they need a flying and a landing animation, and a take off). They are
-  extremely skittish: a bird flies off the moment the snake gets close, much sooner than a mouse runs, and it flies out of the
-  screen and is gone. Decide what eating one is worth.
+- [x] **Birds.** Done: `BirdBody` (with `BirdFlight` and `BirdPerch`) is a critter that flies in from off the screen, lands in the oval
+  (`BirdLanding` never picks a spot in front of the snake's mouth, and picks another one if the snake comes close while the bird is
+  still coming down), hops and looks around, and flies off the moment the snake comes closer than the bird's alarm distance. It
+  crouches for 0.3 seconds first, which is the only moment to catch it (a sprint lunge does it); it cannot be eaten in the air. Eating
+  one scores 2 and fills a little more of the hunger bar than a mouse, but the point of it is its power up.
+- [x] **Several kinds of birds, one power up each.** Small ones (blue tit, robin, sparrow) and large ones (blackbird, crow, pigeon), in
+  `BirdKind`, each with its own sprites and colours (`BirdArt`, `BirdPalette`). The small ones are the most skittish.
+
+- [ ] **Fewer, rarer birds.** There are too many birds. At most one bird on the screen at a time (drop `SpawnTuning.mostBirds` and
+  `pointsPerExtraBird`, so the score never brings a second one), and a lot rarer: much longer waits between birds
+  (`firstBirdDelay`, `birdDelayMin` and `birdDelayMax` in `SpawnTuning`). Update the tests in `CritterSpawnerTest` that count two birds.
+- [ ] **The snake does not die from touching itself, except under the lupus curse.** Normally the snake can loop over its own body
+  and nothing happens (so `snake.hitsItself()` no longer ends the game in `GameWorld.updatePlaying`): the only way to die is to starve.
+  The **lupus curse** is a special curse that, while it is active, makes the snake die if it touches itself, as it does now. Decide how a
+  snake catches the curse (an item, a critter or a boss?) and how long it lasts, then show it on the screen like the other effects and
+  power ups. Until it exists, nothing kills the snake but hunger. Check how the snake is drawn when its body crosses itself.
 
 ## Power ups
 
 - [ ] **Bunnies and ducks as real critters.** They were disguises of the vague critters, which are weird monsters now. Their
   sprites are in the git history (`SpriteArt.Bunny` and `SpriteArt.Chick`).
-- [ ] **Power-up critters.** Every so often a power-up critter arrives (it comes out of the grass like the mice and toads); eating
-  it gives the snake a power up for a short time:
-  - **Bigger mouth**: the snake eats from further away.
-  - **Faster sprint**: sprinting is faster, or costs less hunger.
-  - **Sneakier**: mice only run away when the snake is closer.
-  - **Mice pheromones**: more mice come, or they come towards the snake.
-  - **Toad repellent**: toads stay away from the snake.
-  - **Zoom**: the snake moves faster for a while. It used to be the orange toad's poison, which was more of a power up.
-- [ ] **Power ups and downs stack.** They run at the same time, together with the effects of the toads (`Effect`), and each one
-  runs out on its own. The screen shows all that is active.
+- [x] **Power-up critters.** The birds are the power ups (`PowerUp`, `PowerUpTracker`, `PowerUpBoosts`, numbers in `PowerUpTuning`):
+  - **Zoom** (blue tit): the snake moves faster.
+  - **Sprinter** (robin): sprinting is faster and costs less hunger.
+  - **Sneaky** (sparrow): mice and birds only notice the snake from closer.
+  - **Big mouth** (blackbird): the snake eats from further away.
+  - **Toad-free** (crow): toads hop away from the snake. This is being reworked (see "Toad-free" below).
+  - **Mouse lure** (pigeon): more mice come, and faster. It is being renamed and reworked as Cheese (see "Cheese" below).
+- [x] **Power ups and downs stack.** They run at the same time, together with the effects of the toads (`Effect`), and each one
+  runs out on its own. The screen shows all that is active: one bar for each, and a banner for the last one eaten.
+- [ ] **Cheese.** The mouse power up (the pigeon's, `PowerUp.Pheromones`) is called **Cheese**, not "mouse lure": rename it everywhere
+  (the enum entry, `PowerUpBoosts.attractsMice`, `power_up_pheromones`, the banner "Mouse lure!", the tests and `readme.yml`). While it is on,
+  the snake carries a little piece of cheese in its mouth (drawn in `SnakeHeadRenderer`), and mice run **towards** the snake instead of
+  away from it (a mouse that sees the snake no longer flees: it runs at it, in `MouseGait`, through the `SnakeAura`). Decide whether it
+  also keeps bringing more mice, as the pheromones do now, and whether a mouse is eaten when it reaches the cheese.
+- [ ] **Toad-free explodes the toads.** Eating the crow (`PowerUp.ToadRepellent`, "Toad-free!") makes every toad on the screen explode at
+  once (a burst of particles in each toad's colours with `ParticleSystem`, like the one when the snake dies, and the toads are removed
+  from the world), and while the power up is active no new toads come out of the grass (`CritterSpawner` skips the toad timer, and a
+  toad that is still coming in from the grass is blown up too). This replaces the toads hopping away from the snake: remove that
+  (`SnakeAura.repelsToads`, the scared hop in `ToadGait`, `CritterTuning.repelDistance` and their tests). Decide whether the toads that
+  explode feed the snake or score anything (probably not), and whether the toad timer carries on while it is off.
+- [ ] **Power-up polish.** Show the bigger mouth on the snake's head.
 
 ## Adventure mode
 

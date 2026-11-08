@@ -9,7 +9,7 @@ import kotlin.random.Random
 
 /**
  * One game: the phase it is in, the snake and the animals. The parts with a job of their own are classes of their own
- * ([EffectTracker], [CritterSpawner], [Feeding], [ParticleSystem], [Hunger], [SprintControl]); this one only steps them in order. It is mutable and is
+ * ([EffectTracker], [PowerUpTracker], [CritterSpawner], [Feeding], [ParticleSystem], [Hunger], [SprintControl]); this one only steps them in order. It is mutable and is
  * stepped with [update] once per frame; [tick] changes with every step so that a drawing that reads it is drawn again.
  */
 class GameWorld(val arena: Arena, seed: Int = 1) {
@@ -56,6 +56,8 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     /** The animals that are out of the grass, in the oval or on their way. */
     val critters: List<Critter> get() = mutableCritters
     val effects = EffectTracker()
+    val powerUps = PowerUpTracker()
+    private val boosts = PowerUpBoosts(powerUps)
     val hunger = Hunger()
     val sprint = SprintControl()
 
@@ -152,6 +154,7 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
         time += dt
         sprint.update(dt, canSprint = phase == GamePhase.Playing)
         effects.update(dt, isCountingDown = phase == GamePhase.Playing, isShowing = phase != GamePhase.GameOver)
+        powerUps.update(dt, isCountingDown = phase == GamePhase.Playing)
         when (phase) {
             GamePhase.Ready -> snake.step(dt, readySpeed)
             GamePhase.Playing -> updatePlaying(dt)
@@ -167,12 +170,12 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     }
 
     private fun updatePlaying(dt: Float) {
-        snake.step(dt, 1f + SprintTuning.speedBoost * sprint.level)
-        hunger.update(dt, sprint.level)
+        snake.step(dt, (1f + boosts.sprintBoost * sprint.level) * boosts.speedFactor)
+        hunger.update(dt, sprint.level, boosts.sprintDrainFactor)
         dustAtNewBounces()
-        spawner.update(dt, mutableCritters, score)
+        spawner.update(dt, mutableCritters, score, Vec2(snake.x, snake.y), boosts.attractsMice)
         updateCritters(dt)
-        feeding.update(dt, snake, mutableCritters).forEach { eat(it) }
+        feeding.update(dt, snake, mutableCritters, boosts.mouthFactor).forEach { eat(it) }
         effectParticles.emit(effects, sprint.level, snake, critters)
         if (hunger.isStarving || snake.hitsItself()) endGame()
     }
@@ -185,8 +188,9 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
 
     private fun updateCritters(dt: Float) {
         val snakeHead = Vec2(snake.x, snake.y)
+        val aura = boosts.aura
         for (critter in critters) {
-            critter.update(dt, arena, random, snakeHead)
+            critter.update(dt, arena, random, snakeHead, aura)
             if (critter.landed) {
                 critter.landed = false
                 particleSystem.dust(critter.x, critter.y, 3, dustColor)
@@ -209,6 +213,18 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
                 particleSystem.sparkles(
                     critter.x, critter.y - 3f, 9,
                     listOf(Color(0xFFFFFFFF), Color(0xFFF28FA9), Color(0xFFFFF3B0)),
+                )
+            }
+            is Critter.Bird -> {
+                score += BirdTuning.score
+                hunger.feed(HungerTuning.birdFills)
+                powerUps.apply(critter.kind)
+                snake.grow(1)
+                snake.addBulge()
+                particleSystem.floatText("+${BirdTuning.score}", snake.x, snake.y - 6f, Color(0xFFFFF3B0))
+                particleSystem.sparkles(
+                    critter.x, critter.y - 3f, 14,
+                    listOf(Color(0xFFFFFFFF), Color(0xFFF4D35E), Color(0xFFA6EDE2)),
                 )
             }
             is Critter.Toad -> {
