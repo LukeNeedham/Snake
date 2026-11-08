@@ -8,9 +8,6 @@ enum class Effect(val durationSeconds: Float) {
     /** Every animal but the snake looks like one of a few other animals, and keeps that look for as long as it lasts. */
     Disguised(9f),
 
-    /** The snake moves faster. */
-    Speedy(6f),
-
     /** The snake ignores taps. */
-    Confused(3.5f),
+    Confused(2.5f),
 }

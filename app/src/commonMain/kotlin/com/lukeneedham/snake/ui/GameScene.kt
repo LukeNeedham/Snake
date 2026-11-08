@@ -14,11 +14,13 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
 import androidx.compose.ui.graphics.Canvas as GraphicsCanvas
 import androidx.compose.ui.input.pointer.changedToDownIgnoreConsumed
+import androidx.compose.ui.input.pointer.changedToUpIgnoreConsumed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import com.lukeneedham.snake.game.Arena
 import com.lukeneedham.snake.game.GameWorld
+import com.lukeneedham.snake.game.PressTarget
 import com.lukeneedham.snake.render.SceneTexts
 import com.lukeneedham.snake.render.createBackground
 import com.lukeneedham.snake.render.createFrontGrass
@@ -28,10 +30,17 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * The game itself: the world is drawn into a small bitmap at one unit per art pixel, then scaled up without smoothing. Every
- * finger that goes down is a tap, so that two thumbs can tap in turn.
+ * finger is told apart by its id: one that goes down in the sprint zone sprints until it comes up, one on a button presses it, any
+ * other is a tap. So one thumb can sprint while the other turns.
  */
 @Composable
-internal fun GameScene(world: GameWorld, texts: SceneTexts, onTap: () -> Unit, modifier: Modifier = Modifier) {
+internal fun GameScene(
+    world: GameWorld,
+    texts: SceneTexts,
+    onPress: (pointerId: Long, target: PressTarget) -> Unit,
+    onRelease: (pointerId: Long) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val arena = world.arena
     val density = LocalDensity.current
     val layoutDirection = LocalLayoutDirection.current
@@ -44,16 +53,29 @@ internal fun GameScene(world: GameWorld, texts: SceneTexts, onTap: () -> Unit, m
     val background = remember(arena, density, layoutDirection) { createBackground(arena, density, layoutDirection) }
     val frontGrass = remember(arena) { createFrontGrass(arena) }
     val topInsetPx = WindowInsets.safeDrawing.getTop(density)
-    val currentOnTap by rememberUpdatedState(onTap)
+    val currentOnPress by rememberUpdatedState(onPress)
+    val currentOnRelease by rememberUpdatedState(onRelease)
 
     Canvas(
         modifier = modifier
             .fillMaxSize()
-            .pointerInput(Unit) {
+            .pointerInput(world, topInsetPx) {
                 awaitPointerEventScope {
                     while (true) {
                         val event = awaitPointerEvent()
-                        if (event.changes.any { it.changedToDownIgnoreConsumed() }) currentOnTap()
+                        for (change in event.changes) {
+                            if (change.changedToDownIgnoreConsumed()) {
+                                val scale = size.width.toFloat() / sceneWidth
+                                val target = PressTarget.at(
+                                    world = world,
+                                    topInset = (topInsetPx / scale).toInt(),
+                                    x = change.position.x / scale,
+                                    y = change.position.y / scale,
+                                )
+                                currentOnPress(change.id.value, target)
+                            }
+                            if (change.changedToUpIgnoreConsumed()) currentOnRelease(change.id.value)
+                        }
                     }
                 }
             },
@@ -75,6 +97,7 @@ private fun Preview() {
     GameScene(
         world = GameWorld(Arena(108f, 240f)),
         texts = sceneTexts(score = 0, bestScore = 0, isNewBest = false),
-        onTap = {},
+        onPress = { _, _ -> },
+        onRelease = {},
     )
 }

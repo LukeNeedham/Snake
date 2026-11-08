@@ -14,6 +14,9 @@ interface CritterBody {
     /** Running for a mouse, in the air or about to be for a toad. */
     val isMoving: Boolean
 
+    /** A mouse that has seen the snake and runs from it. */
+    val isFleeing: Boolean
+
     /** How high a hopping toad is above the ground. */
     val height: Float
 
@@ -21,5 +24,6 @@ interface CritterBody {
     var landed: Boolean
     val isGone: Boolean
 
-    fun update(dt: Float, arena: Arena, random: Random)
+    /** Steps the critter; [snakeHead] is where the head of the snake is, for the critters that run from it. */
+    fun update(dt: Float, arena: Arena, random: Random, snakeHead: Vec2? = null)
 }

@@ -46,6 +46,16 @@ internal class CritterCourse(var x: Float, var y: Float) {
         }
     }
 
+    /** Whether the point is in front of the critter, the side it looks to, and closer than [range]. Behind its back is not seen. */
+    fun sees(pointX: Float, pointY: Float, range: Float): Boolean {
+        val dx = pointX - x
+        val dy = pointY - y
+        return dx * facing > 0f && dx * dx + dy * dy < range * range
+    }
+
+    /** Turns to go straight away from the point. */
+    fun runAwayFrom(pointX: Float, pointY: Float) = setDirection(x - pointX, y - pointY)
+
     /** Whether the critter is going out of the oval. */
     fun isHeadingOut(arena: Arena): Boolean {
         val normal = arena.normal(x, y)

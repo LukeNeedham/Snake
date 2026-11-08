@@ -3,11 +3,11 @@ package com.lukeneedham.snake.game
 import androidx.compose.ui.graphics.Color
 import kotlin.random.Random
 
-/** Drops the specks and sparkles that show the effects of the toads: a trail behind a speedy snake, glints on disguised animals. */
+/** Drops the specks and sparkles that show the sprint and the effects of the toads: a trail behind a sprinting snake, glints on disguised animals. */
 class EffectParticleEmitter(private val particles: ParticleSystem, private val random: Random) {
 
-    fun emit(effects: EffectTracker, snake: Snake, critters: List<Critter>) {
-        if (effects.level(Effect.Speedy) > shownLevel && random.nextFloat() < 0.5f) {
+    fun emit(effects: EffectTracker, sprintLevel: Float, snake: Snake, critters: List<Critter>) {
+        if (sprintLevel > shownLevel && random.nextFloat() < 0.5f) {
             snake.body.points.getOrNull(3)?.let { tail ->
                 particles.speck(
                     tail.x + (random.nextFloat() - 0.5f) * 4f,

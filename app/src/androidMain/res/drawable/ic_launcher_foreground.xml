@@ -1,12 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- A placeholder: a white diamond inside the safe zone. Replace it with the app's own icon. app-icon.png at the repo root
-     is rendered from this by CI (docs/app-icon.md in ci-workflows). -->
+<!-- The head of the snake, seen from above, with its body running out of the icon. The body goes down to the edge of the canvas,
+     which the launcher mask crops. app-icon.png at the repo root is rendered from this by CI (docs/app-icon.md in ci-workflows). -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
     <path
+        android:fillColor="#E8465A"
+        android:pathData="M48,22h4v2h-4zM56,22h4v2h-4zM50,24h8v2h-8zM52,28h4v2h-4zM52,30h4v2h-4zM52,32h4v2h-4z" />
+    <path
+        android:fillColor="#14261B"
+        android:pathData="M50,32h2v2h-2zM56,32h2v2h-2zM48,34h12v2h-12zM46,36h6v2h-6zM56,36h6v2h-6zM44,38h4v2h-4zM60,38h4v2h-4zM42,40h6v2h-6zM60,40h6v2h-6zM40,42h6v2h-6zM62,42h6v2h-6zM40,44h4v2h-4zM64,44h4v2h-4zM40,46h4v2h-4zM64,46h4v2h-4zM38,48h4v2h-4zM66,48h4v2h-4zM38,50h10v2h-10zM60,50h10v2h-10zM36,52h6v2h-6zM48,52h2v2h-2zM58,52h2v2h-2zM66,52h6v2h-6zM36,54h4v2h-4zM44,54h4v2h-4zM64,54h2v2h-2zM68,54h4v2h-4zM36,56h4v2h-4zM44,56h4v2h-4zM64,56h2v2h-2zM68,56h4v2h-4zM36,58h6v2h-6zM48,58h2v2h-2zM58,58h2v2h-2zM66,58h6v2h-6zM36,60h12v2h-12zM60,60h12v2h-12zM36,62h4v2h-4zM68,62h4v2h-4zM36,64h4v2h-4zM68,64h4v2h-4zM36,66h4v2h-4zM68,66h4v2h-4zM36,68h4v2h-4zM68,68h4v2h-4zM38,70h4v2h-4zM66,70h4v2h-4zM38,72h6v2h-6zM64,72h6v2h-6zM40,74h6v2h-6zM62,74h10v2h-10zM40,76h8v2h-8zM60,76h6v2h-6zM68,76h4v2h-4zM42,78h22v2h-22zM68,78h4v2h-4zM42,80h4v2h-4zM48,80h12v2h-12zM68,80h4v2h-4zM42,82h6v2h-6zM70,82h4v2h-4zM44,84h4v2h-4zM70,84h4v2h-4zM44,86h4v2h-4zM70,86h4v2h-4zM44,88h4v2h-4zM70,88h4v2h-4zM46,90h2v2h-2zM70,90h4v2h-4zM46,92h4v2h-4zM70,92h4v2h-4zM46,94h4v2h-4zM72,94h2v2h-2zM46,96h4v2h-4zM72,96h2v2h-2zM46,98h4v2h-4zM72,98h4v2h-4zM46,100h4v2h-4zM72,100h4v2h-4zM46,102h4v2h-4zM70,102h4v2h-4zM44,104h6v2h-6zM70,104h4v2h-4zM44,106h4v2h-4zM70,106h4v2h-4z" />
+    <path
+        android:fillColor="#38A866"
+        android:pathData="M52,36h4v2h-4zM48,38h12v2h-12zM48,40h12v2h-12zM46,42h16v2h-16zM44,44h20v2h-20zM44,46h20v2h-20zM42,48h24v2h-24zM48,50h12v2h-12zM50,52h8v2h-8zM50,54h8v2h-8zM50,56h8v2h-8zM50,58h8v2h-8zM48,60h12v2h-12zM40,62h28v2h-28zM40,64h28v2h-28zM40,66h28v2h-28zM40,68h28v2h-28zM42,70h24v2h-24zM44,72h20v2h-20zM46,74h16v2h-16zM48,76h12v2h-12z" />
+    <path
         android:fillColor="#FFFFFF"
-        android:pathData="M54,30L78,54L54,78L30,54Z" />
+        android:pathData="M42,52h6v2h-6zM60,52h6v2h-6zM40,54h4v2h-4zM48,54h2v2h-2zM58,54h6v2h-6zM66,54h2v2h-2zM40,56h4v2h-4zM48,56h2v2h-2zM58,56h6v2h-6zM66,56h2v2h-2zM42,58h6v2h-6zM60,58h6v2h-6z" />
+    <path
+        android:fillColor="#52C27D"
+        android:pathData="M66,76h2v2h-2zM64,78h4v2h-4zM46,80h2v2h-2zM64,80h2v2h-2zM48,82h2v2h-2zM60,82h6v2h-6zM48,84h16v2h-16zM52,86h10v2h-10zM68,88h2v2h-2zM48,90h2v2h-2zM68,90h2v2h-2zM50,92h2v2h-2zM66,92h4v2h-4zM50,94h4v2h-4zM64,94h4v2h-4zM52,96h14v2h-14zM56,98h8v2h-8zM48,106h2v2h-2z" />
+    <path
+        android:fillColor="#2F8F5B"
+        android:pathData="M60,80h4v2h-4zM50,82h10v2h-10zM68,94h2v2h-2zM50,96h2v2h-2zM66,96h4v2h-4zM52,98h4v2h-4zM64,98h4v2h-4zM54,100h14v2h-14zM56,102h8v2h-8zM50,106h2v2h-2zM68,106h2v2h-2z" />
+    <path
+        android:fillColor="#F4D35E"
+        android:pathData="M66,80h2v2h-2zM66,82h4v2h-4zM64,84h6v2h-6zM48,86h4v2h-4zM62,86h8v2h-8zM48,88h20v2h-20zM50,90h18v2h-18zM52,92h14v2h-14zM54,94h10v2h-10z" />
+    <path
+        android:fillColor="#1F6B45"
+        android:pathData="M70,94h2v2h-2zM70,96h2v2h-2zM50,98h2v2h-2zM68,98h4v2h-4zM50,100h4v2h-4zM68,100h4v2h-4zM50,102h6v2h-6zM64,102h6v2h-6zM50,104h20v2h-20zM52,106h16v2h-16z" />
 </vector>

@@ -1,6 +1,6 @@
 package com.lukeneedham.snake.render
 
-/** The animals, facing right. Each letter is a colour of [spriteColor]; a dot is empty. */
+/** The animals, facing right. The toad is a frog seen from the side: eyes on top of its head, a big hind leg and a pale belly. Each letter is a colour of [spriteColor]; a dot is empty. */
 internal enum class SpriteArt(val rows: List<String>) {
     Mouse(
         listOf(
@@ -15,37 +15,15 @@ internal enum class SpriteArt(val rows: List<String>) {
     ),
     Toad(
         listOf(
-            "...oooo.....",
-            "..owebboo...",
-            ".obbbbbbbo..",
-            "obbbdbbdbbo.",
-            "obbbbbbbbbeo",
-            "oblllllllbo.",
-            ".oo.ooo.oo..",
-        ),
-    ),
-    Bunny(
-        listOf(
-            "....oo.oo...",
-            "...opGoGpo..",
-            "...oGGoGGo..",
-            "..oGGGGGGoo.",
-            ".oGGGGGGeGpo",
-            "oGGGGGGGGGo.",
-            ".oGGoGGGoo..",
-            "..oo.oo.....",
-        ),
-    ),
-    Chick(
-        listOf(
-            "....oo......",
-            "...oyyoo....",
-            "..oyyyyyo...",
-            ".oyyeyyyroo.",
-            ".oyyyyyyrro.",
-            ".oyYYYyyoo..",
-            "..oyyyyo....",
-            "...r..r.....",
+            ".......oo.oo.",
+            "......owwowwo",
+            "......oweoweo",
+            "..oooobbbbbbo",
+            ".obbbbbbbbbbo",
+            "obbbbbbbblllo",
+            "obdbbbblllllo",
+            "oddobbblllo..",
+            ".ooo.ooooo...",
         ),
     ),
     Beetle(
@@ -77,7 +55,7 @@ internal enum class SpriteArt(val rows: List<String>) {
     val height: Int get() = rows.size
 
     companion object {
-        /** What the animals look like while the snake is disguise-blind: never a mouse or a toad. */
-        val disguises: List<SpriteArt> = listOf(Bunny, Chick, Beetle, Hedgehog)
+        /** What the animals look like while the snake is disguise-blind: weird monsters, never a real animal, a mouse or a toad. */
+        val disguises: List<SpriteArt> = listOf(Beetle, Hedgehog)
     }
 }

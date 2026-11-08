@@ -4,8 +4,6 @@ package com.lukeneedham.snake.game
 object SnakeTuning {
     const val speed = 30f
 
-    /** How much faster the snake goes while the speedy effect is at full strength. */
-    const val speedyBoost = 0.6f
     const val turnRadius = 11f
 
     /** How wide the head is at its widest, at the back: it narrows to the nose. */

@@ -16,9 +16,6 @@ internal fun spriteColor(letter: Char, kind: ToadKind?): Color? {
         'b' -> toad.body
         'd' -> toad.shade
         'l' -> toad.light
-        'y' -> Color(0xFFFFD84A)
-        'Y' -> Color(0xFFFFEF9A)
-        'r' -> Color(0xFFFF8A3D)
         'k' -> Color(0xFF3A3340)
         's' -> Color(0xFF8C82A0)
         'h' -> Color(0xFF6B4A35)

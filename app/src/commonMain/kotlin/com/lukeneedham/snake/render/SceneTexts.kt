@@ -13,7 +13,10 @@ internal data class SceneTexts(
     val newBest: String,
     val tapToRetry: String,
     val paused: String,
-    val tapToResume: String,
+    val menuResume: String,
+    val menuBack: String,
+    val menuRestart: String,
+    val menuSettings: String,
     /** The name of each effect, in the order of the `Effect` entries. */
     val effectNames: List<String>,
 )

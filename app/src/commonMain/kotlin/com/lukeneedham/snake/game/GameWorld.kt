@@ -9,7 +9,7 @@ import kotlin.random.Random
 
 /**
  * One game: the phase it is in, the snake and the animals. The parts with a job of their own are classes of their own
- * ([EffectTracker], [CritterSpawner], [Feeding], [ParticleSystem]); this one only steps them in order. It is mutable and is
+ * ([EffectTracker], [CritterSpawner], [Feeding], [ParticleSystem], [Hunger], [SprintControl]); this one only steps them in order. It is mutable and is
  * stepped with [update] once per frame; [tick] changes with every step so that a drawing that reads it is drawn again.
  */
 class GameWorld(val arena: Arena, seed: Int = 1) {
@@ -39,12 +39,25 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     var rejectedTapTime = 0f
         private set
 
+    /** Whether the menu is over the scene. A paused game always has it open. */
+    var isMenuOpen = false
+        private set
+
+    /** The corner of the screen that sprints: it comes from the settings. */
+    var sprintSide = SprintSide.Left
+
+    /** The buttons of the menu: restarting only makes sense in a game that is paused. */
+    val menuItems: List<MenuItem>
+        get() = if (phase == GamePhase.Paused) listOf(MenuItem.Resume, MenuItem.Restart, MenuItem.Settings) else listOf(MenuItem.Resume, MenuItem.Settings)
+
     val snake = Snake(arena)
     private val mutableCritters = ArrayList<Critter>()
 
     /** The animals that are out of the grass, in the oval or on their way. */
     val critters: List<Critter> get() = mutableCritters
     val effects = EffectTracker()
+    val hunger = Hunger()
+    val sprint = SprintControl()
 
     private val random = Random(seed)
     val particleSystem = ParticleSystem(random)
@@ -61,15 +74,47 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
         spawner.reset()
     }
 
+    /** Pausing opens the menu: the game carries on when it is closed. */
     fun pause() {
-        if (phase == GamePhase.Playing) phase = GamePhase.Paused
+        if (phase != GamePhase.Playing) return
+        phase = GamePhase.Paused
+        isMenuOpen = true
+        sprint.clear()
+        redraw()
     }
 
     fun resume() {
-        if (phase == GamePhase.Paused) phase = GamePhase.Playing
+        if (phase != GamePhase.Paused) return
+        phase = GamePhase.Playing
+        isMenuOpen = false
+        redraw()
     }
 
-    /** The one control of the game: turn the other way. A confused snake ignores it. */
+    /** Opens the menu: a game that is being played is paused, the title and game over screens just show it over them. */
+    fun openMenu() {
+        if (phase == GamePhase.Playing) {
+            pause()
+        } else if (phase != GamePhase.Paused) {
+            isMenuOpen = true
+            redraw()
+        }
+    }
+
+    fun closeMenu() {
+        if (phase == GamePhase.Paused) {
+            resume()
+        } else {
+            isMenuOpen = false
+            redraw()
+        }
+    }
+
+    /** A paused world is not stepped, so the drawing is told by hand to draw again when the menu opens or closes. */
+    private fun redraw() {
+        tick++
+    }
+
+    /** Turn the other way: a tap anywhere but in the [SprintZone]. A confused snake ignores it. */
     fun tap() {
         if (phase != GamePhase.Playing) return
         if (effects.isOn(Effect.Confused)) {
@@ -78,6 +123,13 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
         }
         snake.toggleTurn()
     }
+
+    /** A finger went down in the [SprintZone]: the snake sprints for as long as it is held. It never turns the snake. */
+    fun sprintPress(pointerId: Long) {
+        if (phase == GamePhase.Playing) sprint.press(pointerId)
+    }
+
+    fun sprintRelease(pointerId: Long) = sprint.release(pointerId)
 
     fun applyEffect(kind: ToadKind) = effects.apply(kind)
 
@@ -89,6 +141,7 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     fun endGame() {
         if (phase != GamePhase.Playing) return
         phase = GamePhase.GameOver
+        sprint.clear()
         gameOverTime = 0f
         shake = startingShake
         particleSystem.explode(snake.x, snake.y, listOf(Color(0xFFE8465A), Color(0xFF52C27D), Color(0xFFF4D35E)))
@@ -97,6 +150,7 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     fun update(dt: Float) {
         if (phase == GamePhase.Paused) return
         time += dt
+        sprint.update(dt, canSprint = phase == GamePhase.Playing)
         effects.update(dt, isCountingDown = phase == GamePhase.Playing, isShowing = phase != GamePhase.GameOver)
         when (phase) {
             GamePhase.Ready -> snake.step(dt, readySpeed)
@@ -113,13 +167,14 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     }
 
     private fun updatePlaying(dt: Float) {
-        snake.step(dt, 1f + SnakeTuning.speedyBoost * effects.level(Effect.Speedy))
+        snake.step(dt, 1f + SprintTuning.speedBoost * sprint.level)
+        hunger.update(dt, sprint.level)
         dustAtNewBounces()
         spawner.update(dt, mutableCritters, score)
         updateCritters(dt)
         feeding.update(dt, snake, mutableCritters).forEach { eat(it) }
-        effectParticles.emit(effects, snake, critters)
-        if (snake.hitsItself()) endGame()
+        effectParticles.emit(effects, sprint.level, snake, critters)
+        if (hunger.isStarving || snake.hitsItself()) endGame()
     }
 
     private fun dustAtNewBounces() {
@@ -129,8 +184,9 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     }
 
     private fun updateCritters(dt: Float) {
+        val snakeHead = Vec2(snake.x, snake.y)
         for (critter in critters) {
-            critter.update(dt, arena, random)
+            critter.update(dt, arena, random, snakeHead)
             if (critter.landed) {
                 critter.landed = false
                 particleSystem.dust(critter.x, critter.y, 3, dustColor)
@@ -146,6 +202,7 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
         when (critter) {
             is Critter.Mouse -> {
                 score++
+                hunger.feed(HungerTuning.mouseFills)
                 snake.grow(1)
                 snake.addBulge()
                 particleSystem.floatText("+1", snake.x, snake.y - 6f, Color(0xFFFFF3B0))
@@ -156,6 +213,7 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
             }
             is Critter.Toad -> {
                 effects.apply(critter.kind)
+                hunger.feed(HungerTuning.toadFills)
                 particleSystem.sparkles(
                     critter.x, critter.y - 3f, 12,
                     listOf(critter.kind.body, critter.kind.light, Color(0xFFFFFFFF)),

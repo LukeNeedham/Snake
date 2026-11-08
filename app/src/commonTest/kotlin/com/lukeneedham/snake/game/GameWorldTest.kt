@@ -114,4 +114,168 @@ class GameWorldTest {
         world.resume()
         assertEquals(GamePhase.Playing, world.phase)
     }
+
+    @Test
+    fun aFingerHeldInTheSprintZoneSprintsAndDoesNotTurn() {
+        val world = newWorld()
+        world.start()
+        val before = world.snake.turnDirection
+        world.sprintPress(1L)
+        repeat(60) { world.update(1f / 60f) }
+        assertTrue(world.sprint.level > 0.9f)
+        assertEquals(before, world.snake.turnDirection)
+    }
+
+    @Test
+    fun theSprintStopsAsSoonAsTheFingerComesUp() {
+        val world = newWorld()
+        world.start()
+        world.sprintPress(1L)
+        repeat(60) { world.update(1f / 60f) }
+        world.sprintRelease(1L)
+        repeat(60) { world.update(1f / 60f) }
+        assertEquals(0f, world.sprint.level, 1e-4f)
+    }
+
+    @Test
+    fun aSprintingThumbAndATappingThumbWorkTogether() {
+        val world = newWorld()
+        world.start()
+        val before = world.snake.turnDirection
+        world.sprintPress(1L)
+        repeat(30) { world.update(1f / 60f) }
+        world.tap()
+        assertEquals(-before, world.snake.turnDirection)
+        assertTrue(world.sprint.level > 0.5f)
+    }
+
+    @Test
+    fun aFingerPressedBeforeTheStartDoesNotSprint() {
+        val world = newWorld()
+        world.sprintPress(1L)
+        world.start()
+        repeat(60) { world.update(1f / 60f) }
+        assertEquals(0f, world.sprint.level)
+    }
+
+    @Test
+    fun pausingStopsTheSprint() {
+        val world = newWorld()
+        world.start()
+        world.sprintPress(1L)
+        repeat(30) { world.update(1f / 60f) }
+        world.pause()
+        world.resume()
+        repeat(60) { world.update(1f / 60f) }
+        assertEquals(0f, world.sprint.level, 1e-4f)
+    }
+
+    @Test
+    fun sprintingGoesFasterAndDrainsTheHungerBarFaster() {
+        val resting = newWorld().also { it.start() }
+        val sprinting = newWorld().also { it.start() }
+        sprinting.sprintPress(1L)
+        repeat(120) {
+            resting.update(1f / 60f)
+            sprinting.update(1f / 60f)
+        }
+        assertTrue(sprinting.snake.totalDistance > resting.snake.totalDistance)
+        assertTrue(sprinting.hunger.level < resting.hunger.level)
+    }
+
+    @Test
+    fun theSnakeGetsHungryAsTimePasses() {
+        val world = newWorld()
+        world.start()
+        repeat(300) { world.update(1f / 60f) }
+        assertTrue(world.hunger.level < 1f)
+    }
+
+    @Test
+    fun eatingAMouseFillsTheHungerBar() {
+        val world = newWorld()
+        world.start()
+        repeat(300) { world.update(1f / 60f) }
+        val before = world.hunger.level
+        world.placeMouseInFrontOfTheMouth()
+        repeat(30) { world.update(1f / 60f) }
+        assertTrue(world.hunger.level > before)
+    }
+
+    @Test
+    fun eatingAToadFillsTheBarOnlyALittle() {
+        val world = newWorld()
+        world.start()
+        repeat(300) { world.update(1f / 60f) }
+        val before = world.hunger.level
+        world.placeToadInFrontOfTheMouth(ToadKind.Teal)
+        world.update(1f / 60f)
+        val gained = world.hunger.level - before
+        assertTrue(gained > 0f)
+        assertTrue(gained < HungerTuning.mouseFills / 2f)
+    }
+
+    @Test
+    fun aPausedSnakeDoesNotGetHungry() {
+        val world = newWorld()
+        world.start()
+        world.update(1f / 60f)
+        world.pause()
+        val before = world.hunger.level
+        repeat(120) { world.update(1f / 60f) }
+        assertEquals(before, world.hunger.level)
+    }
+
+    @Test
+    fun pausingOpensTheMenuAndResumingClosesIt() {
+        val world = newWorld()
+        world.start()
+        world.openMenu()
+        assertEquals(GamePhase.Paused, world.phase)
+        assertTrue(world.isMenuOpen)
+        assertEquals(listOf(MenuItem.Resume, MenuItem.Restart, MenuItem.Settings), world.menuItems)
+        world.closeMenu()
+        assertEquals(GamePhase.Playing, world.phase)
+        assertFalse(world.isMenuOpen)
+    }
+
+    @Test
+    fun theMenuOfTheTitleScreenOnlyHasResumeAndSettings() {
+        val world = newWorld()
+        world.openMenu()
+        assertEquals(GamePhase.Ready, world.phase)
+        assertTrue(world.isMenuOpen)
+        assertEquals(listOf(MenuItem.Resume, MenuItem.Settings), world.menuItems)
+        world.closeMenu()
+        assertFalse(world.isMenuOpen)
+        assertEquals(GamePhase.Ready, world.phase)
+    }
+
+    @Test
+    fun theSprintCornerIsOnTheLeftUnlessSetOtherwise() {
+        assertEquals(SprintSide.Left, newWorld().sprintSide)
+    }
+
+    @Test
+    fun openingAndClosingTheMenuMakesTheSceneDrawAgain() {
+        // A paused world is not stepped, so nothing else tells the drawing that the menu is there
+        val world = newWorld()
+        world.start()
+        world.update(1f / 60f)
+        val beforeOpening = world.tick
+        world.openMenu()
+        assertTrue(world.tick > beforeOpening)
+        world.update(1f / 60f)
+        val beforeClosing = world.tick
+        world.closeMenu()
+        assertTrue(world.tick > beforeClosing)
+    }
+
+    @Test
+    fun theMenuOfTheTitleScreenMakesTheSceneDrawAgainToo() {
+        val world = newWorld()
+        val before = world.tick
+        world.openMenu()
+        assertTrue(world.tick > before)
+    }
 }
