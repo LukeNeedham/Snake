@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlin.math.roundToInt
 
-/** Connects the game to the page: it steps the world every frame, passes the fingers on, and publishes what the page shows. */
+/** Connects the game to the page: it steps the world every frame, passes the fingers and the pause on, and publishes what the page shows. */
 class GameViewModel(bestScoreStore: BestScoreStore) : ViewModel() {
 
     private var world = GameWorld(Arena(WorldTuning.width.toFloat(), defaultHeight))
@@ -42,13 +42,13 @@ class GameViewModel(bestScoreStore: BestScoreStore) : ViewModel() {
     }
 
     /**
-     * A finger went down. While playing, what it does depends on how long it stays down (a short press turns the snake, a hold
-     * sprints), so that waits for [onRelease]; in the other phases it acts at once.
+     * A finger went down. While playing, one in the sprint zone sprints until it is released and any other turns the snake; in
+     * the other phases any finger starts, resumes or restarts the game.
      */
-    fun onPress(pointerId: Long) {
+    fun onPress(pointerId: Long, inSprintZone: Boolean) {
         when (world.phase) {
             GamePhase.Ready -> world.start()
-            GamePhase.Playing -> world.press(pointerId)
+            GamePhase.Playing -> if (inSprintZone) world.sprintPress(pointerId) else world.tap()
             GamePhase.Paused -> world.resume()
             GamePhase.GameOver -> if (world.canRestart) {
                 newWorld(world.arena.height)
@@ -59,7 +59,7 @@ class GameViewModel(bestScoreStore: BestScoreStore) : ViewModel() {
     }
 
     fun onRelease(pointerId: Long) {
-        world.release(pointerId)
+        world.sprintRelease(pointerId)
         publish()
     }
 

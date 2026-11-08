@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="settings_title">Settings</string>
+    <string name="pause_button">Pause</string>
     <string name="game_title">Snake</string>
     <string name="tap_to_start">Tap to twist</string>
     <string name="game_over">Game over</string>
@@ -12,6 +13,5 @@
     <string name="tap_to_resume">Tap to resume</string>
     <string name="effect_hallucinating">Trippy!</string>
     <string name="effect_disguised">Mystery!</string>
-    <string name="effect_speedy">Zoom!</string>
     <string name="effect_confused">Dizzy!</string>
 </resources>

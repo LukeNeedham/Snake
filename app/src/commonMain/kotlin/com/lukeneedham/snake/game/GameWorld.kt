@@ -73,7 +73,7 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
         if (phase == GamePhase.Paused) phase = GamePhase.Playing
     }
 
-    /** The one control of the game: turn the other way. A confused snake ignores it. */
+    /** Turn the other way: a tap anywhere but in the [SprintZone]. A confused snake ignores it. */
     fun tap() {
         if (phase != GamePhase.Playing) return
         if (effects.isOn(Effect.Confused)) {
@@ -83,15 +83,12 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
         snake.toggleTurn()
     }
 
-    /** A finger went down while playing: if it stays down the snake sprints, if it comes up soon it is a tap. */
-    fun press(pointerId: Long) {
-        if (phase == GamePhase.Playing) sprint.press(pointerId, time)
+    /** A finger went down in the [SprintZone]: the snake sprints for as long as it is held. It never turns the snake. */
+    fun sprintPress(pointerId: Long) {
+        if (phase == GamePhase.Playing) sprint.press(pointerId)
     }
 
-    /** A finger came up: a short press turns the snake, the end of a long one just stops the sprint. */
-    fun release(pointerId: Long) {
-        if (sprint.release(pointerId, time) && phase == GamePhase.Playing) tap()
-    }
+    fun sprintRelease(pointerId: Long) = sprint.release(pointerId)
 
     fun applyEffect(kind: ToadKind) = effects.apply(kind)
 
@@ -112,7 +109,7 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     fun update(dt: Float) {
         if (phase == GamePhase.Paused) return
         time += dt
-        sprint.update(dt, time, canSprint = phase == GamePhase.Playing)
+        sprint.update(dt, canSprint = phase == GamePhase.Playing)
         effects.update(dt, isCountingDown = phase == GamePhase.Playing, isShowing = phase != GamePhase.GameOver)
         when (phase) {
             GamePhase.Ready -> snake.step(dt, readySpeed)
@@ -129,13 +126,13 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     }
 
     private fun updatePlaying(dt: Float) {
-        snake.step(dt, 1f + SnakeTuning.speedyBoost * effects.level(Effect.Speedy) + SprintTuning.speedBoost * sprint.level)
+        snake.step(dt, 1f + SprintTuning.speedBoost * sprint.level)
         hunger.update(dt, sprint.level)
         dustAtNewBounces()
         spawner.update(dt, mutableCritters, score)
         updateCritters(dt)
         feeding.update(dt, snake, mutableCritters).forEach { eat(it) }
-        effectParticles.emit(effects, snake, critters)
+        effectParticles.emit(effects, sprint.level, snake, critters)
         if (hunger.isStarving || snake.hitsItself()) endGame()
     }
 

@@ -7,7 +7,6 @@ import com.lukeneedham.snake.generated.resources.best_value
 import com.lukeneedham.snake.generated.resources.effect_confused
 import com.lukeneedham.snake.generated.resources.effect_disguised
 import com.lukeneedham.snake.generated.resources.effect_hallucinating
-import com.lukeneedham.snake.generated.resources.effect_speedy
 import com.lukeneedham.snake.generated.resources.game_over
 import com.lukeneedham.snake.generated.resources.game_title
 import com.lukeneedham.snake.generated.resources.new_best
@@ -35,7 +34,6 @@ internal fun sceneTexts(score: Int, bestScore: Int, isNewBest: Boolean): SceneTe
         when (effect) {
             Effect.Hallucinating -> stringResource(Res.string.effect_hallucinating)
             Effect.Disguised -> stringResource(Res.string.effect_disguised)
-            Effect.Speedy -> stringResource(Res.string.effect_speedy)
             Effect.Confused -> stringResource(Res.string.effect_confused)
         }
     },

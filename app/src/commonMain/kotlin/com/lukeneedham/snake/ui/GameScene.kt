@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import com.lukeneedham.snake.game.Arena
 import com.lukeneedham.snake.game.GameWorld
+import com.lukeneedham.snake.game.SprintZone
 import com.lukeneedham.snake.render.SceneTexts
 import com.lukeneedham.snake.render.createBackground
 import com.lukeneedham.snake.render.createFrontGrass
@@ -29,13 +30,14 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * The game itself: the world is drawn into a small bitmap at one unit per art pixel, then scaled up without smoothing. Every
- * finger is told apart by its id, so that two thumbs can tap in turn; the world decides if a finger was a tap or a hold.
+ * finger is told apart by its id: one that goes down in the sprint zone sprints until it comes up, any other is a tap. So one
+ * thumb can sprint while the other turns.
  */
 @Composable
 internal fun GameScene(
     world: GameWorld,
     texts: SceneTexts,
-    onPress: (pointerId: Long) -> Unit,
+    onPress: (pointerId: Long, inSprintZone: Boolean) -> Unit,
     onRelease: (pointerId: Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -57,12 +59,18 @@ internal fun GameScene(
     Canvas(
         modifier = modifier
             .fillMaxSize()
-            .pointerInput(Unit) {
+            .pointerInput(arena) {
                 awaitPointerEventScope {
                     while (true) {
                         val event = awaitPointerEvent()
                         for (change in event.changes) {
-                            if (change.changedToDownIgnoreConsumed()) currentOnPress(change.id.value)
+                            if (change.changedToDownIgnoreConsumed()) {
+                                val scale = size.width.toFloat() / sceneWidth
+                                currentOnPress(
+                                    change.id.value,
+                                    SprintZone.contains(arena, change.position.x / scale, change.position.y / scale),
+                                )
+                            }
                             if (change.changedToUpIgnoreConsumed()) currentOnRelease(change.id.value)
                         }
                     }
@@ -86,7 +94,7 @@ private fun Preview() {
     GameScene(
         world = GameWorld(Arena(108f, 240f)),
         texts = sceneTexts(score = 0, bestScore = 0, isNewBest = false),
-        onPress = {},
+        onPress = { _, _ -> },
         onRelease = {},
     )
 }

@@ -20,14 +20,16 @@ import com.lukeneedham.snake.ui.theme.AppTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
- * All of the page's UI: the game scene, with a button to the settings over it on the title and game over screens.
+ * All of the page's UI: the game scene, with a pause button over it while playing, and a button to the settings on the title and
+ * game over screens.
  * `internal`: the screenshots of the app use it too.
  */
 @Composable
 internal fun GamePageContent(
     state: GameUiState,
-    onPress: (pointerId: Long) -> Unit,
+    onPress: (pointerId: Long, inSprintZone: Boolean) -> Unit,
     onRelease: (pointerId: Long) -> Unit,
+    onPause: () -> Unit,
     onSceneSize: (widthPx: Int, heightPx: Int) -> Unit,
     onOpenSettings: () -> Unit,
 ) {
@@ -43,6 +45,15 @@ internal fun GamePageContent(
             onPress = onPress,
             onRelease = onRelease,
         )
+        if (state.phase == GamePhase.Playing) {
+            PauseButton(
+                onClick = onPause,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .windowInsetsPadding(WindowInsets.safeDrawing)
+                    .padding(8.dp),
+            )
+        }
         if (state.phase == GamePhase.Ready || state.phase == GamePhase.GameOver) {
             SettingsButton(
                 onClick = onOpenSettings,
@@ -63,8 +74,9 @@ private fun Preview() {
     AppTheme {
         GamePageContent(
             state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 0, isNewBest = false),
-            onPress = {},
+            onPress = { _, _ -> },
             onRelease = {},
+            onPause = {},
             onSceneSize = { _, _ -> },
             onOpenSettings = {},
         )

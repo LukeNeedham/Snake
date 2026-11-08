@@ -11,9 +11,9 @@ description: |
   a skin pattern that repeats as it grows, and the game ends the moment the snake touches itself.
 
   Beware the toads that hop out of the grass: each colour is poisonous in its own way. One makes the whole screen wavy,
-  one turns every animal into a random animal, one makes the snake speed up, and one makes it so dizzy that it ignores
-  your taps for a few seconds.
+  one turns every animal into a weird monster, and one makes the snake so dizzy that it ignores your taps for a few seconds.
 
   The snake is always hungry: a bar at the top of the screen runs down, a mouse fills it, a toad hardly does, and the
-  snake starves when it is empty. Hold a finger on the screen to sprint, which is faster but burns the bar quicker, and
-  tap to turn. The mice run from a snake they see coming, but they cannot see what is behind them.
+  snake starves when it is empty. Hold the corner at the bottom right to sprint, which is faster but burns the bar quicker,
+  while your other thumb taps anywhere else to turn. A button at the top left pauses the game.
+  The mice run from a snake they see coming, but they cannot see what is behind them.

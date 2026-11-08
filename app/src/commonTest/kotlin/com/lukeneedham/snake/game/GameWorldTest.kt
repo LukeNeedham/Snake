@@ -116,34 +116,65 @@ class GameWorldTest {
     }
 
     @Test
-    fun aQuickPressTurnsTheSnakeWhenTheFingerComesUp() {
+    fun aFingerHeldInTheSprintZoneSprintsAndDoesNotTurn() {
         val world = newWorld()
         world.start()
         val before = world.snake.turnDirection
-        world.press(1L)
-        repeat(3) { world.update(1f / 60f) }
+        world.sprintPress(1L)
+        repeat(60) { world.update(1f / 60f) }
+        assertTrue(world.sprint.level > 0.9f)
         assertEquals(before, world.snake.turnDirection)
-        world.release(1L)
-        assertEquals(-before, world.snake.turnDirection)
     }
 
     @Test
-    fun aHeldFingerSprintsAndDoesNotTurn() {
+    fun theSprintStopsAsSoonAsTheFingerComesUp() {
+        val world = newWorld()
+        world.start()
+        world.sprintPress(1L)
+        repeat(60) { world.update(1f / 60f) }
+        world.sprintRelease(1L)
+        repeat(60) { world.update(1f / 60f) }
+        assertEquals(0f, world.sprint.level, 1e-4f)
+    }
+
+    @Test
+    fun aSprintingThumbAndATappingThumbWorkTogether() {
         val world = newWorld()
         world.start()
         val before = world.snake.turnDirection
-        world.press(1L)
+        world.sprintPress(1L)
+        repeat(30) { world.update(1f / 60f) }
+        world.tap()
+        assertEquals(-before, world.snake.turnDirection)
+        assertTrue(world.sprint.level > 0.5f)
+    }
+
+    @Test
+    fun aFingerPressedBeforeTheStartDoesNotSprint() {
+        val world = newWorld()
+        world.sprintPress(1L)
+        world.start()
         repeat(60) { world.update(1f / 60f) }
-        assertTrue(world.sprint.level > 0.9f)
-        world.release(1L)
-        assertEquals(before, world.snake.turnDirection)
+        assertEquals(0f, world.sprint.level)
+    }
+
+    @Test
+    fun pausingStopsTheSprint() {
+        val world = newWorld()
+        world.start()
+        world.sprintPress(1L)
+        repeat(30) { world.update(1f / 60f) }
+        world.pause()
+        world.resume()
+        repeat(60) { world.update(1f / 60f) }
+        assertEquals(0f, world.sprint.level, 1e-4f)
     }
 
     @Test
     fun sprintingGoesFasterAndDrainsTheHungerBarFaster() {
         val resting = newWorld().also { it.start() }
         val sprinting = newWorld().also { it.start() }
-        sprinting.press(1L)
+        sprinting.sprintPress(1L)
         repeat(120) {
             resting.update(1f / 60f)
             sprinting.update(1f / 60f)

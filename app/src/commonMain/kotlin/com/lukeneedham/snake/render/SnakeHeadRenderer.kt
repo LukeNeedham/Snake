@@ -13,7 +13,7 @@ import kotlin.math.sin
 /** The head is widest at the back and narrows to the nose: discs of shrinking radius, each as far in front of the centre. */
 private val headShape = listOf(-0.4f to SnakeTuning.headRadius, 1.4f to 3.4f, 3.0f to 2.7f, 4.4f to 1.9f, 5.4f to 1.1f)
 
-/** Draws the head: its shape, the mouth or the flicking tongue, and the eyes, which blink and turn to crosses when dead. */
+/** Draws the head: its shape, the mouth or the flicking tongue, and the eyes, which look where the snake turns, blink and turn to crosses when dead. */
 internal fun DrawScope.drawSnakeHead(world: GameWorld, deadAmount: Float) {
     val snake = world.snake
     val dx = cos(snake.heading)
@@ -30,7 +30,7 @@ internal fun DrawScope.drawSnakeHead(world: GameWorld, deadAmount: Float) {
     if (snake.mouthOpen > 0.25f) {
         drawOpenMouth(snake.x + dx * SnakeTuning.mouthReach, snake.y + dy * SnakeTuning.mouthReach, snake.mouthOpen)
     } else if (deadAmount < 0.5f) {
-        drawTongue(world, snake.x + dx * 6f, snake.y + dy * 6f, dx, dy)
+        drawTongue(world, snake.x + dx * tongueRoot, snake.y + dy * tongueRoot, dx, dy)
     }
     drawEyes(world, deadAmount, dx, dy)
 }
@@ -40,7 +40,7 @@ private fun DrawScope.drawOpenMouth(x: Float, y: Float, openness: Float) {
     pixelDisc(x, y, 1.4f * openness, SnakePalette.mouthInside)
 }
 
-/** The forked tongue flicks out every few seconds. */
+/** The forked tongue flicks out every few seconds, from the very tip of the nose: it never shows over the head. */
 private fun DrawScope.drawTongue(world: GameWorld, tipX: Float, tipY: Float, dx: Float, dy: Float) {
     val phase = (world.time % tongueCycle) / tongueCycle
     if (phase > tongueOutPart) return
@@ -67,7 +67,10 @@ private fun DrawScope.drawEyes(world: GameWorld, deadAmount: Float, dx: Float, d
             isBlinking -> pixelRect(ex - 1, ey, 2, 1, SnakePalette.outline)
             else -> {
                 pixelRect(ex - 1, ey - 1, 2, 2, Color.White)
-                pixel(ex - 1 + (dx + 1f).roundToInt().coerceIn(0, 1), ey - 1 + (dy + 1f).roundToInt().coerceIn(0, 1), SnakePalette.outline)
+                // The pupils look the way the snake is turning: to the side of its heading, and a little ahead
+                val lookX = dx * 0.4f - dy * snake.turnDirection
+                val lookY = dy * 0.4f + dx * snake.turnDirection
+                pixel(ex - 1 + if (lookX > 0f) 1 else 0, ey - 1 + if (lookY > 0f) 1 else 0, SnakePalette.outline)
             }
         }
     }
@@ -82,6 +85,8 @@ private fun DrawScope.drawCrossEye(x: Int, y: Int) {
     pixel(x + 1, y + 1, ink)
 }
 
+/** How far from the centre of the head the front of its outline is: the tongue starts just past it. */
+private const val tongueRoot = 7.6f
 private const val tongueCycle = 2.6f
 private const val tongueOutPart = 0.22f
 private const val blinkCycle = 4.2f

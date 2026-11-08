@@ -22,9 +22,9 @@ class EffectTrackerTest {
     @Test
     fun theTimeDoesNotRunOutWhileItIsNotCountingDown() {
         val effects = EffectTracker()
-        effects.apply(ToadKind.Orange)
+        effects.apply(ToadKind.Pink)
         effects.update(5f, isCountingDown = false, isShowing = true)
-        assertEquals(Effect.Speedy.durationSeconds, effects.remaining(Effect.Speedy))
+        assertEquals(Effect.Confused.durationSeconds, effects.remaining(Effect.Confused))
     }
 
     @Test
