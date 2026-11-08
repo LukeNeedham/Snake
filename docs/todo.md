@@ -71,8 +71,7 @@ into its own doc when work on it starts.
   toad that is still coming in from the grass is blown up too). This replaces the toads hopping away from the snake: remove that
   (`SnakeAura.repelsToads`, the scared hop in `ToadGait`, `CritterTuning.repelDistance` and their tests). Decide whether the toads that
   explode feed the snake or score anything (probably not), and whether the toad timer carries on while it is off.
-- [ ] **Power-up polish.** Show the bigger mouth on the snake's head: the blackbird's Big mouth power up already makes the mouth reach
-  1.8 times as far, but the head looks the same. Draw a wider, open mouth while it is on.
+- [x] **Power-up polish.** Done: with Big mouth on, the snout is swollen and the mouth is a wide gape (`SnakeHeadRenderer`).
 
 ## Adventure mode
 

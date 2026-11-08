@@ -14,6 +14,9 @@ import kotlin.math.sin
 /** The head is widest at the back and narrows to the nose: discs of shrinking radius, each as far in front of the centre. */
 private val headShape = listOf(-0.4f to SnakeTuning.headRadius, 1.4f to 3.4f, 3.0f to 2.7f, 4.4f to 1.9f, 5.4f to 1.1f)
 
+/** With the big mouth power up the snout is swollen: wider all the way to the nose. */
+private val bigMouthHeadShape = listOf(-0.4f to SnakeTuning.headRadius, 1.4f to 4.3f, 3.0f to 4.1f, 4.4f to 3.3f, 5.4f to 2.3f)
+
 /** Draws the head: its shape, the mouth or the flicking tongue (or the cheese the snake carries), and the eyes, which look where the snake turns, blink and turn to crosses when dead. */
 internal fun DrawScope.drawSnakeHead(world: GameWorld, deadAmount: Float) {
     val snake = world.snake
@@ -21,26 +24,31 @@ internal fun DrawScope.drawSnakeHead(world: GameWorld, deadAmount: Float) {
     val dy = sin(snake.heading)
     val color = lerp(SnakePalette.head, SnakePalette.dead, deadAmount)
 
-    for ((offset, radius) in headShape) {
+    val hasBigMouth = world.powerUps.isOn(PowerUp.BiggerMouth)
+    val shape = if (hasBigMouth) bigMouthHeadShape else headShape
+    for ((offset, radius) in shape) {
         pixelDisc(snake.x + dx * offset, snake.y + dy * offset, radius + 1f, SnakePalette.outline)
     }
-    for ((offset, radius) in headShape) {
+    for ((offset, radius) in shape) {
         pixelDisc(snake.x + dx * offset, snake.y + dy * offset, radius, color)
     }
 
     if (world.powerUps.isOn(PowerUp.Cheese)) {
         drawCheese(snake.x + dx * SnakeTuning.mouthReach, snake.y + dy * SnakeTuning.mouthReach, dx, dy)
+    } else if (hasBigMouth && deadAmount < 0.5f) {
+        // The wide mouth always gapes a little, and opens wider than normal when food is near
+        drawOpenMouth(snake.x + dx * bigMouthReach, snake.y + dy * bigMouthReach, maxOf(snake.mouthOpen, bigMouthRest), bigMouthScale)
     } else if (snake.mouthOpen > 0.25f) {
-        drawOpenMouth(snake.x + dx * SnakeTuning.mouthReach, snake.y + dy * SnakeTuning.mouthReach, snake.mouthOpen)
+        drawOpenMouth(snake.x + dx * SnakeTuning.mouthReach, snake.y + dy * SnakeTuning.mouthReach, snake.mouthOpen, 1f)
     } else if (deadAmount < 0.5f) {
         drawTongue(world, snake.x + dx * tongueRoot, snake.y + dy * tongueRoot, dx, dy)
     }
     drawEyes(world, deadAmount, dx, dy)
 }
 
-private fun DrawScope.drawOpenMouth(x: Float, y: Float, openness: Float) {
-    pixelDisc(x, y, 2.2f * openness + 0.4f, SnakePalette.outline)
-    pixelDisc(x, y, 1.4f * openness, SnakePalette.mouthInside)
+private fun DrawScope.drawOpenMouth(x: Float, y: Float, openness: Float, scale: Float) {
+    pixelDisc(x, y, (2.2f * openness + 0.4f) * scale, SnakePalette.outline)
+    pixelDisc(x, y, 1.4f * openness * scale, SnakePalette.mouthInside)
 }
 
 /** The forked tongue flicks out every few seconds, from the very tip of the nose: it never shows over the head. */
@@ -94,3 +102,8 @@ private const val tongueCycle = 2.6f
 private const val tongueOutPart = 0.22f
 private const val blinkCycle = 4.2f
 private const val blinkSeconds = 0.14f
+
+/** The big mouth is this many times as wide, sits a little further forward, and is at least this open even when nothing is near. */
+private const val bigMouthScale = 1.6f
+private const val bigMouthReach = 5.2f
+private const val bigMouthRest = 0.55f
