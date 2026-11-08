@@ -5,16 +5,25 @@
 
 # Snake
 
-TODO: one line saying what the app does.
+Snake with a twist: one button, a snake that only ever turns, and poisonous toads.
 
 ## Description
 
-TODO: what the app is and who it is for, with a few highlights of what it can be used for. A paragraph or two,
-and no feature list.
+Snake is a one-button arcade game in pixel art. The snake never goes straight: it circles around itself, and the only
+thing you can do is tap to change the direction of the turn. Steer it by twisting out of its own spiral, bounce it off the
+edge of the oval, and eat the mice that run out of the tall grass. Each mouse makes the snake one section longer, with
+a skin pattern that repeats as it grows, and the game ends the moment the snake touches itself.
+
+Beware the toads that hop out of the grass: each colour is poisonous in its own way. One makes the whole screen wavy,
+one turns every animal into a random animal, one makes the snake speed up, and one makes it so dizzy that it ignores
+your taps for a few seconds.
 
 ## Screenshots
 
-<img src="docs/screenshots/01-SettingsPage.png" width="240" alt="Settings Page">
+<img src="docs/screenshots/01-GamePageReady.png" width="240" alt="Game Page Ready">
+<img src="docs/screenshots/02-GamePage.png" width="240" alt="Game Page">
+<img src="docs/screenshots/03-GamePageHallucinating.png" width="240" alt="Game Page Hallucinating">
+<img src="docs/screenshots/04-GamePageGameOver.png" width="240" alt="Game Page Game Over">
 
 ## Getting started as a user
 
