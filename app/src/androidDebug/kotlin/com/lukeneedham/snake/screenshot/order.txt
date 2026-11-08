@@ -1,1 +1,4 @@
-SettingsPage
+GamePageReady
+GamePage
+GamePageHallucinating
+GamePageGameOver

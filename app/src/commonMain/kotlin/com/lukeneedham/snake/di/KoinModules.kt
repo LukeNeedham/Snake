@@ -1,5 +1,6 @@
 package com.lukeneedham.snake.di
 
+import com.lukeneedham.snake.ui.GameViewModel
 import com.lukeneedham.snake.ui.SettingsViewModel
 import com.lukeneedham.common.DebugKit
 import org.koin.core.module.Module
@@ -10,6 +11,7 @@ import org.koin.dsl.module
 object KoinModules {
 
     private val app = module {
+        viewModel { GameViewModel(get()) }
         viewModel { SettingsViewModel(isDebugEnabled = DebugKit.enabled) }
     }
 
