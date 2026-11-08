@@ -1,5 +1,6 @@
 package com.lukeneedham.snake.game
 
+import kotlin.math.abs
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -38,7 +39,7 @@ class PowerUpTest {
         powerUps.apply(BirdKind.Crow)
         powerUps.update(PowerUp.Zoom.durationSeconds + 0.5f, isCountingDown = true)
         assertFalse(powerUps.isOn(PowerUp.Zoom))
-        assertTrue(powerUps.isOn(PowerUp.ToadRepellent))
+        assertTrue(powerUps.isOn(PowerUp.ToadFree))
     }
 
     @Test
@@ -66,7 +67,9 @@ class PowerUpTest {
         assertEquals(1f, boosts.mouthFactor)
         assertEquals(SprintTuning.speedBoost, boosts.sprintBoost)
         assertFalse(boosts.attractsMice)
-        assertFalse(boosts.aura.repelsToads)
+        assertFalse(boosts.mouthIsFull)
+        assertFalse(boosts.keepsToadsAway)
+        assertFalse(boosts.aura.attractsMice)
         assertEquals(1f, boosts.aura.noticeScale)
         powerUps.apply(BirdKind.BlueTit)
         powerUps.apply(BirdKind.Robin)
@@ -79,8 +82,10 @@ class PowerUpTest {
         assertEquals(PowerUpTuning.fastSprintDrainFactor, boosts.sprintDrainFactor)
         assertEquals(PowerUpTuning.biggerMouthFactor, boosts.mouthFactor)
         assertEquals(PowerUpTuning.sneakyNoticeFactor, boosts.aura.noticeScale)
-        assertTrue(boosts.aura.repelsToads)
+        assertTrue(boosts.keepsToadsAway)
         assertTrue(boosts.attractsMice)
+        assertTrue(boosts.mouthIsFull)
+        assertTrue(boosts.aura.attractsMice)
     }
 
     @Test
@@ -94,20 +99,46 @@ class PowerUpTest {
         assertTrue(mouse.isFleeing)
     }
 
+    private val cheeseAura = SnakeAura(attractsMice = true)
+
     @Test
-    fun aToadHopsAwayFromASnakeThatRepelsToads() {
-        val toad = Critter.Toad(1, ToadKind.Teal, arena.centerX, arena.centerY, lifetime = 100f)
-        val head = Vec2(arena.centerX + 10f, arena.centerY)
-        val random = Random(4)
-        repeat(60) { toad.update(dt, arena, random, head, SnakeAura(repelsToads = true)) }
-        assertTrue(toad.x < arena.centerX - 3f)
+    fun aMouseRunsTowardsASnakeWithCheeseEvenFromBehindItsBack() {
+        val mouse = Critter.Mouse(1, arena.centerX, arena.centerY, lifetime = 100f)
+        // A new mouse looks to the right, and this snake is behind it and far away
+        val head = Vec2(arena.centerX - 50f, arena.centerY)
+        repeat(30) { mouse.update(dt, arena, Random(1), head, cheeseAura) }
+        assertFalse(mouse.isFleeing)
+        assertTrue(mouse.x < arena.centerX - 5f)
     }
 
     @Test
-    fun aToadIgnoresTheSnakeWithoutTheRepellent() {
+    fun miceStandAroundASnakeWithCheeseInsteadOfRunningThroughIt() {
+        val mouse = Critter.Mouse(1, arena.centerX, arena.centerY, lifetime = 100f)
+        val head = Vec2(arena.centerX + 30f, arena.centerY)
+        repeat(60 * 4) { mouse.update(dt, arena, Random(1), head, cheeseAura) }
+        assertTrue(mouse.x > head.x - CritterTuning.cheeseCrowdDistance - 1f)
+        assertTrue(mouse.x < head.x + 1f)
+        assertFalse(mouse.isMoving)
+    }
+
+    @Test
+    fun miceThatGatheredStayDazedForAMomentWhenTheCheeseIsGone() {
+        val mouse = Critter.Mouse(1, arena.centerX, arena.centerY, lifetime = 100f)
+        val head = Vec2(arena.centerX + 3f, arena.centerY)
+        repeat(10) { mouse.update(dt, arena, Random(1), head, cheeseAura) }
+        // Without the cheese the snake is close to the mouse, which would flee from it, but it is dazed
+        repeat(30) {
+            mouse.update(dt, arena, Random(1), head)
+            assertFalse(mouse.isFleeing)
+        }
+    }
+
+    @Test
+    fun aToadIgnoresASnakeWithCheese() {
         val toad = Critter.Toad(1, ToadKind.Teal, arena.centerX, arena.centerY, lifetime = 100f)
-        // The toad would hop at once if it were scared, but it sits for its first 0.2 seconds
-        toad.update(dt, arena, Random(4), Vec2(arena.centerX + 10f, arena.centerY))
-        assertFalse(toad.isMoving)
+        val head = Vec2(arena.centerX + 10f, arena.centerY)
+        val random = Random(4)
+        repeat(60) { toad.update(dt, arena, random, head, cheeseAura) }
+        assertTrue(abs(toad.x - arena.centerX) < 14f)
     }
 }

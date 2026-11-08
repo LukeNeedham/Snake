@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.lerp
 import com.lukeneedham.snake.game.GameWorld
+import com.lukeneedham.snake.game.PowerUp
 import com.lukeneedham.snake.game.SnakeTuning
 import kotlin.math.PI
 import kotlin.math.cos
@@ -13,7 +14,7 @@ import kotlin.math.sin
 /** The head is widest at the back and narrows to the nose: discs of shrinking radius, each as far in front of the centre. */
 private val headShape = listOf(-0.4f to SnakeTuning.headRadius, 1.4f to 3.4f, 3.0f to 2.7f, 4.4f to 1.9f, 5.4f to 1.1f)
 
-/** Draws the head: its shape, the mouth or the flicking tongue, and the eyes, which look where the snake turns, blink and turn to crosses when dead. */
+/** Draws the head: its shape, the mouth or the flicking tongue (or the cheese the snake carries), and the eyes, which look where the snake turns, blink and turn to crosses when dead. */
 internal fun DrawScope.drawSnakeHead(world: GameWorld, deadAmount: Float) {
     val snake = world.snake
     val dx = cos(snake.heading)
@@ -27,7 +28,9 @@ internal fun DrawScope.drawSnakeHead(world: GameWorld, deadAmount: Float) {
         pixelDisc(snake.x + dx * offset, snake.y + dy * offset, radius, color)
     }
 
-    if (snake.mouthOpen > 0.25f) {
+    if (world.powerUps.isOn(PowerUp.Cheese)) {
+        drawCheese(snake.x + dx * SnakeTuning.mouthReach, snake.y + dy * SnakeTuning.mouthReach, dx, dy)
+    } else if (snake.mouthOpen > 0.25f) {
         drawOpenMouth(snake.x + dx * SnakeTuning.mouthReach, snake.y + dy * SnakeTuning.mouthReach, snake.mouthOpen)
     } else if (deadAmount < 0.5f) {
         drawTongue(world, snake.x + dx * tongueRoot, snake.y + dy * tongueRoot, dx, dy)

@@ -10,4 +10,7 @@ enum class Effect(val durationSeconds: Float) {
 
     /** The snake ignores taps. */
     Confused(2.5f),
+
+    /** The lupus curse: the snake dies if it touches itself. Without it, the snake can cross its own body safely. */
+    Lupus(12f),
 }

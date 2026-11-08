@@ -15,7 +15,7 @@ object PowerUpTuning {
     /** Animals notice the snake from this fraction of the distance. */
     const val sneakyNoticeFactor = 0.4f
 
-    /** Mice come this many times as fast, and this many more can be out at once. */
-    const val pheromoneSpawnFactor = 2.5f
-    const val pheromoneExtraMice = 2
+    /** With the cheese, mice come this many times as fast, and this many more can be out at once. */
+    const val cheeseSpawnFactor = 2.5f
+    const val cheeseExtraMice = 2
 }
