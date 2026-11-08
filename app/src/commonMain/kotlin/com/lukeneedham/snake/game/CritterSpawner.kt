@@ -14,8 +14,8 @@ class CritterSpawner(private val arena: Arena, private val random: Random) {
 
     /** Called when the game starts: the first mouse comes quickly, the first toad later. */
     fun reset() {
-        mouseTimer = firstMouseDelay
-        toadTimer = firstToadDelay
+        mouseTimer = SpawnTuning.firstMouseDelay
+        toadTimer = SpawnTuning.firstToadDelay
     }
 
     fun update(dt: Float, critters: MutableList<Critter>, score: Int) {
@@ -23,13 +23,13 @@ class CritterSpawner(private val arena: Arena, private val random: Random) {
         toadTimer -= dt
         val mice = critters.count { it is Critter.Mouse }
         val toads = critters.count { it is Critter.Toad }
-        if (mice < min(2 + score / 5, 5) && mouseTimer <= 0f) {
+        if (mice < min(1 + score / SpawnTuning.pointsPerExtraMouse, SpawnTuning.mostMice) && mouseTimer <= 0f) {
             critters.add(newMouse())
-            mouseTimer = 1f + random.nextFloat() * 1.2f
+            mouseTimer = between(SpawnTuning.mouseDelayMin, SpawnTuning.mouseDelayMax)
         }
-        if (toads < min(1 + score / 6, 3) && toadTimer <= 0f) {
+        if (toads < min(1 + score / SpawnTuning.pointsPerExtraToad, SpawnTuning.mostToads) && toadTimer <= 0f) {
             critters.add(newToad())
-            toadTimer = 6f + random.nextFloat() * 4f
+            toadTimer = between(SpawnTuning.toadDelayMin, SpawnTuning.toadDelayMax)
         }
     }
 
@@ -44,7 +44,9 @@ class CritterSpawner(private val arena: Arena, private val random: Random) {
         return Critter.Toad(nextId++, kind, spot.x, spot.y, lifetime())
     }
 
-    private fun lifetime(): Float = 14f + random.nextFloat() * 8f
+    private fun lifetime(): Float = between(14f, 22f)
+
+    private fun between(least: Float, most: Float): Float = least + random.nextFloat() * (most - least)
 
     private fun spotInTheGrass(): Vec2 {
         val angle = random.nextFloat() * 2f * PI.toFloat()
@@ -53,10 +55,5 @@ class CritterSpawner(private val arena: Arena, private val random: Random) {
             arena.centerX + (arena.radiusX + reach) * cos(angle),
             arena.centerY + (arena.radiusY + reach) * sin(angle),
         )
-    }
-
-    private companion object {
-        const val firstMouseDelay = 0.5f
-        const val firstToadDelay = 7f
     }
 }

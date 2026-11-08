@@ -26,7 +26,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 internal fun GamePageContent(
     state: GameUiState,
-    onTap: () -> Unit,
+    onPress: (pointerId: Long) -> Unit,
+    onRelease: (pointerId: Long) -> Unit,
     onSceneSize: (widthPx: Int, heightPx: Int) -> Unit,
     onOpenSettings: () -> Unit,
 ) {
@@ -39,7 +40,8 @@ internal fun GamePageContent(
         GameScene(
             world = state.world,
             texts = sceneTexts(score = state.score, bestScore = state.bestScore, isNewBest = state.isNewBest),
-            onTap = onTap,
+            onPress = onPress,
+            onRelease = onRelease,
         )
         if (state.phase == GamePhase.Ready || state.phase == GamePhase.GameOver) {
             SettingsButton(
@@ -61,7 +63,8 @@ private fun Preview() {
     AppTheme {
         GamePageContent(
             state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 0, isNewBest = false),
-            onTap = {},
+            onPress = {},
+            onRelease = {},
             onSceneSize = { _, _ -> },
             onOpenSettings = {},
         )

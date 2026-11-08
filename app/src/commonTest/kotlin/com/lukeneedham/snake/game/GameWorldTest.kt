@@ -114,4 +114,84 @@ class GameWorldTest {
         world.resume()
         assertEquals(GamePhase.Playing, world.phase)
     }
+
+    @Test
+    fun aQuickPressTurnsTheSnakeWhenTheFingerComesUp() {
+        val world = newWorld()
+        world.start()
+        val before = world.snake.turnDirection
+        world.press(1L)
+        repeat(3) { world.update(1f / 60f) }
+        assertEquals(before, world.snake.turnDirection)
+        world.release(1L)
+        assertEquals(-before, world.snake.turnDirection)
+    }
+
+    @Test
+    fun aHeldFingerSprintsAndDoesNotTurn() {
+        val world = newWorld()
+        world.start()
+        val before = world.snake.turnDirection
+        world.press(1L)
+        repeat(60) { world.update(1f / 60f) }
+        assertTrue(world.sprint.level > 0.9f)
+        world.release(1L)
+        assertEquals(before, world.snake.turnDirection)
+    }
+
+    @Test
+    fun sprintingGoesFasterAndDrainsTheHungerBarFaster() {
+        val resting = newWorld().also { it.start() }
+        val sprinting = newWorld().also { it.start() }
+        sprinting.press(1L)
+        repeat(120) {
+            resting.update(1f / 60f)
+            sprinting.update(1f / 60f)
+        }
+        assertTrue(sprinting.snake.totalDistance > resting.snake.totalDistance)
+        assertTrue(sprinting.hunger.level < resting.hunger.level)
+    }
+
+    @Test
+    fun theSnakeGetsHungryAsTimePasses() {
+        val world = newWorld()
+        world.start()
+        repeat(300) { world.update(1f / 60f) }
+        assertTrue(world.hunger.level < 1f)
+    }
+
+    @Test
+    fun eatingAMouseFillsTheHungerBar() {
+        val world = newWorld()
+        world.start()
+        repeat(300) { world.update(1f / 60f) }
+        val before = world.hunger.level
+        world.placeMouseInFrontOfTheMouth()
+        repeat(30) { world.update(1f / 60f) }
+        assertTrue(world.hunger.level > before)
+    }
+
+    @Test
+    fun eatingAToadFillsTheBarOnlyALittle() {
+        val world = newWorld()
+        world.start()
+        repeat(300) { world.update(1f / 60f) }
+        val before = world.hunger.level
+        world.placeToadInFrontOfTheMouth(ToadKind.Teal)
+        world.update(1f / 60f)
+        val gained = world.hunger.level - before
+        assertTrue(gained > 0f)
+        assertTrue(gained < HungerTuning.mouseFills / 2f)
+    }
+
+    @Test
+    fun aPausedSnakeDoesNotGetHungry() {
+        val world = newWorld()
+        world.start()
+        world.update(1f / 60f)
+        world.pause()
+        val before = world.hunger.level
+        repeat(120) { world.update(1f / 60f) }
+        assertEquals(before, world.hunger.level)
+    }
 }

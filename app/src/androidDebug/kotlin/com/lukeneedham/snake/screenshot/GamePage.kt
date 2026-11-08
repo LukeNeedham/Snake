@@ -18,7 +18,7 @@ private fun GamePageReadyScreenshot() {
         GameWorld(Arena(108f, 240f), seed = 7).also { repeat(150) { _ -> it.update(1f / 60f) } }
     }
     val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
-    AppTheme { GamePageContent(state = state, onTap = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
+    AppTheme { GamePageContent(state = state, onPress = {}, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
 }
 
 /** Rendered by CI to docs/screenshots/<position in order.txt>-GamePage.png. */
@@ -33,7 +33,7 @@ private fun GamePageScreenshot() {
         }
     }
     val state = GameUiState(world = world, phase = world.phase, score = world.score, bestScore = 12, isNewBest = false)
-    AppTheme { GamePageContent(state = state, onTap = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
+    AppTheme { GamePageContent(state = state, onPress = {}, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
 }
 
 /** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageHallucinating.png. */
@@ -50,7 +50,7 @@ private fun GamePageHallucinatingScreenshot() {
         }
     }
     val state = GameUiState(world = world, phase = world.phase, score = world.score, bestScore = 12, isNewBest = false)
-    AppTheme { GamePageContent(state = state, onTap = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
+    AppTheme { GamePageContent(state = state, onPress = {}, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
 }
 
 /** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageGameOver.png. */
@@ -67,5 +67,5 @@ private fun GamePageGameOverScreenshot() {
         }
     }
     val state = GameUiState(world = world, phase = world.phase, score = world.score, bestScore = 13, isNewBest = true)
-    AppTheme { GamePageContent(state = state, onTap = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
+    AppTheme { GamePageContent(state = state, onPress = {}, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
 }

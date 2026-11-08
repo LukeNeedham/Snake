@@ -13,6 +13,7 @@ internal class ToadBody(x: Float, y: Float, lifetime: Float) : CritterBody {
     override val facing: Int get() = course.facing
     override val mode: CritterMode get() = visit.mode
     override val isMoving: Boolean get() = gait.isHopping
+    override val isFleeing: Boolean get() = false
     override val height: Float get() = gait.height
     override var landed: Boolean
         get() = gait.landed
@@ -21,7 +22,7 @@ internal class ToadBody(x: Float, y: Float, lifetime: Float) : CritterBody {
         }
     override val isGone: Boolean get() = visit.isGone
 
-    override fun update(dt: Float, arena: Arena, random: Random) {
+    override fun update(dt: Float, arena: Arena, random: Random, snakeHead: Vec2?) {
         if (visit.update(dt, arena.signedDistance(course.x, course.y))) gait.update(dt, arena, random)
     }
 }

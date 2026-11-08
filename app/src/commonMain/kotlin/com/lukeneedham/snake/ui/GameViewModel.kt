@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlin.math.roundToInt
 
-/** Connects the game to the page: it steps the world every frame, passes taps on, and publishes what the page shows. */
+/** Connects the game to the page: it steps the world every frame, passes the fingers on, and publishes what the page shows. */
 class GameViewModel(bestScoreStore: BestScoreStore) : ViewModel() {
 
     private var world = GameWorld(Arena(WorldTuning.width.toFloat(), defaultHeight))
@@ -41,16 +41,25 @@ class GameViewModel(bestScoreStore: BestScoreStore) : ViewModel() {
         publish()
     }
 
-    fun onTap() {
+    /**
+     * A finger went down. While playing, what it does depends on how long it stays down (a short press turns the snake, a hold
+     * sprints), so that waits for [onRelease]; in the other phases it acts at once.
+     */
+    fun onPress(pointerId: Long) {
         when (world.phase) {
             GamePhase.Ready -> world.start()
-            GamePhase.Playing -> world.tap()
+            GamePhase.Playing -> world.press(pointerId)
             GamePhase.Paused -> world.resume()
             GamePhase.GameOver -> if (world.canRestart) {
                 newWorld(world.arena.height)
                 world.start()
             }
         }
+        publish()
+    }
+
+    fun onRelease(pointerId: Long) {
+        world.release(pointerId)
         publish()
     }
 

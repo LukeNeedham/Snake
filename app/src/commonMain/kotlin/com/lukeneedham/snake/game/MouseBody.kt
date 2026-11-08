@@ -13,11 +13,12 @@ internal class MouseBody(x: Float, y: Float, lifetime: Float) : CritterBody {
     override val facing: Int get() = course.facing
     override val mode: CritterMode get() = visit.mode
     override val isMoving: Boolean get() = gait.isRunning
+    override val isFleeing: Boolean get() = gait.isFleeing
     override val height: Float get() = 0f
     override var landed = false
     override val isGone: Boolean get() = visit.isGone
 
-    override fun update(dt: Float, arena: Arena, random: Random) {
-        if (visit.update(dt, arena.signedDistance(course.x, course.y))) gait.update(dt, arena, random)
+    override fun update(dt: Float, arena: Arena, random: Random, snakeHead: Vec2?) {
+        if (visit.update(dt, arena.signedDistance(course.x, course.y))) gait.update(dt, arena, random, snakeHead)
     }
 }

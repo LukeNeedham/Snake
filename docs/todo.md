@@ -5,20 +5,19 @@ into its own doc when work on it starts.
 
 ## Next up
 
-- [ ] **Mice run from the snake.** There is no fleeing logic yet, so it has to be added first (in `MouseGait`/`CritterMode`):
-  a mouse that sees the snake approaching runs away. It does not notice a snake that approaches from behind: the mouse only
+- [x] **Mice run from the snake.** Done in `MouseGait`: a roaming mouse that sees the snake approaching runs away. It does not notice a snake that approaches from behind: the mouse only
   sees what is in front of it (its `facing`), so a snake that sneaks up on a mouse's back can still eat it.
-- [ ] **New toad sprites.** The current toads look like slimes. Draw new ones that are obviously frogs (eyes on top of the head,
+- [x] **New toad sprites.** The current toads look like slimes. Draw new ones that are obviously frogs (eyes on top of the head,
   long back legs, a pale belly), still tinted per kind: purple, teal, orange and pink. Check them with a rendered preview, like
   the sprites in `Sprites.kt`.
-- [ ] **Fewer mice.** Mice spawn too often: lower the spawn rate and the number of mice at a time (`spawnCritters` in
+- [x] **Fewer mice.** Mice spawn too often: lower the spawn rate and the number of mice at a time (`spawnCritters` in
   `GameWorld`, and the timers in `GameTuning`).
-- [ ] **A hunger bar instead of just points.**
+- [x] **A hunger bar instead of just points.**
   - The snake has a hunger bar that goes down at a steady rate.
   - A mouse fills it; a toad fills it too, but only a tiny bit.
   - When it reaches zero the snake dies. That is the reason to keep eating.
   - The score stays (mice eaten), and the bar is shown on the screen.
-- [ ] **Sprint mode.**
+- [x] **Sprint mode.**
   - The player can boost the snake to go faster by holding a finger on the screen: it sprints for as long as the finger is held.
   - Sprinting drains the hunger bar faster.
   - A quick tap still flips the direction of the turn, so a tap and a hold have to be told apart.

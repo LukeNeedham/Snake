@@ -9,7 +9,7 @@ import kotlin.random.Random
 
 /**
  * One game: the phase it is in, the snake and the animals. The parts with a job of their own are classes of their own
- * ([EffectTracker], [CritterSpawner], [Feeding], [ParticleSystem]); this one only steps them in order. It is mutable and is
+ * ([EffectTracker], [CritterSpawner], [Feeding], [ParticleSystem], [Hunger], [SprintControl]); this one only steps them in order. It is mutable and is
  * stepped with [update] once per frame; [tick] changes with every step so that a drawing that reads it is drawn again.
  */
 class GameWorld(val arena: Arena, seed: Int = 1) {
@@ -45,6 +45,8 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     /** The animals that are out of the grass, in the oval or on their way. */
     val critters: List<Critter> get() = mutableCritters
     val effects = EffectTracker()
+    val hunger = Hunger()
+    val sprint = SprintControl()
 
     private val random = Random(seed)
     val particleSystem = ParticleSystem(random)
@@ -62,7 +64,9 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     }
 
     fun pause() {
-        if (phase == GamePhase.Playing) phase = GamePhase.Paused
+        if (phase != GamePhase.Playing) return
+        phase = GamePhase.Paused
+        sprint.clear()
     }
 
     fun resume() {
@@ -79,6 +83,16 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
         snake.toggleTurn()
     }
 
+    /** A finger went down while playing: if it stays down the snake sprints, if it comes up soon it is a tap. */
+    fun press(pointerId: Long) {
+        if (phase == GamePhase.Playing) sprint.press(pointerId, time)
+    }
+
+    /** A finger came up: a short press turns the snake, the end of a long one just stops the sprint. */
+    fun release(pointerId: Long) {
+        if (sprint.release(pointerId, time) && phase == GamePhase.Playing) tap()
+    }
+
     fun applyEffect(kind: ToadKind) = effects.apply(kind)
 
     /** Puts a critter in the world: the tests use it to place one where they need it. */
@@ -89,6 +103,7 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     fun endGame() {
         if (phase != GamePhase.Playing) return
         phase = GamePhase.GameOver
+        sprint.clear()
         gameOverTime = 0f
         shake = startingShake
         particleSystem.explode(snake.x, snake.y, listOf(Color(0xFFE8465A), Color(0xFF52C27D), Color(0xFFF4D35E)))
@@ -97,6 +112,7 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     fun update(dt: Float) {
         if (phase == GamePhase.Paused) return
         time += dt
+        sprint.update(dt, time, canSprint = phase == GamePhase.Playing)
         effects.update(dt, isCountingDown = phase == GamePhase.Playing, isShowing = phase != GamePhase.GameOver)
         when (phase) {
             GamePhase.Ready -> snake.step(dt, readySpeed)
@@ -113,13 +129,14 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     }
 
     private fun updatePlaying(dt: Float) {
-        snake.step(dt, 1f + SnakeTuning.speedyBoost * effects.level(Effect.Speedy))
+        snake.step(dt, 1f + SnakeTuning.speedyBoost * effects.level(Effect.Speedy) + SprintTuning.speedBoost * sprint.level)
+        hunger.update(dt, sprint.level)
         dustAtNewBounces()
         spawner.update(dt, mutableCritters, score)
         updateCritters(dt)
         feeding.update(dt, snake, mutableCritters).forEach { eat(it) }
         effectParticles.emit(effects, snake, critters)
-        if (snake.hitsItself()) endGame()
+        if (hunger.isStarving || snake.hitsItself()) endGame()
     }
 
     private fun dustAtNewBounces() {
@@ -129,8 +146,9 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     }
 
     private fun updateCritters(dt: Float) {
+        val snakeHead = Vec2(snake.x, snake.y)
         for (critter in critters) {
-            critter.update(dt, arena, random)
+            critter.update(dt, arena, random, snakeHead)
             if (critter.landed) {
                 critter.landed = false
                 particleSystem.dust(critter.x, critter.y, 3, dustColor)
@@ -146,6 +164,7 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
         when (critter) {
             is Critter.Mouse -> {
                 score++
+                hunger.feed(HungerTuning.mouseFills)
                 snake.grow(1)
                 snake.addBulge()
                 particleSystem.floatText("+1", snake.x, snake.y - 6f, Color(0xFFFFF3B0))
@@ -156,6 +175,7 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
             }
             is Critter.Toad -> {
                 effects.apply(critter.kind)
+                hunger.feed(HungerTuning.toadFills)
                 particleSystem.sparkles(
                     critter.x, critter.y - 3f, 12,
                     listOf(critter.kind.body, critter.kind.light, Color(0xFFFFFFFF)),

@@ -22,10 +22,10 @@ class CritterSpawnerTest {
     }
 
     @Test
-    fun thereAreAtMostTwoMiceAndOneToadAtTheStart() {
+    fun thereIsOnlyOneMouseAndOneToadAtTheStart() {
         spawner.reset()
         repeat(150) { spawner.update(0.1f, critters, score = 0) }
-        assertEquals(2, critters.count { it is Critter.Mouse })
+        assertEquals(1, critters.count { it is Critter.Mouse })
         assertEquals(1, critters.count { it is Critter.Toad })
     }
 
@@ -33,7 +33,7 @@ class CritterSpawnerTest {
     fun morePointsBringMoreAnimals() {
         spawner.reset()
         repeat(300) { spawner.update(0.1f, critters, score = 30) }
-        assertEquals(5, critters.count { it is Critter.Mouse })
+        assertEquals(3, critters.count { it is Critter.Mouse })
         assertEquals(3, critters.count { it is Critter.Toad })
     }
 
