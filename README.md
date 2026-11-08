@@ -18,6 +18,10 @@ Beware the toads that hop out of the grass: each colour is poisonous in its own 
 one turns every animal into a random animal, one makes the snake speed up, and one makes it so dizzy that it ignores
 your taps for a few seconds.
 
+The snake is always hungry: a bar at the top of the screen runs down, a mouse fills it, a toad hardly does, and the
+snake starves when it is empty. Hold a finger on the screen to sprint, which is faster but burns the bar quicker, and
+tap to turn. The mice run from a snake they see coming, but they cannot see what is behind them.
+
 ## Screenshots
 
 <img src="docs/screenshots/01-GamePageReady.png" width="240" alt="Game Page Ready">
