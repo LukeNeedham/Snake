@@ -16,7 +16,7 @@ into its own doc when work on it starts.
   - The snake has a hunger bar that goes down at a steady rate.
   - A mouse fills it; a toad fills it too, but only a tiny bit.
   - When it reaches zero the snake dies. That is the reason to keep eating.
-  - The score stays (a mouse is 100 points, a bird 150, a toad 0), and the bar is shown on the screen.
+  - The score stays (a mouse is 100 points, a bird 150, a toad 0), and the hunger is shown as a stomach in the top right corner that fills from the bottom.
 - [x] **Sprint mode.**
   - The player can boost the snake to go faster by holding the sprint corner (bottom left, or right in the settings): it sprints for as long as the finger
     is held there, and stops as soon as it lets go.
