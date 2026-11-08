@@ -5,9 +5,9 @@ into its own doc when work on it starts.
 
 ## Next up
 
-- [ ] **Mice run from the snake.** A mouse that sees the snake approaching runs away, but not if the snake approaches from
-  behind it: the mouse only notices what is in front of it (its `facing`), so a snake that sneaks up on a mouse's back can still
-  eat it.
+- [ ] **Mice run from the snake.** There is no fleeing logic yet, so it has to be added first (in `MouseGait`/`CritterMode`):
+  a mouse that sees the snake approaching runs away. It does not notice a snake that approaches from behind: the mouse only
+  sees what is in front of it (its `facing`), so a snake that sneaks up on a mouse's back can still eat it.
 - [ ] **New toad sprites.** The current toads look like slimes. Draw new ones that are obviously frogs (eyes on top of the head,
   long back legs, a pale belly), still tinted per kind: purple, teal, orange and pink. Check them with a rendered preview, like
   the sprites in `Sprites.kt`.
