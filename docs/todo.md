@@ -22,6 +22,10 @@ into its own doc when work on it starts.
     is held there, and stops as soon as it lets go.
   - Sprinting drains the hunger bar faster.
   - A finger in the sprint corner never turns the snake; a tap anywhere else does. So one thumb sprints while the other turns.
+- [ ] **Birds.** A new kind of critter, with new sprites. Unlike the mice and toads they do not come out of the grass: they fly in
+  from off the screen and land anywhere in the oval (so they need a flying and a landing animation, and a take off). They are
+  extremely skittish: a bird flies off the moment the snake gets close, much sooner than a mouse runs, and it flies out of the
+  screen and is gone. Decide what eating one is worth.
 
 ## Power ups
 
