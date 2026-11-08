@@ -26,35 +26,45 @@ sealed interface Critter {
 
     /** Runs fast for a moment, stands still and looks around, then runs again. */
     class Mouse(override val id: Int, x: Float, y: Float, lifetime: Float) : Critter {
-        private val motion = CritterMotion(x, y, lifetime)
-        override val x: Float get() = motion.x
-        override val y: Float get() = motion.y
-        override val facing: Int get() = motion.facing
-        override val mode: CritterMode get() = motion.mode
-        override val isMoving: Boolean get() = motion.isMoving
-        override val height: Float get() = motion.height
-        override var landed: Boolean
-            get() = motion.landed
-            set(value) { motion.landed = value }
-        override val isGone: Boolean get() = motion.isGone
+        private val course = CritterCourse(x, y)
+        private val visit = CritterVisit(lifetime)
+        private val gait = MouseGait(course, visit)
 
-        override fun update(dt: Float, arena: Arena, random: Random) = motion.updateMouse(dt, arena, random)
+        override val x: Float get() = course.x
+        override val y: Float get() = course.y
+        override val facing: Int get() = course.facing
+        override val mode: CritterMode get() = visit.mode
+        override val isMoving: Boolean get() = gait.isRunning
+        override val height: Float get() = 0f
+        override var landed = false
+        override val isGone: Boolean get() = visit.isGone
+
+        override fun update(dt: Float, arena: Arena, random: Random) {
+            if (visit.update(dt, arena.signedDistance(course.x, course.y))) gait.update(dt, arena, random)
+        }
     }
 
     /** Sits still, then hops a short way in a random direction. Eating one has the effect of its [kind]. */
     class Toad(override val id: Int, val kind: ToadKind, x: Float, y: Float, lifetime: Float) : Critter {
-        private val motion = CritterMotion(x, y, lifetime)
-        override val x: Float get() = motion.x
-        override val y: Float get() = motion.y
-        override val facing: Int get() = motion.facing
-        override val mode: CritterMode get() = motion.mode
-        override val isMoving: Boolean get() = motion.isMoving
-        override val height: Float get() = motion.height
-        override var landed: Boolean
-            get() = motion.landed
-            set(value) { motion.landed = value }
-        override val isGone: Boolean get() = motion.isGone
+        private val course = CritterCourse(x, y)
+        private val visit = CritterVisit(lifetime)
+        private val gait = ToadGait(course, visit)
 
-        override fun update(dt: Float, arena: Arena, random: Random) = motion.updateToad(dt, arena, random)
+        override val x: Float get() = course.x
+        override val y: Float get() = course.y
+        override val facing: Int get() = course.facing
+        override val mode: CritterMode get() = visit.mode
+        override val isMoving: Boolean get() = gait.isHopping
+        override val height: Float get() = gait.height
+        override var landed: Boolean
+            get() = gait.landed
+            set(value) {
+                gait.landed = value
+            }
+        override val isGone: Boolean get() = visit.isGone
+
+        override fun update(dt: Float, arena: Arena, random: Random) {
+            if (visit.update(dt, arena.signedDistance(course.x, course.y))) gait.update(dt, arena, random)
+        }
     }
 }

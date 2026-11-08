@@ -45,7 +45,7 @@ private fun GamePageHallucinatingScreenshot() {
             it.start()
             repeat(720) { _ -> it.update(1f / 60f) }
             it.score = 7
-            it.applyEffect(ToadKind.PURPLE)
+            it.applyEffect(ToadKind.Purple)
             repeat(75) { _ -> it.update(1f / 60f) }
         }
     }

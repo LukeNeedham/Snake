@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.lukeneedham.snake.data.BestScoreStore
 import com.lukeneedham.snake.game.Arena
 import com.lukeneedham.snake.game.GamePhase
-import com.lukeneedham.snake.game.GameTuning
 import com.lukeneedham.snake.game.GameWorld
+import com.lukeneedham.snake.game.WorldTuning
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +15,7 @@ import kotlin.math.roundToInt
 
 class GameViewModel(private val bestScoreStore: BestScoreStore) : ViewModel() {
 
-    private var world = GameWorld(Arena(GameTuning.WORLD_WIDTH.toFloat(), DEFAULT_HEIGHT))
+    private var world = GameWorld(Arena(WorldTuning.width.toFloat(), defaultHeight))
     private var bestScore = 0
     private var isNewBest = false
     private var savedThisGame = false
@@ -35,15 +35,15 @@ class GameViewModel(private val bestScoreStore: BestScoreStore) : ViewModel() {
     /** The arena is an oval that fills the screen, so the world takes the aspect ratio of the screen. */
     fun onSceneSize(widthPx: Int, heightPx: Int) {
         if (widthPx <= 0 || heightPx <= 0) return
-        val height = (GameTuning.WORLD_WIDTH.toFloat() * heightPx / widthPx).roundToInt()
+        val height = (WorldTuning.width.toFloat() * heightPx / widthPx).roundToInt()
         if (height == world.arena.height.toInt()) return
         newWorld(height.toFloat())
     }
 
     /** Called once per frame with the seconds since the last frame. */
     fun onFrame(seconds: Float) {
-        world.update(seconds.coerceIn(0f, MAX_STEP))
-        if (world.phase == GamePhase.GAME_OVER && !savedThisGame) {
+        world.update(seconds.coerceIn(0f, maxStep))
+        if (world.phase == GamePhase.GameOver && !savedThisGame) {
             savedThisGame = true
             isNewBest = world.score > bestScore
             val score = world.score
@@ -54,10 +54,10 @@ class GameViewModel(private val bestScoreStore: BestScoreStore) : ViewModel() {
 
     fun onTap() {
         when (world.phase) {
-            GamePhase.READY -> world.start()
-            GamePhase.PLAYING -> world.tap()
-            GamePhase.PAUSED -> world.resume()
-            GamePhase.GAME_OVER -> if (world.canRestart) {
+            GamePhase.Ready -> world.start()
+            GamePhase.Playing -> world.tap()
+            GamePhase.Paused -> world.resume()
+            GamePhase.GameOver -> if (world.canRestart) {
                 newWorld(world.arena.height)
                 world.start()
             }
@@ -71,7 +71,7 @@ class GameViewModel(private val bestScoreStore: BestScoreStore) : ViewModel() {
     }
 
     private fun newWorld(height: Float) {
-        world = GameWorld(Arena(GameTuning.WORLD_WIDTH.toFloat(), height), seed = (world.time * 1000f).toInt())
+        world = GameWorld(Arena(WorldTuning.width.toFloat(), height), seed = (world.time * 1000f).toInt())
         savedThisGame = false
         isNewBest = false
         publish()
@@ -86,12 +86,12 @@ class GameViewModel(private val bestScoreStore: BestScoreStore) : ViewModel() {
         world = world,
         phase = world.phase,
         score = world.score,
-        bestScore = maxOf(bestScore, if (world.phase == GamePhase.GAME_OVER) world.score else 0),
+        bestScore = maxOf(bestScore, if (world.phase == GamePhase.GameOver) world.score else 0),
         isNewBest = isNewBest,
     )
 
     private companion object {
-        const val DEFAULT_HEIGHT = 234f
-        const val MAX_STEP = 0.05f
+        const val defaultHeight = 234f
+        const val maxStep = 0.05f
     }
 }

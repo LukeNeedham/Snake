@@ -15,7 +15,7 @@ class CritterTest {
         var entered = false
         repeat(60 * 10) {
             mouse.update(1f / 60f, arena, random)
-            if (mouse.mode == CritterMode.ROAMING) entered = true
+            if (mouse.mode == CritterMode.Roaming) entered = true
         }
         assertTrue(entered)
     }
@@ -30,7 +30,7 @@ class CritterTest {
 
     @Test
     fun aToadHopsInTheAirAndSitsStill() {
-        val toad = Critter.Toad(1, ToadKind.TEAL, arena.centerX, arena.centerY, lifetime = 100f)
+        val toad = Critter.Toad(1, ToadKind.Teal, arena.centerX, arena.centerY, lifetime = 100f)
         val random = Random(9)
         var hopped = false
         var sat = false
