@@ -11,8 +11,8 @@ import org.koin.dsl.module
 object KoinModules {
 
     private val app = module {
-        viewModel { GameViewModel(get()) }
-        viewModel { SettingsViewModel(isDebugEnabled = DebugKit.enabled) }
+        viewModel { GameViewModel(get(), get()) }
+        viewModel { SettingsViewModel(isDebugEnabled = DebugKit.enabled, settingsStore = get()) }
     }
 
     val modules: List<Module> = listOf(app)

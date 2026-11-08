@@ -39,6 +39,17 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     var rejectedTapTime = 0f
         private set
 
+    /** Whether the menu is over the scene. A paused game always has it open. */
+    var isMenuOpen = false
+        private set
+
+    /** The corner of the screen that sprints: it comes from the settings. */
+    var sprintSide = SprintSide.Left
+
+    /** The buttons of the menu: restarting only makes sense in a game that is paused. */
+    val menuItems: List<MenuItem>
+        get() = if (phase == GamePhase.Paused) listOf(MenuItem.Resume, MenuItem.Restart, MenuItem.Settings) else listOf(MenuItem.Resume, MenuItem.Settings)
+
     val snake = Snake(arena)
     private val mutableCritters = ArrayList<Critter>()
 
@@ -63,14 +74,27 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
         spawner.reset()
     }
 
+    /** Pausing opens the menu: the game carries on when it is closed. */
     fun pause() {
         if (phase != GamePhase.Playing) return
         phase = GamePhase.Paused
+        isMenuOpen = true
         sprint.clear()
     }
 
     fun resume() {
-        if (phase == GamePhase.Paused) phase = GamePhase.Playing
+        if (phase != GamePhase.Paused) return
+        phase = GamePhase.Playing
+        isMenuOpen = false
+    }
+
+    /** Opens the menu: a game that is being played is paused, the title and game over screens just show it over them. */
+    fun openMenu() {
+        if (phase == GamePhase.Playing) pause() else if (phase != GamePhase.Paused) isMenuOpen = true
+    }
+
+    fun closeMenu() {
+        if (phase == GamePhase.Paused) resume() else isMenuOpen = false
     }
 
     /** Turn the other way: a tap anywhere but in the [SprintZone]. A confused snake ignores it. */

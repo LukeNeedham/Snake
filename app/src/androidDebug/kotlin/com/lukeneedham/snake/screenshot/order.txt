@@ -1,4 +1,5 @@
 GamePageReady
 GamePage
 GamePageHallucinating
+GamePagePaused
 GamePageGameOver

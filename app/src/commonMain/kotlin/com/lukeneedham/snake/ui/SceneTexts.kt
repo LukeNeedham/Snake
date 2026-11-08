@@ -9,10 +9,13 @@ import com.lukeneedham.snake.generated.resources.effect_disguised
 import com.lukeneedham.snake.generated.resources.effect_hallucinating
 import com.lukeneedham.snake.generated.resources.game_over
 import com.lukeneedham.snake.generated.resources.game_title
+import com.lukeneedham.snake.generated.resources.menu_back
+import com.lukeneedham.snake.generated.resources.menu_restart
+import com.lukeneedham.snake.generated.resources.menu_resume
+import com.lukeneedham.snake.generated.resources.menu_settings
 import com.lukeneedham.snake.generated.resources.new_best
 import com.lukeneedham.snake.generated.resources.paused
 import com.lukeneedham.snake.generated.resources.score_value
-import com.lukeneedham.snake.generated.resources.tap_to_resume
 import com.lukeneedham.snake.generated.resources.tap_to_retry
 import com.lukeneedham.snake.generated.resources.tap_to_start
 import com.lukeneedham.snake.render.SceneTexts
@@ -29,7 +32,10 @@ internal fun sceneTexts(score: Int, bestScore: Int, isNewBest: Boolean): SceneTe
     newBest = if (isNewBest) stringResource(Res.string.new_best) else "",
     tapToRetry = stringResource(Res.string.tap_to_retry),
     paused = stringResource(Res.string.paused),
-    tapToResume = stringResource(Res.string.tap_to_resume),
+    menuResume = stringResource(Res.string.menu_resume),
+    menuBack = stringResource(Res.string.menu_back),
+    menuRestart = stringResource(Res.string.menu_restart),
+    menuSettings = stringResource(Res.string.menu_settings),
     effectNames = Effect.entries.map { effect ->
         when (effect) {
             Effect.Hallucinating -> stringResource(Res.string.effect_hallucinating)

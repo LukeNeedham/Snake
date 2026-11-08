@@ -18,7 +18,7 @@ into its own doc when work on it starts.
   - When it reaches zero the snake dies. That is the reason to keep eating.
   - The score stays (mice eaten), and the bar is shown on the screen.
 - [x] **Sprint mode.**
-  - The player can boost the snake to go faster by holding the sprint corner (bottom right): it sprints for as long as the finger
+  - The player can boost the snake to go faster by holding the sprint corner (bottom left, or right in the settings): it sprints for as long as the finger
     is held there, and stops as soon as it lets go.
   - Sprinting drains the hunger bar faster.
   - A finger in the sprint corner never turns the snake; a tap anywhere else does. So one thumb sprints while the other turns.

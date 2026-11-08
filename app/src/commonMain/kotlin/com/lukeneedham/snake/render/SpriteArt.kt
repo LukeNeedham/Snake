@@ -1,6 +1,6 @@
 package com.lukeneedham.snake.render
 
-/** The animals, facing right. The toad is a frog that looks at you: eyes on top of its head, a wide mouth and a pale belly. Each letter is a colour of [spriteColor]; a dot is empty. */
+/** The animals, facing right. The toad is a frog seen from the side: eyes on top of its head, a big hind leg and a pale belly. Each letter is a colour of [spriteColor]; a dot is empty. */
 internal enum class SpriteArt(val rows: List<String>) {
     Mouse(
         listOf(
@@ -15,18 +15,14 @@ internal enum class SpriteArt(val rows: List<String>) {
     ),
     Toad(
         listOf(
-            "..oooo....oooo..",
-            ".owwwwo..owwwwo.",
-            ".owweeo..oeewwo.",
-            ".obbbbbbbbbbbbo.",
-            "obbbbbbbbbbbbbbo",
-            "obbbbbbbbbbbbbbo",
-            "oboooooooooooobo",
-            "obbbllllllllbbbo",
-            "obbdlllllllldbbo",
-            "oddbblloollbbddo",
-            "obbbdbo..obdbbbo",
-            "oooooo....oooooo",
+            "....oo.ooo..",
+            "...owwowwwo.",
+            "...owwoweeo.",
+            "..ooobbbbboo",
+            ".obbbbbbbbbo",
+            "obbddbbbbllo",
+            "obdddbblllo.",
+            ".oooo.ooooo.",
         ),
     ),
     Beetle(

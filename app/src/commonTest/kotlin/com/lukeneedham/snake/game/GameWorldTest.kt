@@ -225,4 +225,34 @@ class GameWorldTest {
         repeat(120) { world.update(1f / 60f) }
         assertEquals(before, world.hunger.level)
     }
+
+    @Test
+    fun pausingOpensTheMenuAndResumingClosesIt() {
+        val world = newWorld()
+        world.start()
+        world.openMenu()
+        assertEquals(GamePhase.Paused, world.phase)
+        assertTrue(world.isMenuOpen)
+        assertEquals(listOf(MenuItem.Resume, MenuItem.Restart, MenuItem.Settings), world.menuItems)
+        world.closeMenu()
+        assertEquals(GamePhase.Playing, world.phase)
+        assertFalse(world.isMenuOpen)
+    }
+
+    @Test
+    fun theMenuOfTheTitleScreenOnlyHasResumeAndSettings() {
+        val world = newWorld()
+        world.openMenu()
+        assertEquals(GamePhase.Ready, world.phase)
+        assertTrue(world.isMenuOpen)
+        assertEquals(listOf(MenuItem.Resume, MenuItem.Settings), world.menuItems)
+        world.closeMenu()
+        assertFalse(world.isMenuOpen)
+        assertEquals(GamePhase.Ready, world.phase)
+    }
+
+    @Test
+    fun theSprintCornerIsOnTheLeftUnlessSetOtherwise() {
+        assertEquals(SprintSide.Left, newWorld().sprintSide)
+    }
 }

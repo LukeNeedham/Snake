@@ -20,7 +20,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import com.lukeneedham.snake.game.Arena
 import com.lukeneedham.snake.game.GameWorld
-import com.lukeneedham.snake.game.SprintZone
+import com.lukeneedham.snake.game.PressTarget
 import com.lukeneedham.snake.render.SceneTexts
 import com.lukeneedham.snake.render.createBackground
 import com.lukeneedham.snake.render.createFrontGrass
@@ -30,14 +30,14 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * The game itself: the world is drawn into a small bitmap at one unit per art pixel, then scaled up without smoothing. Every
- * finger is told apart by its id: one that goes down in the sprint zone sprints until it comes up, any other is a tap. So one
- * thumb can sprint while the other turns.
+ * finger is told apart by its id: one that goes down in the sprint zone sprints until it comes up, one on a button presses it, any
+ * other is a tap. So one thumb can sprint while the other turns.
  */
 @Composable
 internal fun GameScene(
     world: GameWorld,
     texts: SceneTexts,
-    onPress: (pointerId: Long, inSprintZone: Boolean) -> Unit,
+    onPress: (pointerId: Long, target: PressTarget) -> Unit,
     onRelease: (pointerId: Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -59,17 +59,20 @@ internal fun GameScene(
     Canvas(
         modifier = modifier
             .fillMaxSize()
-            .pointerInput(arena) {
+            .pointerInput(world, topInsetPx) {
                 awaitPointerEventScope {
                     while (true) {
                         val event = awaitPointerEvent()
                         for (change in event.changes) {
                             if (change.changedToDownIgnoreConsumed()) {
                                 val scale = size.width.toFloat() / sceneWidth
-                                currentOnPress(
-                                    change.id.value,
-                                    SprintZone.contains(arena, change.position.x / scale, change.position.y / scale),
+                                val target = PressTarget.at(
+                                    world = world,
+                                    topInset = (topInsetPx / scale).toInt(),
+                                    x = change.position.x / scale,
+                                    y = change.position.y / scale,
                                 )
+                                currentOnPress(change.id.value, target)
                             }
                             if (change.changedToUpIgnoreConsumed()) currentOnRelease(change.id.value)
                         }
