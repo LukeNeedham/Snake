@@ -17,13 +17,13 @@ object SpawnTuning {
     const val birdDelayMax = 18f
 
     /** There is one mouse at the start, and one more for every this many points. */
-    const val pointsPerExtraMouse = 8
+    const val pointsPerExtraMouse = 800
     const val mostMice = 3
 
-    const val pointsPerExtraToad = 6
+    const val pointsPerExtraToad = 600
     const val mostToads = 3
 
     /** There is one bird at a time at the start, and two once the score is this high. */
-    const val pointsPerExtraBird = 20
+    const val pointsPerExtraBird = 2000
     const val mostBirds = 2
 }

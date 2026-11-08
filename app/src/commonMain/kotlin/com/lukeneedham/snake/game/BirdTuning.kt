@@ -38,5 +38,4 @@ object BirdTuning {
     const val hopHeight = 2.5f
     const val hopSeconds = 0.25f
 
-    const val score = 2
 }

@@ -9,12 +9,12 @@ private const val barWidth = 44
 private const val barHeight = 4
 
 /**
- * The hunger bar under the score: it runs down, turns red and blinks when the snake is about to starve, and glows while it
+ * The hunger bar in the top left corner, beside the menu button: it runs down, turns red and blinks when the snake is about to starve, and glows while it
  * sprints. What was just eaten shows as a lighter part at the end of the bar, which then fills in.
  */
 internal fun DrawScope.drawHungerBar(world: GameWorld, topInset: Int) {
-    val left = world.arena.width.toInt() / 2 - barWidth / 2
-    val top = topInset + 17
+    val left = 23
+    val top = topInset + 8
     val hunger = world.hunger
     pixelRect(left - 1, top - 1, barWidth + 2, barHeight + 2, PixelFont.outline)
     pixelRect(left, top, barWidth, barHeight, HudPalette.barBack)

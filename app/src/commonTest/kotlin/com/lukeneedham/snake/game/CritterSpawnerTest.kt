@@ -32,7 +32,7 @@ class CritterSpawnerTest {
     @Test
     fun morePointsBringMoreAnimals() {
         spawner.reset()
-        repeat(300) { spawner.update(0.1f, critters, score = 30) }
+        repeat(300) { spawner.update(0.1f, critters, score = 3000) }
         assertEquals(3, critters.count { it is Critter.Mouse })
         assertEquals(3, critters.count { it is Critter.Toad })
     }
@@ -42,14 +42,14 @@ class CritterSpawnerTest {
         spawner.reset()
         repeat(400) { spawner.update(0.1f, critters, score = 0, snakeHead = Vec2(arena.centerX, arena.centerY)) }
         assertEquals(1, critters.count { it is Critter.Bird })
-        repeat(400) { spawner.update(0.1f, critters, score = 40, snakeHead = Vec2(arena.centerX, arena.centerY)) }
+        repeat(400) { spawner.update(0.1f, critters, score = 4000, snakeHead = Vec2(arena.centerX, arena.centerY)) }
         assertEquals(2, critters.count { it is Critter.Bird })
     }
 
     @Test
     fun birdsStartOffTheScreen() {
         spawner.reset()
-        repeat(400) { spawner.update(0.1f, critters, score = 40) }
+        repeat(400) { spawner.update(0.1f, critters, score = 4000) }
         val birds = critters.filterIsInstance<Critter.Bird>()
         assertTrue(birds.isNotEmpty())
         assertTrue(birds.all { it.x < 0f || it.x > arena.width || it.y < 0f || it.y > arena.height })

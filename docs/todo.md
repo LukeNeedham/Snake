@@ -16,7 +16,7 @@ into its own doc when work on it starts.
   - The snake has a hunger bar that goes down at a steady rate.
   - A mouse fills it; a toad fills it too, but only a tiny bit.
   - When it reaches zero the snake dies. That is the reason to keep eating.
-  - The score stays (mice eaten), and the bar is shown on the screen.
+  - The score stays (a mouse is 100 points, a bird 150, a toad 0), and the bar is shown on the screen.
 - [x] **Sprint mode.**
   - The player can boost the snake to go faster by holding the sprint corner (bottom left, or right in the settings): it sprints for as long as the finger
     is held there, and stops as soon as it lets go.
@@ -26,7 +26,7 @@ into its own doc when work on it starts.
   (`BirdLanding` never picks a spot in front of the snake's mouth, and picks another one if the snake comes close while the bird is
   still coming down), hops and looks around, and flies off the moment the snake comes closer than the bird's alarm distance. It
   crouches for 0.3 seconds first, which is the only moment to catch it (a sprint lunge does it); it cannot be eaten in the air. Eating
-  one scores 2 and fills a little more of the hunger bar than a mouse, but the point of it is its power up.
+  one scores 150 and fills a little more of the hunger bar than a mouse, but the point of it is its power up.
 - [x] **Several kinds of birds, one power up each.** Small ones (blue tit, robin, sparrow) and large ones (blackbird, crow, pigeon), in
   `BirdKind`, each with its own sprites and colours (`BirdArt`, `BirdPalette`). The small ones are the most skittish.
 
