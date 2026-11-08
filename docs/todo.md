@@ -48,7 +48,7 @@ into its own doc when work on it starts.
   - **Sprinter** (robin): sprinting is faster and costs less hunger.
   - **Sneaky** (sparrow): mice and birds only notice the snake from closer.
   - **Big mouth** (blackbird): the snake eats from further away.
-  - **Toad-free** (crow): toads hop away from the snake.
+  - **Toad-free** (crow): toads hop away from the snake. This is being reworked (see "Toad-free" below).
   - **Mouse lure** (pigeon): more mice come, and faster. It is being renamed and reworked as Cheese (see "Cheese" below).
 - [x] **Power ups and downs stack.** They run at the same time, together with the effects of the toads (`Effect`), and each one
   runs out on its own. The screen shows all that is active: one bar for each, and a banner for the last one eaten.
@@ -57,6 +57,12 @@ into its own doc when work on it starts.
   the snake carries a little piece of cheese in its mouth (drawn in `SnakeHeadRenderer`), and mice run **towards** the snake instead of
   away from it (a mouse that sees the snake no longer flees: it runs at it, in `MouseGait`, through the `SnakeAura`). Decide whether it
   also keeps bringing more mice, as the pheromones do now, and whether a mouse is eaten when it reaches the cheese.
+- [ ] **Toad-free explodes the toads.** Eating the crow (`PowerUp.ToadRepellent`, "Toad-free!") makes every toad on the screen explode at
+  once (a burst of particles in each toad's colours with `ParticleSystem`, like the one when the snake dies, and the toads are removed
+  from the world), and while the power up is active no new toads come out of the grass (`CritterSpawner` skips the toad timer, and a
+  toad that is still coming in from the grass is blown up too). This replaces the toads hopping away from the snake: remove that
+  (`SnakeAura.repelsToads`, the scared hop in `ToadGait`, `CritterTuning.repelDistance` and their tests). Decide whether the toads that
+  explode feed the snake or score anything (probably not), and whether the toad timer carries on while it is off.
 - [ ] **Power-up polish.** Show the bigger mouth on the snake's head.
 
 ## Adventure mode
