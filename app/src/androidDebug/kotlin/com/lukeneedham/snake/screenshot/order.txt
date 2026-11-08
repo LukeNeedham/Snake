@@ -1,5 +1,6 @@
 GamePageReady
 GamePage
+GamePageBirds
 GamePageHallucinating
 GamePagePaused
 GamePageGameOver

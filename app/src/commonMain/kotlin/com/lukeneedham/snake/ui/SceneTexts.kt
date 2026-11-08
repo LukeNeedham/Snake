@@ -2,6 +2,7 @@ package com.lukeneedham.snake.ui
 
 import androidx.compose.runtime.Composable
 import com.lukeneedham.snake.game.Effect
+import com.lukeneedham.snake.game.PowerUp
 import com.lukeneedham.snake.generated.resources.Res
 import com.lukeneedham.snake.generated.resources.best_value
 import com.lukeneedham.snake.generated.resources.effect_confused
@@ -15,6 +16,12 @@ import com.lukeneedham.snake.generated.resources.menu_resume
 import com.lukeneedham.snake.generated.resources.menu_settings
 import com.lukeneedham.snake.generated.resources.new_best
 import com.lukeneedham.snake.generated.resources.paused
+import com.lukeneedham.snake.generated.resources.power_up_bigger_mouth
+import com.lukeneedham.snake.generated.resources.power_up_fast_sprint
+import com.lukeneedham.snake.generated.resources.power_up_pheromones
+import com.lukeneedham.snake.generated.resources.power_up_sneaky
+import com.lukeneedham.snake.generated.resources.power_up_toad_repellent
+import com.lukeneedham.snake.generated.resources.power_up_zoom
 import com.lukeneedham.snake.generated.resources.score_value
 import com.lukeneedham.snake.generated.resources.tap_to_retry
 import com.lukeneedham.snake.generated.resources.tap_to_start
@@ -41,6 +48,16 @@ internal fun sceneTexts(score: Int, bestScore: Int, isNewBest: Boolean): SceneTe
             Effect.Hallucinating -> stringResource(Res.string.effect_hallucinating)
             Effect.Disguised -> stringResource(Res.string.effect_disguised)
             Effect.Confused -> stringResource(Res.string.effect_confused)
+        }
+    },
+    powerUpNames = PowerUp.entries.map { powerUp ->
+        when (powerUp) {
+            PowerUp.Zoom -> stringResource(Res.string.power_up_zoom)
+            PowerUp.FastSprint -> stringResource(Res.string.power_up_fast_sprint)
+            PowerUp.Sneaky -> stringResource(Res.string.power_up_sneaky)
+            PowerUp.BiggerMouth -> stringResource(Res.string.power_up_bigger_mouth)
+            PowerUp.ToadRepellent -> stringResource(Res.string.power_up_toad_repellent)
+            PowerUp.Pheromones -> stringResource(Res.string.power_up_pheromones)
         }
     },
 )

@@ -18,9 +18,12 @@ internal class CritterCourse(var x: Float, var y: Float) {
     var directionY = 0f
         private set
 
-    fun moveAlong(speed: Float, dt: Float) {
-        x += directionX * speed * dt
-        y += directionY * speed * dt
+    fun moveAlong(speed: Float, dt: Float) = moveBy(speed * dt)
+
+    /** Moves [distance] along the direction. */
+    fun moveBy(distance: Float) {
+        x += directionX * distance
+        y += directionY * distance
     }
 
     fun lookTheOtherWay() {
@@ -52,6 +55,16 @@ internal class CritterCourse(var x: Float, var y: Float) {
         val dy = pointY - y
         return dx * facing > 0f && dx * dx + dy * dy < range * range
     }
+
+    /** Whether the point is closer than [range], in any direction. */
+    fun isNear(pointX: Float, pointY: Float, range: Float): Boolean {
+        val dx = pointX - x
+        val dy = pointY - y
+        return dx * dx + dy * dy < range * range
+    }
+
+    /** Turns to go straight towards the point. */
+    fun aimAt(targetX: Float, targetY: Float) = setDirection(targetX - x, targetY - y)
 
     /** Turns to go straight away from the point. */
     fun runAwayFrom(pointX: Float, pointY: Float) = setDirection(x - pointX, y - pointY)

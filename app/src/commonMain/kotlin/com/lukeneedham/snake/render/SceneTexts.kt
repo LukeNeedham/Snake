@@ -19,4 +19,6 @@ internal data class SceneTexts(
     val menuSettings: String,
     /** The name of each effect, in the order of the `Effect` entries. */
     val effectNames: List<String>,
+    /** The name of each power up, in the order of the `PowerUp` entries. */
+    val powerUpNames: List<String>,
 )

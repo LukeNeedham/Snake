@@ -22,25 +22,28 @@ into its own doc when work on it starts.
     is held there, and stops as soon as it lets go.
   - Sprinting drains the hunger bar faster.
   - A finger in the sprint corner never turns the snake; a tap anywhere else does. So one thumb sprints while the other turns.
-- [ ] **Birds.** A new kind of critter, with new sprites. Unlike the mice and toads they do not come out of the grass: they fly in
-  from off the screen and land anywhere in the oval (so they need a flying and a landing animation, and a take off). They are
-  extremely skittish: a bird flies off the moment the snake gets close, much sooner than a mouse runs, and it flies out of the
-  screen and is gone. Decide what eating one is worth.
+- [x] **Birds.** Done: `BirdBody` (with `BirdFlight` and `BirdPerch`) is a critter that flies in from off the screen, lands in the oval
+  (`BirdLanding` never picks a spot in front of the snake's mouth, and picks another one if the snake comes close while the bird is
+  still coming down), hops and looks around, and flies off the moment the snake comes closer than the bird's alarm distance. It
+  crouches for 0.3 seconds first, which is the only moment to catch it (a sprint lunge does it); it cannot be eaten in the air. Eating
+  one scores 2 and fills a little more of the hunger bar than a mouse, but the point of it is its power up.
+- [x] **Several kinds of birds, one power up each.** Small ones (blue tit, robin, sparrow) and large ones (blackbird, crow, pigeon), in
+  `BirdKind`, each with its own sprites and colours (`BirdArt`, `BirdPalette`). The small ones are the most skittish.
 
 ## Power ups
 
 - [ ] **Bunnies and ducks as real critters.** They were disguises of the vague critters, which are weird monsters now. Their
   sprites are in the git history (`SpriteArt.Bunny` and `SpriteArt.Chick`).
-- [ ] **Power-up critters.** Every so often a power-up critter arrives (it comes out of the grass like the mice and toads); eating
-  it gives the snake a power up for a short time:
-  - **Bigger mouth**: the snake eats from further away.
-  - **Faster sprint**: sprinting is faster, or costs less hunger.
-  - **Sneakier**: mice only run away when the snake is closer.
-  - **Mice pheromones**: more mice come, or they come towards the snake.
-  - **Toad repellent**: toads stay away from the snake.
-  - **Zoom**: the snake moves faster for a while. It used to be the orange toad's poison, which was more of a power up.
-- [ ] **Power ups and downs stack.** They run at the same time, together with the effects of the toads (`Effect`), and each one
-  runs out on its own. The screen shows all that is active.
+- [x] **Power-up critters.** The birds are the power ups (`PowerUp`, `PowerUpTracker`, `PowerUpBoosts`, numbers in `PowerUpTuning`):
+  - **Zoom** (blue tit): the snake moves faster.
+  - **Sprinter** (robin): sprinting is faster and costs less hunger.
+  - **Sneaky** (sparrow): mice and birds only notice the snake from closer.
+  - **Big mouth** (blackbird): the snake eats from further away.
+  - **Toad-free** (crow): toads hop away from the snake.
+  - **Mouse lure** (pigeon): more mice come, and faster. They do not come towards the snake yet.
+- [x] **Power ups and downs stack.** They run at the same time, together with the effects of the toads (`Effect`), and each one
+  runs out on its own. The screen shows all that is active: one bar for each, and a banner for the last one eaten.
+- [ ] **Power-up polish.** Show the bigger mouth on the snake's head, and let the mice come towards the snake with the pheromones.
 
 ## Adventure mode
 

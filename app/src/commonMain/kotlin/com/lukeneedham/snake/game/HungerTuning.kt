@@ -10,6 +10,9 @@ object HungerTuning {
 
     const val mouseFills = 0.3f
 
+    /** A bird is a little more than a mouse: it is the power up that counts. */
+    const val birdFills = 0.4f
+
     /** A toad is hardly a meal. */
     const val toadFills = 0.05f
 
