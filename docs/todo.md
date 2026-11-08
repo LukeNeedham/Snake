@@ -49,10 +49,15 @@ into its own doc when work on it starts.
   - **Sneaky** (sparrow): mice and birds only notice the snake from closer.
   - **Big mouth** (blackbird): the snake eats from further away.
   - **Toad-free** (crow): toads hop away from the snake.
-  - **Mouse lure** (pigeon): more mice come, and faster. They do not come towards the snake yet.
+  - **Mouse lure** (pigeon): more mice come, and faster. It is being renamed and reworked as Cheese (see "Cheese" below).
 - [x] **Power ups and downs stack.** They run at the same time, together with the effects of the toads (`Effect`), and each one
   runs out on its own. The screen shows all that is active: one bar for each, and a banner for the last one eaten.
-- [ ] **Power-up polish.** Show the bigger mouth on the snake's head, and let the mice come towards the snake with the pheromones.
+- [ ] **Cheese.** The mouse power up (the pigeon's, `PowerUp.Pheromones`) is called **Cheese**, not "mouse lure": rename it everywhere
+  (the enum entry, `PowerUpBoosts.attractsMice`, `power_up_pheromones`, the banner "Mouse lure!", the tests and `readme.yml`). While it is on,
+  the snake carries a little piece of cheese in its mouth (drawn in `SnakeHeadRenderer`), and mice run **towards** the snake instead of
+  away from it (a mouse that sees the snake no longer flees: it runs at it, in `MouseGait`, through the `SnakeAura`). Decide whether it
+  also keeps bringing more mice, as the pheromones do now, and whether a mouse is eaten when it reaches the cheese.
+- [ ] **Power-up polish.** Show the bigger mouth on the snake's head.
 
 ## Adventure mode
 
