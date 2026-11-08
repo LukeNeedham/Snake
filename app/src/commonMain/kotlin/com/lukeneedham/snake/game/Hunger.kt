@@ -6,7 +6,7 @@ import kotlin.math.min
 /**
  * How full the snake is: the bar goes down at a steady rate, faster while it sprints, and the snake dies when it is empty.
  * What was just eaten does not fill the bar at once: it shows as a [gain] on top of the [filled] part for a moment, and then the
- * bar fills up into it, so that it is clear how much the food was worth.
+ * bar fills up into it, so that it is clear how much the food was worth. The bar does not drain until it has filled up.
  */
 class Hunger {
     /** 1 when full, 0 when starved: the real value, which already counts what was just eaten. */
@@ -28,10 +28,13 @@ class Hunger {
 
     /** [sprintLevel] is 0 when the snake does not sprint, 1 when it sprints flat out. */
     fun update(dt: Float, sprintLevel: Float) {
-        val rate = HungerTuning.drainPerSecond * (1f + (HungerTuning.sprintDrainFactor - 1f) * sprintLevel)
-        level = max(0f, level - rate * dt)
-        if (filled > level) filled = level
-        if (filled < level) fillIn(dt)
+        if (filled < level) {
+            fillIn(dt)
+        } else {
+            val rate = HungerTuning.drainPerSecond * (1f + (HungerTuning.sprintDrainFactor - 1f) * sprintLevel)
+            level = max(0f, level - rate * dt)
+            filled = level
+        }
     }
 
     fun feed(amount: Float) {

@@ -80,21 +80,38 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
         phase = GamePhase.Paused
         isMenuOpen = true
         sprint.clear()
+        redraw()
     }
 
     fun resume() {
         if (phase != GamePhase.Paused) return
         phase = GamePhase.Playing
         isMenuOpen = false
+        redraw()
     }
 
     /** Opens the menu: a game that is being played is paused, the title and game over screens just show it over them. */
     fun openMenu() {
-        if (phase == GamePhase.Playing) pause() else if (phase != GamePhase.Paused) isMenuOpen = true
+        if (phase == GamePhase.Playing) {
+            pause()
+        } else if (phase != GamePhase.Paused) {
+            isMenuOpen = true
+            redraw()
+        }
     }
 
     fun closeMenu() {
-        if (phase == GamePhase.Paused) resume() else isMenuOpen = false
+        if (phase == GamePhase.Paused) {
+            resume()
+        } else {
+            isMenuOpen = false
+            redraw()
+        }
+    }
+
+    /** A paused world is not stepped, so the drawing is told by hand to draw again when the menu opens or closes. */
+    private fun redraw() {
+        tick++
     }
 
     /** Turn the other way: a tap anywhere but in the [SprintZone]. A confused snake ignores it. */

@@ -15,14 +15,15 @@ internal enum class SpriteArt(val rows: List<String>) {
     ),
     Toad(
         listOf(
-            "....oo.ooo..",
-            "...owwowwwo.",
-            "...owwoweeo.",
-            "..ooobbbbboo",
-            ".obbbbbbbbbo",
-            "obbddbbbbllo",
-            "obdddbblllo.",
-            ".oooo.ooooo.",
+            ".......oo.oo",
+            "......owwowe",
+            "......obbobb",
+            "..oooobbbbbo",
+            ".obbbbbbbbbe",
+            "obbbbbblllo.",
+            "obdbbblllllo",
+            "oddobblllo..",
+            ".ooo.oooo...",
         ),
     ),
     Beetle(

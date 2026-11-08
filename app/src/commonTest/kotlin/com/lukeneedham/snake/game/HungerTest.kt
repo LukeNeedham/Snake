@@ -102,4 +102,43 @@ class HungerTest {
         hunger.feed(0.1f)
         assertEquals(0.2f, hunger.gain, 1e-4f)
     }
+
+    @Test
+    fun theBarDoesNotDrainWhileAMealIsFillingIn() {
+        val hunger = Hunger()
+        hunger.update(20f, sprintLevel = 0f)
+        hunger.feed(HungerTuning.mouseFills)
+        val level = hunger.level
+        // The moment the gain is shown, and then while it fills in
+        var seconds = 0f
+        while (hunger.gain > 0f && seconds < 10f) {
+            hunger.update(0.05f, sprintLevel = 0f)
+            seconds += 0.05f
+            if (hunger.gain > 0f) assertEquals(level, hunger.level, 1e-6f)
+        }
+        assertEquals(0f, hunger.gain, 1e-6f)
+        assertTrue(seconds < 10f)
+    }
+
+    @Test
+    fun theBarDrainsAgainOnceItHasFilledIn() {
+        val hunger = Hunger()
+        hunger.update(20f, sprintLevel = 0f)
+        hunger.feed(HungerTuning.mouseFills)
+        repeat(100) { hunger.update(0.05f, sprintLevel = 0f) }
+        val full = hunger.level
+        hunger.update(1f, sprintLevel = 0f)
+        assertTrue(hunger.level < full)
+        assertEquals(hunger.level, hunger.filled, 1e-6f)
+    }
+
+    @Test
+    fun sprintingDoesNotDrainTheBarWhileAMealIsFillingInEither() {
+        val hunger = Hunger()
+        hunger.update(20f, sprintLevel = 0f)
+        hunger.feed(HungerTuning.mouseFills)
+        val level = hunger.level
+        hunger.update(0.1f, sprintLevel = 1f)
+        assertEquals(level, hunger.level, 1e-6f)
+    }
 }

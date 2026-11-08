@@ -255,4 +255,27 @@ class GameWorldTest {
     fun theSprintCornerIsOnTheLeftUnlessSetOtherwise() {
         assertEquals(SprintSide.Left, newWorld().sprintSide)
     }
+
+    @Test
+    fun openingAndClosingTheMenuMakesTheSceneDrawAgain() {
+        // A paused world is not stepped, so nothing else tells the drawing that the menu is there
+        val world = newWorld()
+        world.start()
+        world.update(1f / 60f)
+        val beforeOpening = world.tick
+        world.openMenu()
+        assertTrue(world.tick > beforeOpening)
+        world.update(1f / 60f)
+        val beforeClosing = world.tick
+        world.closeMenu()
+        assertTrue(world.tick > beforeClosing)
+    }
+
+    @Test
+    fun theMenuOfTheTitleScreenMakesTheSceneDrawAgainToo() {
+        val world = newWorld()
+        val before = world.tick
+        world.openMenu()
+        assertTrue(world.tick > before)
+    }
 }
