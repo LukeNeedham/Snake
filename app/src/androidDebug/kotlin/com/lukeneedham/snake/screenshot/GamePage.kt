@@ -11,22 +11,22 @@ import com.lukeneedham.snake.ui.GameUiState
 import com.lukeneedham.snake.ui.theme.AppTheme
 
 /** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageReady.png. */
-@Preview(widthDp = 360, heightDp = 780)
+@Preview(widthDp = 360, heightDp = 800)
 @Composable
 private fun GamePageReadyScreenshot() {
     val world = remember {
-        GameWorld(Arena(108f, 234f), seed = 7).also { repeat(150) { _ -> it.update(1f / 60f) } }
+        GameWorld(Arena(108f, 240f), seed = 7).also { repeat(150) { _ -> it.update(1f / 60f) } }
     }
     val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
     AppTheme { GamePageContent(state = state, onTap = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
 }
 
 /** Rendered by CI to docs/screenshots/<position in order.txt>-GamePage.png. */
-@Preview(widthDp = 360, heightDp = 780)
+@Preview(widthDp = 360, heightDp = 800)
 @Composable
 private fun GamePageScreenshot() {
     val world = remember {
-        GameWorld(Arena(108f, 234f), seed = 7).also {
+        GameWorld(Arena(108f, 240f), seed = 7).also {
             it.start()
             repeat(720) { _ -> it.update(1f / 60f) }
             it.score = 7
@@ -37,11 +37,11 @@ private fun GamePageScreenshot() {
 }
 
 /** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageHallucinating.png. */
-@Preview(widthDp = 360, heightDp = 780)
+@Preview(widthDp = 360, heightDp = 800)
 @Composable
 private fun GamePageHallucinatingScreenshot() {
     val world = remember {
-        GameWorld(Arena(108f, 234f), seed = 7).also {
+        GameWorld(Arena(108f, 240f), seed = 7).also {
             it.start()
             repeat(720) { _ -> it.update(1f / 60f) }
             it.score = 7
@@ -54,11 +54,11 @@ private fun GamePageHallucinatingScreenshot() {
 }
 
 /** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageGameOver.png. */
-@Preview(widthDp = 360, heightDp = 780)
+@Preview(widthDp = 360, heightDp = 800)
 @Composable
 private fun GamePageGameOverScreenshot() {
     val world = remember {
-        GameWorld(Arena(108f, 234f), seed = 7).also {
+        GameWorld(Arena(108f, 240f), seed = 7).also {
             it.start()
             repeat(720) { _ -> it.update(1f / 60f) }
             it.score = 13
