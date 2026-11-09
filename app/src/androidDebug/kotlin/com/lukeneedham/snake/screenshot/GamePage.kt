@@ -173,6 +173,118 @@ private fun GameTutorialBirdScreenshot() {
     AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
 }
 
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GameTutorialWaking.png. */
+@Preview(widthDp = 360, heightDp = 800)
+@Composable
+private fun GameTutorialWakingScreenshot() {
+    // The snake wakes up, with its eyes open after the first blink
+    val world = remember {
+        GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Tutorial).also {
+            it.start()
+            repeat(60) { _ -> it.update(1f / 60f) }
+        }
+    }
+    val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
+    AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
+}
+
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GameTutorialTasting.png. */
+@Preview(widthDp = 360, heightDp = 800)
+@Composable
+private fun GameTutorialTastingScreenshot() {
+    // The snake sticks its tongue out
+    val world = remember {
+        GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Tutorial).also {
+            it.start()
+            repeat(138) { _ -> it.update(1f / 60f) }
+        }
+    }
+    val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
+    AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
+}
+
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GameTutorialPopped.png. */
+@Preview(widthDp = 360, heightDp = 800)
+@Composable
+private fun GameTutorialPoppedScreenshot() {
+    // The big bubble pops, and the snake starts to turn
+    val world = remember {
+        GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Tutorial).also {
+            it.start()
+            repeat(570) { _ -> it.update(1f / 60f) }
+        }
+    }
+    val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
+    AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
+}
+
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GameTutorialZoomed.png. */
+@Preview(widthDp = 360, heightDp = 800)
+@Composable
+private fun GameTutorialZoomedScreenshot() {
+    // The snake has sprinted for long enough, and the words say that zooming makes it hungry
+    val world = remember {
+        GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Tutorial).also {
+            it.start()
+            it.jumpToLesson(IntroStage.Sprint)
+            it.introPress(7L, isInSprintZone = true)
+            repeat(135) { _ -> it.update(1f / 60f) }
+        }
+    }
+    val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
+    AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
+}
+
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GameTutorialDizzy.png. */
+@Preview(widthDp = 360, heightDp = 800)
+@Composable
+private fun GameTutorialDizzyScreenshot() {
+    // The snake has eaten the pink toad: it is dizzy, and the words say that toads poison
+    val world = remember {
+        GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Tutorial).also {
+            it.start()
+            it.jumpToLesson(IntroStage.Dizzy)
+            it.applyEffect(ToadKind.Pink)
+            repeat(30) { _ -> it.update(1f / 60f) }
+        }
+    }
+    val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
+    AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
+}
+
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GameTutorialPowers.png. */
+@Preview(widthDp = 360, heightDp = 800)
+@Composable
+private fun GameTutorialPowersScreenshot() {
+    // The snake has eaten the bird: it has the power, and the words say that birds give powers
+    val world = remember {
+        GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Tutorial).also {
+            it.start()
+            it.jumpToLesson(IntroStage.Powers)
+            it.powerUps.apply(BirdKind.BlueTit)
+            repeat(30) { _ -> it.update(1f / 60f) }
+        }
+    }
+    val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
+    AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
+}
+
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GameTutorialReturn.png. */
+@Preview(widthDp = 360, heightDp = 800)
+@Composable
+private fun GameTutorialReturnScreenshot() {
+    // All is learned: an arrow shows the way back to the house
+    val world = remember {
+        GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Tutorial).also {
+            it.start()
+            it.jumpToLesson(IntroStage.Return)
+            repeat(30) { _ -> it.update(1f / 60f) }
+        }
+    }
+    val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
+    AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
+}
+
 /** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageLeaving.png. */
 @Preview(widthDp = 360, heightDp = 800)
 @Composable
