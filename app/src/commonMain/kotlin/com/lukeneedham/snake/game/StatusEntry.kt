@@ -20,11 +20,11 @@ object ActiveStatuses {
         val entries = ArrayList<StatusEntry>()
         for (powerDown in PowerDown.entries) {
             val remaining = powerDowns.remaining(powerDown)
-            if (remaining > 0f) entries.add(StatusEntry(powerDown, null, remaining, powerDown.durationSeconds))
+            if (remaining > 0f) entries.add(StatusEntry(powerDown, null, remaining, powerDowns.duration(powerDown)))
         }
         for (powerUp in PowerUp.entries) {
             val remaining = powerUps.remaining(powerUp)
-            if (remaining > 0f) entries.add(StatusEntry(null, powerUp, remaining, powerUp.durationSeconds))
+            if (remaining > 0f) entries.add(StatusEntry(null, powerUp, remaining, powerUps.duration(powerUp)))
         }
         return entries
     }

@@ -64,8 +64,9 @@ internal fun createSealPatch(layout: WorldLayout, density: Density, layoutDirect
     val halfWidth = (DenTuning.pathHalfWidth + sealMargin).toInt()
     val left = arena.centerX.toInt() - halfWidth
     val width = halfWidth * 2
-    val top = (arena.height - sealAbove).toInt()
-    val height = (arena.height + sealBelow).toInt() - top
+    val bottom = arena.ovalBottom + WorldTuning.grassDepth
+    val top = (bottom - sealAbove).toInt()
+    val height = (bottom + sealBelow).toInt() - top
     val terrain = layout.sealedTerrain
     val area = (width * height).toFloat() / (arena.width * arena.height)
 

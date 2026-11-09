@@ -9,13 +9,13 @@ import kotlin.random.Random
 /** Where a bird lands: anywhere in the oval, but never right in front of the snake's mouth. */
 internal object BirdLanding {
 
-    /** A spot in the oval that is at least [BirdTuning.landClearance] from [head] if one is found in a few tries, else the furthest one tried. */
-    fun spot(arena: Arena, random: Random, head: Vec2?): Vec2 {
+    /** A spot in the oval that is at least [clearance] from [head] if one is found in a few tries, else the furthest one tried. */
+    fun spot(arena: Arena, random: Random, head: Vec2?, clearance: Float = BirdTuning.landClearance): Vec2 {
         var best = candidate(arena, random)
         if (head == null) return best
         var bestDistance = distance(best.x, best.y, head)
         var attempts = 0
-        while (bestDistance < BirdTuning.landClearance && attempts < BirdTuning.landingAttempts) {
+        while (bestDistance < clearance && attempts < BirdTuning.landingAttempts) {
             val next = candidate(arena, random)
             val nextDistance = distance(next.x, next.y, head)
             if (nextDistance > bestDistance) {
@@ -28,7 +28,8 @@ internal object BirdLanding {
     }
 
     /** Whether the snake's [head] is too close to the spot for a bird to land there. */
-    fun isTooClose(x: Float, y: Float, head: Vec2): Boolean = distance(x, y, head) < BirdTuning.landClearance
+    fun isTooClose(x: Float, y: Float, head: Vec2, clearance: Float = BirdTuning.landClearance): Boolean =
+        distance(x, y, head) < clearance
 
     private fun candidate(arena: Arena, random: Random): Vec2 {
         val angle = random.nextFloat() * 2f * PI.toFloat()

@@ -5,7 +5,7 @@ import kotlin.math.sin
 import kotlin.random.Random
 
 /** A toad sits still, then hops a short way in a random direction. */
-internal class ToadGait(private val course: CritterCourse, private val visit: CritterVisit) {
+internal class ToadGait(private val course: CritterCourse, private val visit: CritterVisit, private val rules: ToadRules = ToadRules.standard) {
 
     var isHopping = false
         private set
@@ -29,7 +29,7 @@ internal class ToadGait(private val course: CritterCourse, private val visit: Cr
     private fun hop(dt: Float, random: Random) {
         hopTime += dt
         course.moveAlong(hopSpeed, dt)
-        val progress = (hopTime / CritterTuning.hopDuration).coerceAtMost(1f)
+        val progress = (hopTime / rules.hopDuration).coerceAtMost(1f)
         height = sin(PI.toFloat() * progress) * CritterTuning.hopHeight
         if (progress >= 1f) {
             isHopping = false
@@ -42,7 +42,7 @@ internal class ToadGait(private val course: CritterCourse, private val visit: Cr
     private fun startHop(arena: Arena, random: Random) {
         course.chooseDirection(visit.mode, arena, random)
         val distance = if (visit.mode == CritterMode.Roaming) 5f + random.nextFloat() * 7f else 9f
-        hopSpeed = distance / CritterTuning.hopDuration
+        hopSpeed = distance / rules.hopDuration
         hopTime = 0f
         isHopping = true
     }

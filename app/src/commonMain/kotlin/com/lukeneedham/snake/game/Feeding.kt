@@ -19,7 +19,7 @@ class Feeding(private val ground: Bounds) {
         }
         val mouthX = snake.x + cos(snake.heading) * SnakeTuning.mouthReach
         val mouthY = snake.y + sin(snake.heading) * SnakeTuning.mouthReach
-        val eatRadius = SnakeTuning.eatRadius * reachFactor
+        val eatRadius = snake.rules.eatRadius * reachFactor
         val eatLimit = eatRadius * eatRadius
         val openLimit = openRange * reachFactor
         val eaten = ArrayList<Critter>()

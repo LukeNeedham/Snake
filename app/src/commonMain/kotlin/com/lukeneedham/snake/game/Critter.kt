@@ -4,15 +4,15 @@ package com.lukeneedham.snake.game
 sealed interface Critter : CritterBody {
     val id: Int
 
-    /** Runs fast for a moment (as fast as the level makes it, by its [speedFactor]), stands still and looks around, then runs again. */
-    class Mouse(override val id: Int, x: Float, y: Float, lifetime: Float, tameTarget: Vec2? = null, speedFactor: Float = 1f) :
+    /** Runs fast for a moment (as fast as the level makes it, by its [rules]), stands still and looks around, then runs again. */
+    class Mouse(override val id: Int, x: Float, y: Float, lifetime: Float, tameTarget: Vec2? = null, rules: MouseRules = MouseRules.standard) :
         Critter,
-        CritterBody by MouseBody(x, y, lifetime, tameTarget, speedFactor)
+        CritterBody by MouseBody(x, y, lifetime, tameTarget, rules)
 
     /** Sits still, then hops a short way in a random direction. Eating one has the power down of its [kind]. */
-    class Toad(override val id: Int, val kind: ToadKind, x: Float, y: Float, lifetime: Float, tameTarget: Vec2? = null) :
+    class Toad(override val id: Int, val kind: ToadKind, x: Float, y: Float, lifetime: Float, tameTarget: Vec2? = null, rules: ToadRules = ToadRules.standard) :
         Critter,
-        CritterBody by ToadBody(x, y, lifetime, tameTarget)
+        CritterBody by ToadBody(x, y, lifetime, tameTarget, rules)
 
     /**
      * Flies in from off the screen at [x], [y] and lands at [landX], [landY], stays for [staySeconds], and flies off. It flies off
@@ -31,6 +31,7 @@ sealed interface Critter : CritterBody {
         staySeconds: Float,
         isLanded: Boolean = false,
         isTame: Boolean = false,
+        rules: BirdRules = BirdRules.standard,
     ) : Critter,
-        CritterBody by BirdBody(x, y, landX, landY, kind.alarmDistance, staySeconds, isLanded, isTame)
+        CritterBody by BirdBody(x, y, landX, landY, kind.alarmDistance, staySeconds, isLanded, isTame, rules)
 }

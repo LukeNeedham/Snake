@@ -10,10 +10,10 @@ import kotlin.random.Random
  * The body of a toad: it sits still, then hops a short way in a random direction. A toad with a [tameTarget] (the one of the lesson of
  * the poison) only hops to it, and stays there.
  */
-internal class ToadBody(x: Float, y: Float, lifetime: Float, private val tameTarget: Vec2? = null) : CritterBody {
+internal class ToadBody(x: Float, y: Float, lifetime: Float, private val tameTarget: Vec2? = null, private val rules: ToadRules = ToadRules.standard) : CritterBody {
     private val course = CritterCourse(x, y)
     private val visit = CritterVisit(lifetime)
-    private val gait = ToadGait(course, visit)
+    private val gait = ToadGait(course, visit, rules)
 
     private var isTameHopping = false
     private var tameHeight = 0f
@@ -49,7 +49,7 @@ internal class ToadBody(x: Float, y: Float, lifetime: Float, private val tameTar
         if (isTameHopping) {
             tameHopTime += dt
             course.moveAlong(tameHopSpeed, dt)
-            val progress = min(1f, tameHopTime / CritterTuning.hopDuration)
+            val progress = min(1f, tameHopTime / rules.hopDuration)
             tameHeight = sin(PI.toFloat() * progress) * CritterTuning.hopHeight
             if (progress >= 1f) {
                 isTameHopping = false
@@ -66,7 +66,7 @@ internal class ToadBody(x: Float, y: Float, lifetime: Float, private val tameTar
         tameRest -= dt
         if (tameRest > 0f) return
         course.aimAt(target.x, target.y)
-        tameHopSpeed = min(hopLength, distance) / CritterTuning.hopDuration
+        tameHopSpeed = min(hopLength, distance) / rules.hopDuration
         tameHopTime = 0f
         isTameHopping = true
     }

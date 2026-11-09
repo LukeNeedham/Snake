@@ -19,9 +19,10 @@ internal class BirdBody(
     staySeconds: Float,
     isLanded: Boolean,
     private val isTame: Boolean = false,
+    private val rules: BirdRules = BirdRules.standard,
 ) : CritterBody {
     private val course = CritterCourse(x, y)
-    private val flight = BirdFlight(course, landX, landY)
+    private val flight = BirdFlight(course, landX, landY, rules)
     private val perch = BirdPerch(course, staySeconds)
     private var phase = if (isLanded) BirdPhase.Perched else BirdPhase.Arriving
     private var crouchTime = 0f
@@ -45,7 +46,7 @@ internal class BirdBody(
     override var landed = false
     override val isGone: Boolean get() = flight.isOut
     override val isAirborne: Boolean get() = phase == BirdPhase.Arriving || phase == BirdPhase.Leaving
-    override val isEdible: Boolean get() = height <= BirdTuning.eatHeight
+    override val isEdible: Boolean get() = height <= rules.eatHeight
 
     override fun update(dt: Float, arena: Arena, random: Random, snakeHead: Vec2?, aura: SnakeAura) {
         when (phase) {
@@ -71,7 +72,7 @@ internal class BirdBody(
         if (snakeHead != null && course.isNear(snakeHead.x, snakeHead.y, alarmDistance * aura.noticeScale)) {
             perch.freeze()
             flight.pointAwayFrom(snakeHead)
-            crouchTime = BirdTuning.reactionSeconds
+            crouchTime = rules.reactionSeconds
             phase = BirdPhase.Startled
         } else if (perch.isDone) {
             perch.freeze()

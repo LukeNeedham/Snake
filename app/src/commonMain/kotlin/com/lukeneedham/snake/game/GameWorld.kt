@@ -21,7 +21,10 @@ import kotlin.random.Random
  * the path up is blocked by stones, and the snake has to go to the room of the tutorial, to the left, where the lessons are, and come back.
  * The snake can go anywhere on the map ([WorldLayout]); going into the room of the tutorial again teaches the lessons again.
  */
-class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.Oval, val level: LevelConfig = LevelConfig.first) {
+class GameWorld(screen: Arena, seed: Int = 1, val opening: Opening = Opening.Oval, val level: LevelConfig = LevelConfig.first) {
+
+    /** The screen, with the oval of the stage of the [level]. */
+    val arena: Arena = screen.shaped(level.stageShape)
 
     private val hasIntro = opening != Opening.Oval
 
@@ -87,7 +90,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     var hasCompletedTutorial = false
         private set
 
-    var snake: Snake = if (hasIntro) layout.curledSnake() else Snake(arena, layout.ground)
+    var snake: Snake = if (hasIntro) layout.curledSnake(level.snake) else Snake(arena, layout.ground, rules = level.snake)
         private set
 
     /** The world x and y at the top left of the screen: the screen shows the stage, unless the snake is on the path or in the house or the room, and the camera follows it. */
@@ -136,13 +139,13 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
 
     /** The animals that are out of the grass, in the oval or on their way. */
     val critters: List<Critter> get() = mutableCritters
-    val powerDowns = PowerDownTracker()
-    val powerUps = PowerUpTracker()
+    val powerDowns = PowerDownTracker(level.powerDowns)
+    val powerUps = PowerUpTracker(level.powerUps)
 
     /** The power downs and power ups that are on. */
     val statuses: List<StatusEntry> get() = ActiveStatuses.of(powerDowns, powerUps)
-    private val boosts = PowerUpBoosts(powerUps)
-    val hunger = Hunger()
+    private val boosts = PowerUpBoosts(powerUps, level)
+    val hunger = Hunger(level.hunger.lowLevel)
     val sprint = SprintControl()
 
     private val random = Random(seed)
@@ -390,12 +393,12 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
         director.jumpTo(stage)
         if (stage == IntroStage.Leaving) {
             layout.isGateClosed = false
-            snake = layout.curledSnake()
+            snake = layout.curledSnake(level.snake)
             room = Room.House
             isRoomView = false
             cameraX = 0f
         } else {
-            snake = layout.snakeInRoom()
+            snake = layout.snakeInRoom(level.snake)
             room = Room.Tutorial
             isRoomView = true
             cameraX = layout.roomCameraX
@@ -497,7 +500,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
             HungerMode.Full -> hunger.refill()
             HungerMode.Manual -> if (phase == GamePhase.Playing) hunger.settle(dt)
             HungerMode.Drains -> if (phase == GamePhase.Playing) {
-                hunger.update(dt, sprint.level, boosts.sprintDrainFactor, ravenousFactor(), roomConfig.level.hungerDrainPerSecond)
+                hunger.update(dt, sprint.level, boosts.sprintDrainFactor, ravenousFactor(), roomConfig.level.hunger.drainPerSecond)
             }
         }
     }
@@ -567,15 +570,15 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     }
 
     /** How much of the bar [amount] of food fills right now: a greedy snake gets only part of it. */
-    fun foodValue(amount: Float): Float = if (powerDowns.isOn(PowerDown.Greedy)) amount * PowerDownTuning.greedyFeedFactor else amount
+    fun foodValue(amount: Float): Float = if (powerDowns.isOn(PowerDown.Greedy)) amount * level.powerDowns.greedyFeedFactor else amount
 
     private fun feed(amount: Float) = hunger.feed(foodValue(amount))
 
     /** Ravenous makes the hunger bar drain faster, and fades in and out like its arrow. */
-    private fun ravenousFactor(): Float = 1f + (PowerDownTuning.ravenousDrainFactor - 1f) * powerDowns.level(PowerDown.Ravenous)
+    private fun ravenousFactor(): Float = 1f + (level.powerDowns.ravenousDrainFactor - 1f) * powerDowns.level(PowerDown.Ravenous)
 
     /** Lazy slows the snake down, and fades in and out like its bar. */
-    private fun lazyFactor(): Float = 1f + (PowerDownTuning.lazySpeedFactor - 1f) * powerDowns.level(PowerDown.Lazy)
+    private fun lazyFactor(): Float = 1f + (level.powerDowns.lazySpeedFactor - 1f) * powerDowns.level(PowerDown.Lazy)
 
     /** What kills the snake right now, if anything. */
     private fun causeOfDeath(touchedGrass: Boolean): DeathCause? = when {
@@ -618,33 +621,33 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     private fun eat(critter: Critter) {
         when (critter) {
             is Critter.Mouse -> {
-                score += ScoreTuning.mouse
-                feed(HungerTuning.mouseFills)
+                score += level.score.mouse
+                feed(level.hunger.mouseFills)
                 snake.grow(1)
                 snake.addBulge()
-                particleSystem.floatText("+${ScoreTuning.mouse}", snake.x, snake.y - 6f, Color(0xFFFFF3B0))
+                particleSystem.floatText("+${level.score.mouse}", snake.x, snake.y - 6f, Color(0xFFFFF3B0))
                 particleSystem.sparkles(
                     critter.x, critter.y - 3f, 9,
                     listOf(Color(0xFFFFFFFF), Color(0xFFF28FA9), Color(0xFFFFF3B0)),
                 )
             }
             is Critter.Bird -> {
-                score += ScoreTuning.bird
-                feed(HungerTuning.birdFills)
+                score += level.score.bird
+                feed(level.hunger.birdFills)
                 powerUps.apply(critter.kind)
                 if (critter.kind.powerUp == PowerUp.ToadFree) toadBlast.blowUp(mutableCritters)
                 snake.grow(1)
                 snake.addBulge()
-                particleSystem.floatText("+${ScoreTuning.bird}", snake.x, snake.y - 6f, Color(0xFFFFF3B0))
+                particleSystem.floatText("+${level.score.bird}", snake.x, snake.y - 6f, Color(0xFFFFF3B0))
                 particleSystem.sparkles(
                     critter.x, critter.y - 3f, 14,
                     listOf(Color(0xFFFFFFFF), Color(0xFFF4D35E), Color(0xFFA6EDE2)),
                 )
             }
             is Critter.Toad -> {
-                score += ScoreTuning.toad
+                score += level.score.toad
                 powerDowns.apply(critter.kind)
-                feed(HungerTuning.toadFills)
+                feed(level.hunger.toadFills)
                 particleSystem.sparkles(
                     critter.x, critter.y - 3f, 12,
                     listOf(critter.kind.body, critter.kind.light, Color(0xFFFFFFFF)),

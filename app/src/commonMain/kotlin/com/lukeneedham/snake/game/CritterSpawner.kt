@@ -16,9 +16,9 @@ class CritterSpawner(private val arena: Arena, private val random: Random, priva
 
     /** Called when the game starts: the first mouse comes quickly, the first toad later, and the first bird later still. */
     fun reset() {
-        mouseTimer = level.mice.firstDelay
-        toadTimer = level.toads.firstDelay
-        birdTimer = level.firstBirdDelay
+        mouseTimer = level.mice.spawn.firstDelay
+        toadTimer = level.toads.spawn.firstDelay
+        birdTimer = level.birds.firstDelay
     }
 
     /**
@@ -34,45 +34,45 @@ class CritterSpawner(private val arena: Arena, private val random: Random, priva
         attractsMice: Boolean = false,
         allowsToads: Boolean = true,
     ) {
-        mouseTimer -= if (attractsMice) dt * PowerUpTuning.cheeseSpawnFactor else dt
+        mouseTimer -= if (attractsMice) dt * level.powerUps.cheeseSpawnFactor else dt
         if (allowsToads) toadTimer -= dt
         birdTimer -= dt
         val mice = critters.count { it is Critter.Mouse }
         val toads = critters.count { it is Critter.Toad }
         val birds = critters.count { it is Critter.Bird }
-        val extraMice = if (attractsMice) PowerUpTuning.cheeseExtraMice else 0
-        if (mice < min(1 + score / level.mice.pointsPerExtra, level.mice.most) + extraMice && mouseTimer <= 0f) {
+        val extraMice = if (attractsMice) level.powerUps.cheeseExtraMice else 0
+        if (mice < min(1 + score / level.mice.spawn.pointsPerExtra, level.mice.spawn.most) + extraMice && mouseTimer <= 0f) {
             critters.add(newMouse())
-            mouseTimer = between(level.mice.delayMin, level.mice.delayMax)
+            mouseTimer = between(level.mice.spawn.delayMin, level.mice.spawn.delayMax)
         }
-        if (allowsToads && toads < min(1 + score / level.toads.pointsPerExtra, level.toads.most) && toadTimer <= 0f) {
+        if (allowsToads && toads < min(1 + score / level.toads.spawn.pointsPerExtra, level.toads.spawn.most) && toadTimer <= 0f) {
             critters.add(newToad())
-            toadTimer = between(level.toads.delayMin, level.toads.delayMax)
+            toadTimer = between(level.toads.spawn.delayMin, level.toads.spawn.delayMax)
         }
-        if (birds == 0 && score >= level.firstBirdScore && birdTimer <= 0f) {
+        if (birds == 0 && score >= level.birds.firstScore && birdTimer <= 0f) {
             critters.add(newBird(snakeHead))
-            birdTimer = between(level.birdDelayMin, level.birdDelayMax)
+            birdTimer = between(level.birds.delayMin, level.birds.delayMax)
         }
     }
 
     private fun newMouse(): Critter {
         val spot = spotInTheGrass()
-        return Critter.Mouse(nextId++, spot.x, spot.y, lifetime(), speedFactor = level.mouseSpeedFactor)
+        return Critter.Mouse(nextId++, spot.x, spot.y, lifetime(level.mice.spawn), rules = level.mice)
     }
 
     private fun newToad(): Critter {
         val spot = spotInTheGrass()
-        val kind = level.toadKinds[random.nextInt(level.toadKinds.size)]
-        return Critter.Toad(nextId++, kind, spot.x, spot.y, lifetime())
+        val kind = level.toads.kinds[random.nextInt(level.toads.kinds.size)]
+        return Critter.Toad(nextId++, kind, spot.x, spot.y, lifetime(level.toads.spawn), rules = level.toads)
     }
 
     /** A bird starts off the screen and flies to a spot in the oval that is not close to the snake. */
     private fun newBird(snakeHead: Vec2?): Critter {
         val kind = BirdKind.entries[random.nextInt(BirdKind.entries.size)]
         val from = spotOffTheScreen()
-        val landing = BirdLanding.spot(arena, random, snakeHead)
-        val stay = between(BirdTuning.staySecondsMin, BirdTuning.staySecondsMax)
-        return Critter.Bird(nextId++, kind, from.x, from.y, landing.x, landing.y, stay)
+        val landing = BirdLanding.spot(arena, random, snakeHead, level.birds.landClearance)
+        val stay = between(level.birds.staySecondsMin, level.birds.staySecondsMax)
+        return Critter.Bird(nextId++, kind, from.x, from.y, landing.x, landing.y, stay, rules = level.birds)
     }
 
     private fun spotOffTheScreen(): Vec2 {
@@ -86,7 +86,7 @@ class CritterSpawner(private val arena: Arena, private val random: Random, priva
         }
     }
 
-    private fun lifetime(): Float = between(14f, 22f)
+    private fun lifetime(rate: CritterRate): Float = between(rate.lifetimeMin, rate.lifetimeMax)
 
     private fun between(least: Float, most: Float): Float = least + random.nextFloat() * (most - least)
 

@@ -8,7 +8,7 @@ import kotlin.math.min
  * What was just eaten does not fill the bar at once: it shows as a [gain] on top of the [filled] part for a moment, and then the
  * bar fills up into it, so that it is clear how much the food was worth. The bar does not drain until it has filled up.
  */
-class Hunger {
+class Hunger(private val lowLevel: Float = HungerTuning.lowLevel) {
     /** 1 when full, 0 when starved: the real value, which already counts what was just eaten. */
     var level = 1f
         private set
@@ -22,7 +22,7 @@ class Hunger {
 
     val isStarving: Boolean get() = level <= 0f
 
-    val isLow: Boolean get() = level <= HungerTuning.lowLevel
+    val isLow: Boolean get() = level <= lowLevel
 
     private var gainWait = 0f
 

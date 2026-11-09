@@ -44,8 +44,8 @@ class WorldLayout(val arena: Arena) {
     /** The floor of the house: where the snake lives. */
     val house = BlobBounds(houseX, houseY, DenTuning.houseRadius, listOf(Wobble(0.06f, 2, 0.7f), Wobble(0.05f, 3, 2.1f)))
 
-    /** The room of the tutorial: an oval of the size of the stage, to the left of the house. */
-    val room = OvalBounds(arena.centerX - arena.width, houseY, arena.radiusX, arena.radiusY)
+    /** The room of the tutorial: the biggest oval that fits the screen, whatever the shape of the stage, to the left of the house. */
+    val room = OvalBounds(arena.centerX - arena.width, houseY, arena.fullRadiusX, arena.fullRadiusY)
 
     /** The path from the house up to the stage. */
     val pathUp: BoxBounds
@@ -72,7 +72,7 @@ class WorldLayout(val arena: Arena) {
     val ground: Bounds
 
     /** Below this the snake has left the stage for the path, and the camera starts to follow it. */
-    val mouthY = arena.height - WorldTuning.grassDepth - 4f
+    val mouthY = arena.ovalBottom - 4f
 
     /** The bubbles of the snake's thought, from the smallest one up: the last one is the big one with the mouse in it. */
     val bubbles = listOf(
@@ -82,7 +82,7 @@ class WorldLayout(val arena: Arena) {
     )
 
     init {
-        val top = arena.height - WorldTuning.grassDepth - DenTuning.pathOverlap
+        val top = arena.ovalBottom - DenTuning.pathOverlap
         pathUp = BoxBounds(arena.centerX, (top + houseY) / 2f, DenTuning.pathHalfWidth, (houseY - top) / 2f)
         pathLeft = BoxBounds((room.centerX + houseX) / 2f, houseY, (houseX - room.centerX) / 2f, DenTuning.leftPathHalfWidth)
         // The stones close the opening that the path up makes in the wall of the house, along the curve of the wall
@@ -100,16 +100,17 @@ class WorldLayout(val arena: Arena) {
             house.signedDistance(x, baseY - height) < margin
 
     /** The snake curled up in its house: it circles the middle of the floor, and it has gone round long enough for its whole body to follow the circle. */
-    fun curledSnake(): Snake {
+    fun curledSnake(rules: SnakeRules = SnakeRules.standard): Snake {
         val heading = -halfPi
         // It turns clockwise, so the middle of its circle is to the right of where it goes
-        val snake = Snake(arena, ground, houseX - SnakeTuning.turnRadius, houseY, heading)
+        val snake = Snake(arena, ground, houseX - rules.turnRadius, houseY, heading, rules)
         repeat((DenTuning.warmUpSeconds * warmUpFrames).toInt()) { snake.step(1f / warmUpFrames, 1f) }
         return snake
     }
 
     /** A snake in the middle of the room of the tutorial, going up, with its body straight behind it: for the lessons to start from. */
-    fun snakeInRoom(): Snake = Snake(arena, ground, room.centerX, room.centerY + roomStartBelow, -halfPi)
+    fun snakeInRoom(rules: SnakeRules = SnakeRules.standard): Snake =
+        Snake(arena, ground, room.centerX, room.centerY + roomStartBelow, -halfPi, rules)
 
     private companion object {
         const val halfPi = 1.5707964f

@@ -3,7 +3,6 @@ package com.lukeneedham.snake.render
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import com.lukeneedham.snake.game.BirdKind
 import com.lukeneedham.snake.game.GameWorld
-import com.lukeneedham.snake.game.HungerTuning
 import com.lukeneedham.snake.game.StomachLayout
 import com.lukeneedham.snake.game.ToadKind
 import kotlin.math.roundToInt
@@ -32,19 +31,19 @@ internal fun DrawScope.drawHungerPage(world: GameWorld, texts: SceneTexts, topIn
     drawAnimalRow(rowLeft, y) { centerX, bottom ->
         drawSprite(SpriteArt.Mouse, null, centerX - SpriteArt.Mouse.width / 2, bottom - SpriteArt.Mouse.height, flip = false)
     }
-    drawPercent(world, HungerTuning.mouseFills, rowLeft, y)
+    drawPercent(world, world.level.hunger.mouseFills, rowLeft, y)
     y += rowHeight
     drawAnimalRow(rowLeft, y) { centerX, bottom ->
         val art = BirdArt.SmallPerched
         val palette = birdPalette(BirdKind.Robin)
         drawRows(art.rows, art.width, centerX - art.width / 2, bottom - art.height, flip = false, colorOf = palette::colorOf)
     }
-    drawPercent(world, HungerTuning.birdFills, rowLeft, y)
+    drawPercent(world, world.level.hunger.birdFills, rowLeft, y)
     y += rowHeight
     drawAnimalRow(rowLeft, y) { centerX, bottom ->
         drawSprite(SpriteArt.Toad, ToadKind.Purple, centerX - SpriteArt.Toad.width / 2, bottom - SpriteArt.Toad.height, flip = false)
     }
-    drawPercent(world, HungerTuning.toadFills, rowLeft, y)
+    drawPercent(world, world.level.hunger.toadFills, rowLeft, y)
 }
 
 /** Calls [drawAnimal] with the middle and the bottom of the row's sprite column. */

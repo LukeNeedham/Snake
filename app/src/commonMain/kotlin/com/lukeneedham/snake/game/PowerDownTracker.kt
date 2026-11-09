@@ -3,7 +3,7 @@ package com.lukeneedham.snake.game
 import kotlin.math.max
 
 /** Which power downs of the toads are on, how long they have left, and how strongly each one shows right now. */
-class PowerDownTracker {
+class PowerDownTracker(private val rules: PowerDownRules = PowerDownRules.standard) {
     private val remaining = FloatArray(PowerDown.entries.size)
     private val levels = FloatArray(PowerDown.entries.size)
 
@@ -14,7 +14,7 @@ class PowerDownTracker {
         private set
 
     fun apply(kind: ToadKind) {
-        remaining[kind.powerDown.ordinal] = kind.powerDown.durationSeconds
+        remaining[kind.powerDown.ordinal] = rules.duration(kind.powerDown)
         bannerKind = kind
         bannerTime = bannerSeconds
     }
@@ -28,6 +28,9 @@ class PowerDownTracker {
     }
 
     /** 0 to 1: how strongly the power down shows, so that it fades in and out. */
+    /** How long a power down lasts in this level. */
+    fun duration(powerDown: PowerDown): Float = rules.duration(powerDown)
+
     fun level(powerDown: PowerDown): Float = levels[powerDown.ordinal]
 
     fun remaining(powerDown: PowerDown): Float = remaining[powerDown.ordinal]

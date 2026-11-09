@@ -27,6 +27,6 @@ class RoomConfig(
         val path = RoomConfig(HungerMode.Manual, showsHunger = false)
 
         /** A stage: the game, as the [level] sets it. */
-        fun stage(level: LevelConfig) = RoomConfig(HungerMode.Drains, showsHunger = true, spawnsCritters = true, level = level, snakeSpeedFactor = level.snakeSpeedFactor)
+        fun stage(level: LevelConfig) = RoomConfig(HungerMode.Drains, showsHunger = true, spawnsCritters = true, level = level, snakeSpeedFactor = level.snake.speedFactor)
     }
 }

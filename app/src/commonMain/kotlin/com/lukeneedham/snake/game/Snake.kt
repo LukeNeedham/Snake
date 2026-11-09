@@ -15,6 +15,7 @@ class Snake(
     startX: Float = arena.centerX,
     startY: Float = arena.centerY,
     startHeading: Float = -halfPi,
+    val rules: SnakeRules = SnakeRules.standard,
 ) {
 
     var x = startX
@@ -33,7 +34,7 @@ class Snake(
     var totalDistance: Float
         private set
 
-    val body = SnakeBody(x, y, heading)
+    val body = SnakeBody(x, y, heading, rules)
 
     /** 0 when the mouth is closed, 1 when it is wide open. */
     var mouthOpen = 0f
@@ -73,7 +74,7 @@ class Snake(
     fun hitsItself(): Boolean = body.touches(x, y)
 
     private fun advance(distance: Float) {
-        heading += turnDirection * distance / SnakeTuning.turnRadius
+        heading += turnDirection * distance / rules.turnRadius
         x += cos(heading) * distance
         y += sin(heading) * distance
         totalDistance += distance

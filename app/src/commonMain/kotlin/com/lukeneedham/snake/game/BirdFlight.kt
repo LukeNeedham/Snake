@@ -5,7 +5,12 @@ import kotlin.math.sqrt
 import kotlin.random.Random
 
 /** A bird in the air: it flies in from off the screen and comes down at its landing spot, or it takes off and flies out of the screen. */
-internal class BirdFlight(private val course: CritterCourse, private var targetX: Float, private var targetY: Float) {
+internal class BirdFlight(
+    private val course: CritterCourse,
+    private var targetX: Float,
+    private var targetY: Float,
+    private val rules: BirdRules = BirdRules.standard,
+) {
 
     /** How high the bird is above the ground. */
     var height = BirdTuning.flightHeight
@@ -22,8 +27,8 @@ internal class BirdFlight(private val course: CritterCourse, private var targetX
 
     /** Flies towards the landing spot, slowing down and coming down on the way. */
     fun approach(dt: Float, arena: Arena, random: Random, snakeHead: Vec2?) {
-        if (snakeHead != null && height > BirdTuning.commitHeight && BirdLanding.isTooClose(targetX, targetY, snakeHead)) {
-            val spot = BirdLanding.spot(arena, random, snakeHead)
+        if (snakeHead != null && height > BirdTuning.commitHeight && BirdLanding.isTooClose(targetX, targetY, snakeHead, rules.landClearance)) {
+            val spot = BirdLanding.spot(arena, random, snakeHead, rules.landClearance)
             targetX = spot.x
             targetY = spot.y
         }
@@ -39,7 +44,7 @@ internal class BirdFlight(private val course: CritterCourse, private var targetX
         }
         course.aimAt(targetX, targetY)
         val closeness = min(1f, distance / BirdTuning.glideDistance)
-        val speed = BirdTuning.landingSpeed + (BirdTuning.cruiseSpeed - BirdTuning.landingSpeed) * closeness
+        val speed = rules.landingSpeed + (rules.cruiseSpeed - rules.landingSpeed) * closeness
         course.moveBy(min(speed * dt, distance))
         height = BirdTuning.flightHeight * closeness
     }
@@ -58,9 +63,9 @@ internal class BirdFlight(private val course: CritterCourse, private var targetX
     /** Climbs and flies off the way the bird points, faster and faster, until it is out of the screen. */
     fun leave(dt: Float, arena: Arena) {
         airTime += dt
-        height = min(BirdTuning.flightHeight, height + BirdTuning.climbSpeed * dt)
+        height = min(BirdTuning.flightHeight, height + rules.climbSpeed * dt)
         val ramp = takeOffStartSpeed + (1f - takeOffStartSpeed) * min(1f, airTime / BirdTuning.takeOffSeconds)
-        course.moveBy(BirdTuning.leaveSpeed * ramp * dt)
+        course.moveBy(rules.leaveSpeed * ramp * dt)
         val margin = BirdTuning.exitMargin
         if (course.x < -margin || course.x > arena.width + margin || course.y < -margin || course.y > arena.height + margin) isOut = true
     }

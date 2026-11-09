@@ -8,10 +8,10 @@ import kotlin.random.Random
  * The body of a mouse: it runs fast for a moment, stands still and looks around, then runs again. A mouse with a [tameTarget] (the one of the
  * lesson of the hunger) only runs to it, and stays there: it does not mind the snake.
  */
-internal class MouseBody(x: Float, y: Float, lifetime: Float, private val tameTarget: Vec2? = null, private val speedFactor: Float = 1f) : CritterBody {
+internal class MouseBody(x: Float, y: Float, lifetime: Float, private val tameTarget: Vec2? = null, private val rules: MouseRules = MouseRules.standard) : CritterBody {
     private val course = CritterCourse(x, y)
     private val visit = CritterVisit(lifetime)
-    private val gait = MouseGait(course, visit, speedFactor)
+    private val gait = MouseGait(course, visit, rules)
     private var isWalking = false
 
     override val x: Float get() = course.x
@@ -39,7 +39,7 @@ internal class MouseBody(x: Float, y: Float, lifetime: Float, private val tameTa
         isWalking = distance > arrivedDistance
         if (!isWalking) return
         course.aimAt(target.x, target.y)
-        course.moveBy(min(CritterTuning.mouseSpeed * speedFactor * dt, distance))
+        course.moveBy(min(CritterTuning.mouseSpeed * rules.speedFactor * dt, distance))
     }
 
     private companion object {
