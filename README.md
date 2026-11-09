@@ -23,8 +23,9 @@ Birds fly in from off the screen and land in the oval: blue tits, robins and spa
 worth a little more than a mouse and gives the snake a different power up for a few seconds: it goes faster, sprints for less, is
 sneakier, eats from further away, blows up every toad and keeps new ones away, or carries a piece of cheese that brings mice
 running from all over (but with its mouth full, the snake cannot eat until the cheese is gone). Power ups stack with each other
-and with the toads' poison. What is on shows as arrows in the bottom right corner, which empty as the time runs out; tap them to pause and see
-each one's name, what it does and the seconds left. Birds are rare, only one at a time, and extremely skittish: they fly off the moment the snake gets
+and with the toads' poison. What is on shows as arrows in the bottom right corner, which empty as the time runs out.
+All the pause menus are pages of one pause overlay that you swipe between: the buttons, the stomach (tap it in the corner to open
+it) with how much each animal fills it, and what is on (tap the arrows) with each one's name, what it does and the seconds left. Birds are rare, only one at a time, and extremely skittish: they fly off the moment the snake gets
 close, so catching one takes a sprint.
 
 The snake is always hungry: a bar at the top of the screen runs down, a mouse fills it, a toad hardly does, and the
@@ -40,7 +41,9 @@ The mice run from a snake they see coming, but they cannot see what is behind th
 <img src="docs/screenshots/03-GamePageBirds.png" width="240" alt="Game Page Birds">
 <img src="docs/screenshots/04-GamePageHallucinating.png" width="240" alt="Game Page Hallucinating">
 <img src="docs/screenshots/05-GamePagePaused.png" width="240" alt="Game Page Paused">
-<img src="docs/screenshots/06-GamePageGameOver.png" width="240" alt="Game Page Game Over">
+<img src="docs/screenshots/06-GamePageHunger.png" width="240" alt="Game Page Hunger">
+<img src="docs/screenshots/07-GamePageStatus.png" width="240" alt="Game Page Status">
+<img src="docs/screenshots/08-GamePageGameOver.png" width="240" alt="Game Page Game Over">
 
 ## Getting started as a user
 
