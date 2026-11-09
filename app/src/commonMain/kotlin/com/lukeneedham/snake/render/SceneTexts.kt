@@ -7,6 +7,10 @@ import androidx.compose.runtime.Immutable
 internal data class SceneTexts(
     val title: String,
     val tapToStart: String,
+
+    /** The lesson in the story at the start: its lines are split by a line break. */
+    val tapToChangeDirection: String,
+    val followThePath: String,
     val gameOver: String,
     val score: String,
     val best: String,

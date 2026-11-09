@@ -1,4 +1,7 @@
 GamePageReady
+GamePageRumble
+GamePageThinking
+GamePageLesson
 GamePage
 GamePageBirds
 GamePageHallucinating

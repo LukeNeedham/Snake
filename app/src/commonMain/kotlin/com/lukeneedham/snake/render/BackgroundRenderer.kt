@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import com.lukeneedham.snake.game.Arena
+import com.lukeneedham.snake.game.DenLayout
 import com.lukeneedham.snake.game.WorldTuning
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -18,16 +19,24 @@ private val sandEdge = Color(0xFFB19659)
 private val sand = Color(0xFFD2B87E)
 private val sandLight = Color(0xFFDCC896)
 private val sandDark = Color(0xFFC4A96F)
+private val earth = Color(0xFFB99D68)
+private val earthLight = Color(0xFFC6AB78)
+private val earthDark = Color(0xFFA68A58)
 
-/** Draws the static scene once into a bitmap: the sand of the oval, and the dense grass around it. */
-internal fun createBackground(arena: Arena, density: Density, layoutDirection: LayoutDirection): ImageBitmap {
+/**
+ * Draws the static scene once into a bitmap: the sand of the oval, and the dense grass around it. The bitmap is two screens tall: under the
+ * oval is the second screen, with the den of the snake and the bare path through the grass that leads from it to the oval.
+ */
+internal fun createBackground(den: DenLayout, density: Density, layoutDirection: LayoutDirection): ImageBitmap {
+    val arena = den.arena
     val width = arena.width.toInt()
-    val height = arena.height.toInt()
+    val height = den.worldHeight.toInt()
     val bitmap = ImageBitmap(width, height)
     CanvasDrawScope().draw(density, layoutDirection, Canvas(bitmap), Size(width.toFloat(), height.toFloat())) {
-        drawGround(arena, width, height)
-        drawBackBlades(arena, width, height)
+        drawGround(den, width, height)
+        drawBackBlades(den, width, height)
         drawPebbles(arena)
+        drawDenRocks(den)
     }
     return bitmap
 }
@@ -39,12 +48,12 @@ private fun noise(x: Int, y: Int): Float {
     return (h and 0xFFFF) / 65535f
 }
 
-private fun DrawScope.drawGround(arena: Arena, width: Int, height: Int) {
+private fun DrawScope.drawGround(den: DenLayout, width: Int, height: Int) {
     for (y in 0 until height) {
         var runStart = 0
         var runColor: Color? = null
         for (x in 0..width) {
-            val color = if (x < width) groundColor(arena, x, y) else null
+            val color = if (x < width) groundColor(den, x, y) else null
             if (color != runColor) {
                 if (runColor != null) pixelRect(runStart, y, x - runStart, 1, runColor)
                 runStart = x
@@ -54,31 +63,34 @@ private fun DrawScope.drawGround(arena: Arena, width: Int, height: Int) {
     }
 }
 
-private fun groundColor(arena: Arena, x: Int, y: Int): Color {
-    val distance = arena.signedDistance(x + 0.5f, y + 0.5f)
+private fun groundColor(den: DenLayout, x: Int, y: Int): Color {
+    val distance = den.ground.signedDistance(x + 0.5f, y + 0.5f)
     val n = noise(x, y)
     if (distance >= 0f) {
         return if (n < 0.1f) GrassPalette.speckDark else if (n > 0.92f) GrassPalette.speckLight else GrassPalette.base
     }
     if (distance > -1.5f) return sandRim
     if (distance > -3f) return sandEdge
+    if (den.den.signedDistance(x + 0.5f, y + 0.5f) < -2f) {
+        return if (n < 0.08f) earthDark else if (n > 0.9f) earthLight else earth
+    }
     return if (n < 0.06f) sandDark else if (n > 0.93f) sandLight else sand
 }
 
-private fun DrawScope.drawBackBlades(arena: Arena, width: Int, height: Int) {
+private fun DrawScope.drawBackBlades(den: DenLayout, width: Int, height: Int) {
     val random = Random(4242)
     val blades = ArrayList<GrassBlade>()
-    repeat(5200) {
+    repeat(10400) {
         val x = random.nextInt(width)
         val y = random.nextInt(height + 10)
-        if (arena.signedDistance(x + 0.5f, y + 0.5f) >= -2f) {
+        if (den.ground.signedDistance(x + 0.5f, y + 0.5f) >= -2f) {
             blades.add(GrassBlade(x, y, 6 + random.nextInt(7), 0f, random.nextInt(4)))
         }
     }
     blades.sortBy { it.y }
     val colors = GrassPalette.bladesBack
     for (blade in blades) {
-        val depth = arena.signedDistance(blade.x + 0.5f, blade.y + 0.5f)
+        val depth = den.ground.signedDistance(blade.x + 0.5f, blade.y + 0.5f)
         val shade = (blade.shade + if (depth > WorldTuning.grassDepth * 0.6f) -1 else 0).coerceIn(0, colors.lastIndex)
         pixelRect(blade.x, blade.y - blade.height, 1, blade.height, colors[shade])
         if (blade.shade == 3) pixelRect(blade.x + 1, blade.y - blade.height + 2, 1, blade.height - 2, colors[shade])

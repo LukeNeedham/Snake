@@ -20,7 +20,52 @@ import kotlin.random.Random
 @Composable
 private fun GamePageReadyScreenshot() {
     val world = remember {
-        GameWorld(Arena(108f, 240f), seed = 7).also { repeat(150) { _ -> it.update(1f / 60f) } }
+        GameWorld(Arena(108f, 240f), seed = 7, hasIntro = true).also { repeat(150) { _ -> it.update(1f / 60f) } }
+    }
+    val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
+    AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
+}
+
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageRumble.png. */
+@Preview(widthDp = 360, heightDp = 800)
+@Composable
+private fun GamePageRumbleScreenshot() {
+    // The stomach of the snake rumbles in its den
+    val world = remember {
+        GameWorld(Arena(108f, 240f), seed = 7, hasIntro = true).also {
+            it.start()
+            repeat(120) { _ -> it.update(1f / 60f) }
+        }
+    }
+    val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
+    AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
+}
+
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageThinking.png. */
+@Preview(widthDp = 360, heightDp = 800)
+@Composable
+private fun GamePageThinkingScreenshot() {
+    // The snake thinks of a mouse: three bubbles, the last with the mouse in it
+    val world = remember {
+        GameWorld(Arena(108f, 240f), seed = 7, hasIntro = true).also {
+            it.start()
+            repeat(312) { _ -> it.update(1f / 60f) }
+        }
+    }
+    val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
+    AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
+}
+
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageLesson.png. */
+@Preview(widthDp = 360, heightDp = 800)
+@Composable
+private fun GamePageLessonScreenshot() {
+    // The bubble has popped, and a text tells the player how to turn the snake
+    val world = remember {
+        GameWorld(Arena(108f, 240f), seed = 7, hasIntro = true).also {
+            it.start()
+            repeat(504) { _ -> it.update(1f / 60f) }
+        }
     }
     val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
     AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }

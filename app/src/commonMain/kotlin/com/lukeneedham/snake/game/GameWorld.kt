@@ -4,15 +4,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import kotlin.math.abs
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.random.Random
 
 /**
  * One game: the phase it is in, the snake and the animals. The parts with a job of their own are classes of their own
  * ([EffectTracker], [PowerUpTracker], [CritterSpawner], [Feeding], [ToadBlast], [ParticleSystem], [Hunger], [SprintControl]); this one only steps them in order. It is mutable and is
- * stepped with [update] once per frame; [tick] changes with every step so that a drawing that reads it is drawn again.
+ * stepped with [update] once per frame; [tick] changes with every step so that a drawing that reads it is drawn again. A world with an
+ * intro starts with the snake curled up in its den, under the oval: the first tap plays the story, which hands over to [GamePhase.Playing]
+ * once the player has steered the snake out of the den and along the path into the oval.
  */
-class GameWorld(val arena: Arena, seed: Int = 1) {
+class GameWorld(val arena: Arena, seed: Int = 1, hasIntro: Boolean = false) {
 
     /** Read it while drawing to be drawn again after every step. */
     var tick by mutableLongStateOf(0L)
@@ -20,6 +24,12 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
 
     var phase = GamePhase.Ready
         private set
+
+    /** The phase a paused game goes back to when it is resumed. */
+    private var phaseBeforePause = GamePhase.Playing
+
+    /** Whether the story at the start is on, even if the menu paused it. */
+    val isIntro: Boolean get() = phase == GamePhase.Intro || (phase == GamePhase.Paused && phaseBeforePause == GamePhase.Intro)
 
     var score = 0
         internal set
@@ -50,7 +60,18 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     val menuItems: List<MenuItem>
         get() = if (phase == GamePhase.Paused) listOf(MenuItem.Resume, MenuItem.Restart, MenuItem.Settings) else listOf(MenuItem.Resume, MenuItem.Settings)
 
-    val snake = Snake(arena)
+    val den = DenLayout(arena)
+
+    /** The story at the start, or null in a world that has none. */
+    val intro: IntroDirector? = if (hasIntro) IntroDirector() else null
+
+    var snake: Snake = if (hasIntro) den.curledSnake() else Snake(arena)
+        private set
+
+    /** The world y at the top of the screen: the screen shows the oval, unless the camera is following the snake up the path. */
+    var cameraY = if (hasIntro) den.introTop else 0f
+        private set
+
     private val mutableCritters = ArrayList<Critter>()
 
     /** The animals that are out of the grass, in the oval or on their way. */
@@ -73,13 +94,18 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
 
     fun start() {
         if (phase != GamePhase.Ready) return
-        phase = GamePhase.Playing
-        spawner.reset()
+        if (intro != null) {
+            phase = GamePhase.Intro
+        } else {
+            phase = GamePhase.Playing
+            spawner.reset()
+        }
     }
 
-    /** Pausing opens the menu: the game carries on when it is closed. */
+    /** Pausing opens the menu: the game (or the story) carries on when it is closed. */
     fun pause() {
-        if (phase != GamePhase.Playing) return
+        if (phase != GamePhase.Playing && phase != GamePhase.Intro) return
+        phaseBeforePause = phase
         phase = GamePhase.Paused
         isMenuOpen = true
         sprint.clear()
@@ -88,14 +114,14 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
 
     fun resume() {
         if (phase != GamePhase.Paused) return
-        phase = GamePhase.Playing
+        phase = phaseBeforePause
         isMenuOpen = false
         redraw()
     }
 
     /** Opens the menu: a game that is being played is paused, the title and game over screens just show it over them. */
     fun openMenu() {
-        if (phase == GamePhase.Playing) {
+        if (phase == GamePhase.Playing || phase == GamePhase.Intro) {
             pause()
         } else if (phase != GamePhase.Paused) {
             isMenuOpen = true
@@ -119,12 +145,27 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
 
     /** Turn the other way: a tap anywhere but in the [SprintZone]. A confused snake ignores it. */
     fun tap() {
+        if (phase == GamePhase.Intro) {
+            tapInIntro()
+            return
+        }
         if (phase != GamePhase.Playing) return
         if (effects.isOn(Effect.Confused)) {
             rejectedTapTime = rejectedTapSeconds
             return
         }
         snake.toggleTurn()
+    }
+
+    /** During the story a tap skips ahead to the lesson; once the lesson is on it turns the snake, and that is what it was there to teach. */
+    private fun tapInIntro() {
+        val director = intro ?: return
+        if (director.stage.isStory) {
+            director.skip()
+        } else {
+            snake.toggleTurn()
+            director.turned()
+        }
     }
 
     /** A finger went down in the [SprintZone]: the snake sprints for as long as it is held. It never turns the snake. */
@@ -157,7 +198,8 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
         effects.update(dt, isCountingDown = phase == GamePhase.Playing, isShowing = phase != GamePhase.GameOver)
         powerUps.update(dt, isCountingDown = phase == GamePhase.Playing)
         when (phase) {
-            GamePhase.Ready -> snake.step(dt, readySpeed)
+            GamePhase.Ready -> snake.step(dt, intro?.snakeSpeed ?: readySpeed)
+            GamePhase.Intro -> updateIntro(dt)
             GamePhase.Playing -> updatePlaying(dt)
             GamePhase.GameOver -> {
                 gameOverTime += dt
@@ -170,7 +212,39 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
         tick++
     }
 
+    private fun updateIntro(dt: Float) {
+        val director = intro ?: return
+        val stageBefore = director.stage
+        director.update(dt)
+        if (stageBefore != IntroStage.Popped && director.stage == IntroStage.Popped) popBubble()
+        shake = IntroTuning.rumbleShake * director.rumble
+        snake.step(dt, director.snakeSpeed)
+        val target = (snake.y - arena.height * DenTuning.followLine).coerceIn(0f, den.introTop)
+        moveCamera(dt, target)
+        if (arena.signedDistance(snake.x, snake.y) < -DenTuning.exitDepth) finishIntro()
+    }
+
+    private fun popBubble() {
+        val bubble = den.bubbles.last()
+        particleSystem.sparkles(bubble.x, bubble.y, 18, listOf(Color(0xFFFFFFFF), Color(0xFFBFE3FF), Color(0xFFF28FA9)))
+    }
+
+    /** The snake is in the oval: from here on it is the game, and the walls are the oval's. */
+    private fun finishIntro() {
+        phase = GamePhase.Playing
+        shake = 0f
+        snake.useBounds(arena)
+        spawner.reset()
+    }
+
+    /** Eases the camera towards [target], and stops when it is there. */
+    private fun moveCamera(dt: Float, target: Float) {
+        cameraY += (target - cameraY) * min(1f, dt * DenTuning.cameraEase)
+        if (abs(target - cameraY) < cameraSettleDistance) cameraY = target
+    }
+
     private fun updatePlaying(dt: Float) {
+        if (cameraY > 0f) moveCamera(dt, 0f)
         snake.step(dt, (1f + boosts.sprintBoost * sprint.level) * boosts.speedFactor)
         hunger.update(dt, sprint.level, boosts.sprintDrainFactor)
         dustAtNewBounces()
@@ -247,6 +321,9 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
         const val startingShake = 3f
         const val shakeDecay = 5f
         const val rejectedTapSeconds = 0.4f
+
+        /** The camera is close enough to where it is going to be there. */
+        const val cameraSettleDistance = 0.05f
 
         /** The snake on the title screen circles slowly. */
         const val readySpeed = 0.6f

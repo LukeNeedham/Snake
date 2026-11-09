@@ -22,7 +22,7 @@ import kotlin.math.roundToInt
 class GameViewModel(bestScoreStore: BestScoreStore, settingsStore: SettingsStore) : ViewModel() {
 
     private var sprintSide = SprintSide.Left
-    private var world = GameWorld(Arena(WorldTuning.width.toFloat(), defaultHeight))
+    private var world = GameWorld(Arena(WorldTuning.width.toFloat(), defaultHeight), hasIntro = true)
     private val bestScores = BestScoreTracker(bestScoreStore, viewModelScope) { publish() }
 
     private val _uiState = MutableStateFlow(buildState())
@@ -43,7 +43,8 @@ class GameViewModel(bestScoreStore: BestScoreStore, settingsStore: SettingsStore
         if (widthPx <= 0 || heightPx <= 0) return
         val height = (WorldTuning.width.toFloat() * heightPx / widthPx).roundToInt()
         if (height == world.arena.height.toInt()) return
-        newWorld(height.toFloat())
+        // A game in progress is lost when the screen changes size; the title or the story begins again
+        newWorld(height.toFloat(), hasIntro = world.phase == GamePhase.Ready || world.isIntro)
     }
 
     /** Called once per frame with the seconds since the last frame. */
@@ -66,6 +67,7 @@ class GameViewModel(bestScoreStore: BestScoreStore, settingsStore: SettingsStore
         } else {
             when (world.phase) {
                 GamePhase.Ready -> world.start()
+                GamePhase.Intro -> world.tap()
                 GamePhase.Playing -> if (target == PressTarget.Sprint) world.sprintPress(pointerId) else world.tap()
                 GamePhase.Paused -> Unit
                 GamePhase.GameOver -> restartIfAllowed()
@@ -83,7 +85,7 @@ class GameViewModel(bestScoreStore: BestScoreStore, settingsStore: SettingsStore
         when (item) {
             MenuItem.Resume -> world.closeMenu()
             MenuItem.Restart -> {
-                newWorld(world.arena.height)
+                newWorld(world.arena.height, hasIntro = false)
                 world.start()
             }
             MenuItem.Settings -> Unit // the page opens it
@@ -92,7 +94,7 @@ class GameViewModel(bestScoreStore: BestScoreStore, settingsStore: SettingsStore
 
     private fun restartIfAllowed() {
         if (!world.canRestart) return
-        newWorld(world.arena.height)
+        newWorld(world.arena.height, hasIntro = false)
         world.start()
     }
 
@@ -102,8 +104,10 @@ class GameViewModel(bestScoreStore: BestScoreStore, settingsStore: SettingsStore
         publish()
     }
 
-    private fun newWorld(height: Float) {
-        world = GameWorld(Arena(WorldTuning.width.toFloat(), height), seed = (world.time * 1000f).toInt()).also { it.sprintSide = sprintSide }
+    /** The story at the start is only told in the first game: a restart goes straight to the oval. */
+    private fun newWorld(height: Float, hasIntro: Boolean) {
+        world = GameWorld(Arena(WorldTuning.width.toFloat(), height), seed = (world.time * 1000f).toInt(), hasIntro = hasIntro)
+            .also { it.sprintSide = sprintSide }
         bestScores.newGame()
         publish()
     }

@@ -10,6 +10,7 @@ import com.lukeneedham.snake.generated.resources.effect_disguised
 import com.lukeneedham.snake.generated.resources.effect_hallucinating
 import com.lukeneedham.snake.generated.resources.effect_lupus
 import com.lukeneedham.snake.generated.resources.game_over
+import com.lukeneedham.snake.generated.resources.follow_the_path
 import com.lukeneedham.snake.generated.resources.game_title
 import com.lukeneedham.snake.generated.resources.menu_back
 import com.lukeneedham.snake.generated.resources.menu_restart
@@ -24,6 +25,7 @@ import com.lukeneedham.snake.generated.resources.power_up_sneaky
 import com.lukeneedham.snake.generated.resources.power_up_toad_free
 import com.lukeneedham.snake.generated.resources.power_up_zoom
 import com.lukeneedham.snake.generated.resources.score_value
+import com.lukeneedham.snake.generated.resources.tap_to_change_direction
 import com.lukeneedham.snake.generated.resources.tap_to_retry
 import com.lukeneedham.snake.generated.resources.tap_to_start
 import com.lukeneedham.snake.render.SceneTexts
@@ -34,6 +36,8 @@ import org.jetbrains.compose.resources.stringResource
 internal fun sceneTexts(score: Int, bestScore: Int, isNewBest: Boolean): SceneTexts = SceneTexts(
     title = stringResource(Res.string.game_title),
     tapToStart = stringResource(Res.string.tap_to_start),
+    tapToChangeDirection = stringResource(Res.string.tap_to_change_direction),
+    followThePath = stringResource(Res.string.follow_the_path),
     gameOver = stringResource(Res.string.game_over),
     score = stringResource(Res.string.score_value, score),
     best = stringResource(Res.string.best_value, bestScore),

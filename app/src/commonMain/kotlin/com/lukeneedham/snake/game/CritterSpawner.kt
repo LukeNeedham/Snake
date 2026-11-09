@@ -1,6 +1,7 @@
 package com.lukeneedham.snake.game
 
 import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.min
 import kotlin.math.sin
@@ -89,12 +90,22 @@ class CritterSpawner(private val arena: Arena, private val random: Random) {
 
     private fun between(least: Float, most: Float): Float = least + random.nextFloat() * (most - least)
 
+    /** A spot in the grass around the oval, but never on the path that is cut through the grass at the bottom. */
     private fun spotInTheGrass(): Vec2 {
-        val angle = random.nextFloat() * 2f * PI.toFloat()
         val reach = WorldTuning.grassDepth * 0.75f
-        return Vec2(
-            arena.centerX + (arena.radiusX + reach) * cos(angle),
-            arena.centerY + (arena.radiusY + reach) * sin(angle),
-        )
+        var spot: Vec2
+        do {
+            val angle = random.nextFloat() * 2f * PI.toFloat()
+            spot = Vec2(
+                arena.centerX + (arena.radiusX + reach) * cos(angle),
+                arena.centerY + (arena.radiusY + reach) * sin(angle),
+            )
+        } while (spot.y > arena.centerY && abs(spot.x - arena.centerX) < DenTuning.pathHalfWidth + pathMargin)
+        return spot
+    }
+
+    private companion object {
+        /** How far from the path a critter comes out of the grass at the least. */
+        const val pathMargin = 3f
     }
 }

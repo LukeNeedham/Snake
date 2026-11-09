@@ -43,6 +43,12 @@ into its own doc when work on it starts.
   snake catches the curse (an item, a critter or a boss?) and how long it lasts, then show it on the screen like the other effects and
   power ups. Until it exists, nothing kills the snake but hunger. Check how the snake is drawn when its body crosses itself.
 
+- [x] **Intro story and tutorial.** Done: the world is two screens tall (`DenLayout`): the oval, and under it the snake's den (a ring of rocks) with a
+  bare path through the grass that always leads to the oval. `GamePhase.Intro` plays `IntroDirector`'s stages (sleeping, rumbling stomach, three
+  thought bubbles ending in a mouse, the pop), then the lesson ("Tap to change direction") and the player steers out along the path while the
+  camera (`GameWorld.cameraY`) follows. Only the first game has it; a restart skips it. Possible later: remember that the player has done it
+  and skip it on later launches.
+
 ## Power ups
 
 - [ ] **Bunnies and ducks as real critters, in the levels.** Not for now: they will come in different levels with different biomes

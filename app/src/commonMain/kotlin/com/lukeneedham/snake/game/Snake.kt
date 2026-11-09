@@ -9,15 +9,21 @@ import kotlin.math.sin
  * The snake always turns, and the only control is the direction of the turn. This is the head: where it is, which way it
  * goes and how it bounces off the wall. The [body] follows the path it travelled.
  */
-class Snake(arena: Arena) {
+class Snake(
+    arena: Arena,
+    bounds: Bounds = arena,
+    startX: Float = arena.centerX,
+    startY: Float = arena.centerY,
+    startHeading: Float = -halfPi,
+) {
 
-    var x = arena.centerX
+    var x = startX
         private set
-    var y = arena.centerY
+    var y = startY
         private set
 
     /** In radians: it grows when the snake turns clockwise on the screen. */
-    var heading = -halfPi
+    var heading = startHeading
         private set
 
     /** 1 turns clockwise, -1 anticlockwise. */
@@ -41,10 +47,15 @@ class Snake(arena: Arena) {
     var lastBounceY = 0f
         private set
 
-    private val wallBounce = WallBounce(arena)
+    private var wallBounce = WallBounce(bounds)
 
     init {
         totalDistance = body.initialDistance
+    }
+
+    /** From now on the snake bounces off the wall of [bounds]: the snake leaves the den and its path for the oval. */
+    fun useBounds(bounds: Bounds) {
+        wallBounce = WallBounce(bounds)
     }
 
     fun toggleTurn() {

@@ -26,4 +26,8 @@ description: |
   snake starves when it is empty. Hold the corner at the bottom left to sprint (you can move it to the right in the settings), which is faster but burns
   the bar quicker, while your other thumb taps anywhere else to turn. The button at the top left pauses the game and opens a
   menu with Resume, Restart and Settings.
+  The game opens with a little story: the snake sleeps curled up in its den, a ring of rocks in the grass, until its stomach
+  rumbles and it dreams of a mouse. Then the first tap of the game teaches the one control there is, and the player steers the
+  snake out of its den and along the path through the grass into the oval. Only the first game starts like this: a restart goes straight to the oval.
+
   The mice run from a snake they see coming, but they cannot see what is behind them.
