@@ -1,6 +1,6 @@
 package com.lukeneedham.snake.game
 
-/** Where the arrows of the effects and power ups are, in world units: the drawing and the touches both use it. */
+/** Where the arrows of the power downs and power ups are, in world units: the drawing and the touches both use it. */
 object StatusLayout {
     /** The distance between two arrows, from the top of one to the top of the next. */
     const val rowHeight = 11

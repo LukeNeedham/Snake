@@ -8,6 +8,6 @@ enum class PausePage {
     /** The stomach and how much each kind of animal fills it. */
     Hunger,
 
-    /** The effects and power ups that are on. */
+    /** The power downs and power ups that are on. */
     Status,
 }

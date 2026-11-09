@@ -34,13 +34,13 @@ into its own doc when work on it starts.
   Original brief: There are too many birds. At most one bird on the screen at a time (drop `SpawnTuning.mostBirds` and
   `pointsPerExtraBird`, so the score never brings a second one), and a lot rarer: much longer waits between birds
   (`firstBirdDelay`, `birdDelayMin` and `birdDelayMax` in `SpawnTuning`). Update the tests in `CritterSpawnerTest` that count two birds.
-- [x] **The snake does not die from touching itself, except under the cannibal effect.** Done: it comes from the brown toad
-  (`ToadKind.Brown`, `Effect.Cannibal`, 12 seconds, "Cannibal!"; the grey toad now gives hayfever, which kills on touching the grass), shown with a bar and a banner like the other effects. The body is drawn
+- [x] **The snake does not die from touching itself, except under the cannibal power down.** Done: it comes from the brown toad
+  (`ToadKind.Brown`, `PowerDown.Cannibal`, 12 seconds, "Cannibal!"; the grey toad now gives hayfever, which kills on touching the grass), shown with a bar and a banner like the other power downs. The body is drawn
   in stretches so that where it crosses itself the part nearer the head lies over the other with a dark edge (`SnakeRenderer`).
   Original brief: Normally the snake can loop over its own body
   and nothing happens (so `snake.hitsItself()` no longer ends the game in `GameWorld.updatePlaying`): the only way to die is to starve.
   The **lupus curse** is a special curse that, while it is active, makes the snake die if it touches itself, as it does now. Decide how a
-  snake catches the curse (an item, a critter or a boss?) and how long it lasts, then show it on the screen like the other effects and
+  snake catches the curse (an item, a critter or a boss?) and how long it lasts, then show it on the screen like the other power downs and
   power ups. Until it exists, nothing kills the snake but hunger. Check how the snake is drawn when its body crosses itself.
 
 - [x] **Intro story and tutorial.** Done: the map (`WorldLayout`) is the stage (the oval) at the top, a path of bare ground through the grass one screen
@@ -74,7 +74,7 @@ into its own doc when work on it starts.
   - **Big mouth** (blackbird): the snake eats from further away.
   - **Toad-free** (crow): every toad on the screen explodes, and no new toad comes while it lasts.
   - **Cheese** (pigeon): the snake carries cheese in its mouth, so it cannot eat; more mice come, and gather around it.
-- [x] **Power ups and downs stack.** They run at the same time, together with the effects of the toads (`Effect`), and each one
+- [x] **Power ups and downs stack.** They run at the same time, together with the power downs of the toads (`PowerDown`), and each one
   runs out on its own. The screen shows all that is active: one bar for each, and a banner for the last one eaten.
 - [x] **Cheese.** Done: `PowerUp.Cheese` (10 seconds). The snake carries the cheese in its mouth (`CheeseRenderer`), and a snake that carries
   something cannot eat anything (`PowerUpBoosts.mouthIsFull`, `Feeding`): a rule for anything it will carry later. More mice come, and

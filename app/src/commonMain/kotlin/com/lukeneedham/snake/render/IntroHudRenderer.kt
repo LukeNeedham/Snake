@@ -12,15 +12,15 @@ import kotlin.math.sin
  * What is on the screen during the story and the lessons at the start. Nothing while the story plays by itself; the lesson of the turn once
  * the bubble has popped; in the room of the tutorial the hunger bar, with an arrow and the words that
  * say that the belly decreases, then the sprint button, with an arrow and the lesson of the sprint, and the words that zooming makes the snake
- * hungry, then the words of the lessons of the mouse, the toad and the bird; the arrows that show the way (to the left, back to the house, up to the stage) are in the world, on the paths. The bars and the banners of the effects and the power ups are there once the animals come.
+ * hungry, then the words of the lessons of the mouse, the toad and the bird; the arrows that show the way (to the left, back to the house, up to the stage) are in the world, on the paths. The bars and the banners of the power downs and the power ups are there once the animals come.
  */
 internal fun DrawScope.drawIntroHud(world: GameWorld, texts: SceneTexts, topInset: Int) {
     val intro = world.intro ?: return
     if (world.showsHunger) drawStomach(world, topInset)
     if (intro.showsSprintButton) drawSprintButton(world)
     if (intro.stage.isLesson) {
-        drawEffectBars(world)
-        drawEffectBanner(world, texts)
+        drawStatusBars(world)
+        drawPowerDownBanner(world, texts)
         drawPowerUpBanner(world, texts)
     }
     when (intro.stage) {

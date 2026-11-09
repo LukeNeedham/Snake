@@ -33,14 +33,14 @@ internal data class SceneTexts(
     val statusEmpty: String,
     val hungerTitle: String,
     val hungerFills: String,
-    /** What each effect does, in the order of the `Effect` entries; only the letters, digits and a few marks of the pixel font. */
-    val effectDescriptions: List<String>,
+    /** What each power down does, in the order of the `PowerDown` entries; only the letters, digits and a few marks of the pixel font. */
+    val powerDownDescriptions: List<String>,
     /** What each power up does, in the order of the `PowerUp` entries. */
     val powerUpDescriptions: List<String>,
     /** What the snake died of, in the order of the `DeathCause` entries. */
     val deathCauseNames: List<String>,
-    /** The name of each effect, in the order of the `Effect` entries. */
-    val effectNames: List<String>,
+    /** The name of each power down, in the order of the `PowerDown` entries. */
+    val powerDownNames: List<String>,
     /** The name of each power up, in the order of the `PowerUp` entries. */
     val powerUpNames: List<String>,
 )

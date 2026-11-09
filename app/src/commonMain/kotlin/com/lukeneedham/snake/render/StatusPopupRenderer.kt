@@ -13,7 +13,7 @@ private const val entryGap = 5
 private const val lineChars = 21
 
 /**
- * The third page of the pause overlay, the list of what is on: for each effect and power up its arrow, filled by the time left, its
+ * The third page of the pause overlay, the list of what is on: for each power down and power up its arrow, filled by the time left, its
  * name, the seconds left on the right, and under them what it does.
  */
 internal fun DrawScope.drawStatusPage(world: GameWorld, texts: SceneTexts, topInset: Int) {
@@ -33,10 +33,10 @@ internal fun DrawScope.drawStatusPage(world: GameWorld, texts: SceneTexts, topIn
 private fun DrawScope.drawEntry(entry: StatusEntry, texts: SceneTexts, width: Int, top: Int): Int {
     val colors = statusColors(entry)
     drawFilledArrow(margin, top, entry.isPowerUp, entry.fraction, colors.arrow)
-    val effect = entry.effect
+    val powerDown = entry.powerDown
     val powerUp = entry.powerUp
-    val name = if (powerUp != null) texts.powerUpNames[powerUp.ordinal] else texts.effectNames[effect!!.ordinal]
-    val description = if (powerUp != null) texts.powerUpDescriptions[powerUp.ordinal] else texts.effectDescriptions[effect!!.ordinal]
+    val name = if (powerUp != null) texts.powerUpNames[powerUp.ordinal] else texts.powerDownNames[powerDown!!.ordinal]
+    val description = if (powerUp != null) texts.powerUpDescriptions[powerUp.ordinal] else texts.powerDownDescriptions[powerDown!!.ordinal]
     drawPixelText(name, textLeft, top, colors.text)
     val seconds = "${entry.seconds}s"
     drawPixelText(seconds, width - margin - PixelFont.width(seconds, scale = 1), top, HudPalette.white)

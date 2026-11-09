@@ -1,7 +1,7 @@
 package com.lukeneedham.snake.game
 
-/** The numbers of the effects of the toads. */
-object EffectTuning {
+/** The numbers of the power downs of the toads. */
+object PowerDownTuning {
     /** The lazy snake goes this many times as fast, however it goes. */
     const val lazySpeedFactor = 0.55f
 

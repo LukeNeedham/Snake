@@ -69,7 +69,7 @@ class Snake(
         body.update(dt, totalDistance, heading)
     }
 
-    /** Whether the head touches a part of the body that is not the neck. It only kills the snake under the cannibal effect. */
+    /** Whether the head touches a part of the body that is not the neck. It only kills the snake under the cannibal power down. */
     fun hitsItself(): Boolean = body.touches(x, y)
 
     private fun advance(distance: Float) {

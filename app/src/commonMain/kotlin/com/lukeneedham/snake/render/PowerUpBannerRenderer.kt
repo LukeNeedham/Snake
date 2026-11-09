@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import com.lukeneedham.snake.game.GameWorld
 import kotlin.math.roundToInt
 
-/** The name of the power up that was just eaten rises up over the arena, under the banner of a toad's effect, in the colours of its bird, and fades. */
+/** The name of the power up that was just eaten rises up over the arena, under the banner of a toad's power down, in the colours of its bird, and fades. */
 internal fun DrawScope.drawPowerUpBanner(world: GameWorld, texts: SceneTexts) {
     val kind = world.powerUps.bannerKind ?: return
     val time = world.powerUps.bannerTime

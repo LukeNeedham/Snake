@@ -14,7 +14,7 @@ import kotlin.random.Random
 
 /**
  * One game: the phase it is in, the snake and the animals. The parts with a job of their own are classes of their own
- * ([EffectTracker], [PowerUpTracker], [CritterSpawner], [Feeding], [ToadBlast], [ParticleSystem], [Hunger], [SprintControl]); this one only steps them in order. It is mutable and is
+ * ([PowerDownTracker], [PowerUpTracker], [CritterSpawner], [Feeding], [ToadBlast], [ParticleSystem], [Hunger], [SprintControl]); this one only steps them in order. It is mutable and is
  * stepped with [update] once per frame; [tick] changes with every step so that a drawing that reads it is drawn again. A world that is not
  * opened in the [Opening.Oval] starts with the snake asleep in its house, a screen under the stage: the first tap wakes it, and it hands over to
  * [GamePhase.Playing] once the player has steered the snake out of the house and up the path into the oval. With the [Opening.Tutorial]
@@ -136,11 +136,11 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
 
     /** The animals that are out of the grass, in the oval or on their way. */
     val critters: List<Critter> get() = mutableCritters
-    val effects = EffectTracker()
+    val powerDowns = PowerDownTracker()
     val powerUps = PowerUpTracker()
 
-    /** The effects and power ups that are on. */
-    val statuses: List<StatusEntry> get() = ActiveStatuses.of(effects, powerUps)
+    /** The power downs and power ups that are on. */
+    val statuses: List<StatusEntry> get() = ActiveStatuses.of(powerDowns, powerUps)
     private val boosts = PowerUpBoosts(powerUps)
     val hunger = Hunger()
     val sprint = SprintControl()
@@ -150,7 +150,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     private val spawner = CritterSpawner(arena, random, level).also { it.avoidsPath = !layout.isStageSealed }
     private val feeding = Feeding(layout.ground)
     private val toadBlast = ToadBlast(particleSystem)
-    private val effectParticles = EffectParticleEmitter(particleSystem, random)
+    private val powerDownParticles = PowerDownParticleEmitter(particleSystem, random)
     private var seenBounces = 0
 
     /** Whether the result and the settings button of the game over screen show yet. */
@@ -221,7 +221,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
             return
         }
         if (phase != GamePhase.Playing) return
-        if (effects.isOn(Effect.Confused)) {
+        if (powerDowns.isOn(PowerDown.Confused)) {
             rejectedTapTime = rejectedTapSeconds
             return
         }
@@ -232,7 +232,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     private fun tapInIntro() {
         val director = intro ?: return
         if (director.stage.isStory) return
-        if (effects.isOn(Effect.Confused)) {
+        if (powerDowns.isOn(PowerDown.Confused)) {
             rejectedTapTime = rejectedTapSeconds
             return
         }
@@ -257,7 +257,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
 
     fun sprintRelease(pointerId: Long) = sprint.release(pointerId)
 
-    fun applyEffect(kind: ToadKind) = effects.apply(kind)
+    fun applyPowerDown(kind: ToadKind) = powerDowns.apply(kind)
 
     /** Puts a critter in the world: the tests use it to place one where they need it. */
     internal fun addCritter(critter: Critter) {
@@ -283,7 +283,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
         time += dt
         sprint.update(dt, canSprint = phase == GamePhase.Playing || phase == GamePhase.Intro)
         val isPlayed = phase == GamePhase.Playing || phase == GamePhase.Intro
-        effects.update(dt, isCountingDown = isPlayed, isShowing = phase != GamePhase.GameOver)
+        powerDowns.update(dt, isCountingDown = isPlayed, isShowing = phase != GamePhase.GameOver)
         powerUps.update(dt, isCountingDown = isPlayed)
         when (phase) {
             GamePhase.Ready -> stepSnake(dt, intro?.snakeSpeed ?: readySpeed)
@@ -348,7 +348,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
             eat(it)
             director.ate(it)
         }
-        director.dizzy(effects.isOn(Effect.Confused))
+        director.dizzy(powerDowns.isOn(PowerDown.Confused))
     }
 
     /** Something happens when a part of the story begins: the bubble pops. */
@@ -449,7 +449,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     /** Everything the snake has gathered goes back to how it was at the start of the lessons, and when it leaves the stage: a full belly, no poison, no power up, no animal, no sprint. */
     private fun resetSnakeState() {
         hunger.refill()
-        effects.clear()
+        powerDowns.clear()
         powerUps.clear()
         mutableCritters.clear()
         sprint.clear()
@@ -562,26 +562,26 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
         }
         updateCritters(dt)
         feeding.update(dt, snake, mutableCritters, boosts.mouthFactor, boosts.mouthIsFull).forEach { eat(it) }
-        effectParticles.emit(effects, sprint.level, snake, critters)
+        powerDownParticles.emit(powerDowns, sprint.level, snake, critters)
         causeOfDeath(touchedGrass)?.let { endGame(it) }
     }
 
     /** How much of the bar [amount] of food fills right now: a greedy snake gets only part of it. */
-    fun foodValue(amount: Float): Float = if (effects.isOn(Effect.Greedy)) amount * EffectTuning.greedyFeedFactor else amount
+    fun foodValue(amount: Float): Float = if (powerDowns.isOn(PowerDown.Greedy)) amount * PowerDownTuning.greedyFeedFactor else amount
 
     private fun feed(amount: Float) = hunger.feed(foodValue(amount))
 
     /** Ravenous makes the hunger bar drain faster, and fades in and out like its arrow. */
-    private fun ravenousFactor(): Float = 1f + (EffectTuning.ravenousDrainFactor - 1f) * effects.level(Effect.Ravenous)
+    private fun ravenousFactor(): Float = 1f + (PowerDownTuning.ravenousDrainFactor - 1f) * powerDowns.level(PowerDown.Ravenous)
 
     /** Lazy slows the snake down, and fades in and out like its bar. */
-    private fun lazyFactor(): Float = 1f + (EffectTuning.lazySpeedFactor - 1f) * effects.level(Effect.Lazy)
+    private fun lazyFactor(): Float = 1f + (PowerDownTuning.lazySpeedFactor - 1f) * powerDowns.level(PowerDown.Lazy)
 
     /** What kills the snake right now, if anything. */
     private fun causeOfDeath(touchedGrass: Boolean): DeathCause? = when {
         hunger.isStarving -> DeathCause.Starvation
-        effects.isOn(Effect.Hayfever) && touchedGrass -> DeathCause.Allergies
-        effects.isOn(Effect.Cannibal) && snake.hitsItself() -> DeathCause.Cannibalism
+        powerDowns.isOn(PowerDown.Hayfever) && touchedGrass -> DeathCause.Allergies
+        powerDowns.isOn(PowerDown.Cannibal) && snake.hitsItself() -> DeathCause.Cannibalism
         else -> null
     }
 
@@ -643,7 +643,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
             }
             is Critter.Toad -> {
                 score += ScoreTuning.toad
-                effects.apply(critter.kind)
+                powerDowns.apply(critter.kind)
                 feed(HungerTuning.toadFills)
                 particleSystem.sparkles(
                     critter.x, critter.y - 3f, 12,

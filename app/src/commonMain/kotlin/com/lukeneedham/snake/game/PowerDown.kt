@@ -1,7 +1,7 @@
 package com.lukeneedham.snake.game
 
 /** The bad things a poisonous toad does to the snake. */
-enum class Effect(val durationSeconds: Float) {
+enum class PowerDown(val durationSeconds: Float) {
     /** The whole screen turns wavy. */
     Hallucinating(9f),
 

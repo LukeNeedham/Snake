@@ -2,32 +2,32 @@ package com.lukeneedham.snake.ui
 
 import androidx.compose.runtime.Composable
 import com.lukeneedham.snake.game.DeathCause
-import com.lukeneedham.snake.game.Effect
+import com.lukeneedham.snake.game.PowerDown
 import com.lukeneedham.snake.game.PowerUp
 import com.lukeneedham.snake.generated.resources.Res
 import com.lukeneedham.snake.generated.resources.best_value
 import com.lukeneedham.snake.generated.resources.death_allergies
 import com.lukeneedham.snake.generated.resources.death_cannibalism
 import com.lukeneedham.snake.generated.resources.death_starvation
-import com.lukeneedham.snake.generated.resources.effect_cannibal
-import com.lukeneedham.snake.generated.resources.effect_cannibal_description
-import com.lukeneedham.snake.generated.resources.effect_confused
-import com.lukeneedham.snake.generated.resources.effect_confused_description
-import com.lukeneedham.snake.generated.resources.effect_greedy
-import com.lukeneedham.snake.generated.resources.effect_greedy_description
-import com.lukeneedham.snake.generated.resources.effect_hallucinating
+import com.lukeneedham.snake.generated.resources.power_down_cannibal
+import com.lukeneedham.snake.generated.resources.power_down_cannibal_description
+import com.lukeneedham.snake.generated.resources.power_down_confused
+import com.lukeneedham.snake.generated.resources.power_down_confused_description
+import com.lukeneedham.snake.generated.resources.power_down_greedy
+import com.lukeneedham.snake.generated.resources.power_down_greedy_description
+import com.lukeneedham.snake.generated.resources.power_down_hallucinating
 import com.lukeneedham.snake.generated.resources.belly_decreases
 import com.lukeneedham.snake.generated.resources.but_they_poison
 import com.lukeneedham.snake.generated.resources.eat_to_not_starve
-import com.lukeneedham.snake.generated.resources.effect_hallucinating_description
-import com.lukeneedham.snake.generated.resources.effect_hayfever
-import com.lukeneedham.snake.generated.resources.effect_hayfever_description
-import com.lukeneedham.snake.generated.resources.effect_imposters
-import com.lukeneedham.snake.generated.resources.effect_imposters_description
-import com.lukeneedham.snake.generated.resources.effect_lazy
-import com.lukeneedham.snake.generated.resources.effect_lazy_description
-import com.lukeneedham.snake.generated.resources.effect_ravenous
-import com.lukeneedham.snake.generated.resources.effect_ravenous_description
+import com.lukeneedham.snake.generated.resources.power_down_hallucinating_description
+import com.lukeneedham.snake.generated.resources.power_down_hayfever
+import com.lukeneedham.snake.generated.resources.power_down_hayfever_description
+import com.lukeneedham.snake.generated.resources.power_down_imposters
+import com.lukeneedham.snake.generated.resources.power_down_imposters_description
+import com.lukeneedham.snake.generated.resources.power_down_lazy
+import com.lukeneedham.snake.generated.resources.power_down_lazy_description
+import com.lukeneedham.snake.generated.resources.power_down_ravenous
+import com.lukeneedham.snake.generated.resources.power_down_ravenous_description
 import com.lukeneedham.snake.generated.resources.game_title
 import com.lukeneedham.snake.generated.resources.hunger_fills
 import com.lukeneedham.snake.generated.resources.hunger_title
@@ -101,16 +101,16 @@ internal fun sceneTexts(score: Int, bestScore: Int, isNewBest: Boolean): SceneTe
     statusEmpty = stringResource(Res.string.status_empty),
     hungerTitle = stringResource(Res.string.hunger_title),
     hungerFills = stringResource(Res.string.hunger_fills),
-    effectDescriptions = Effect.entries.map { effect ->
-        when (effect) {
-            Effect.Hallucinating -> stringResource(Res.string.effect_hallucinating_description)
-            Effect.Imposters -> stringResource(Res.string.effect_imposters_description)
-            Effect.Confused -> stringResource(Res.string.effect_confused_description)
-            Effect.Hayfever -> stringResource(Res.string.effect_hayfever_description)
-            Effect.Greedy -> stringResource(Res.string.effect_greedy_description)
-            Effect.Ravenous -> stringResource(Res.string.effect_ravenous_description)
-            Effect.Lazy -> stringResource(Res.string.effect_lazy_description)
-            Effect.Cannibal -> stringResource(Res.string.effect_cannibal_description)
+    powerDownDescriptions = PowerDown.entries.map { powerDown ->
+        when (powerDown) {
+            PowerDown.Hallucinating -> stringResource(Res.string.power_down_hallucinating_description)
+            PowerDown.Imposters -> stringResource(Res.string.power_down_imposters_description)
+            PowerDown.Confused -> stringResource(Res.string.power_down_confused_description)
+            PowerDown.Hayfever -> stringResource(Res.string.power_down_hayfever_description)
+            PowerDown.Greedy -> stringResource(Res.string.power_down_greedy_description)
+            PowerDown.Ravenous -> stringResource(Res.string.power_down_ravenous_description)
+            PowerDown.Lazy -> stringResource(Res.string.power_down_lazy_description)
+            PowerDown.Cannibal -> stringResource(Res.string.power_down_cannibal_description)
         }
     },
     powerUpDescriptions = PowerUp.entries.map { powerUp ->
@@ -123,16 +123,16 @@ internal fun sceneTexts(score: Int, bestScore: Int, isNewBest: Boolean): SceneTe
             PowerUp.Cheese -> stringResource(Res.string.power_up_cheese_description)
         }
     },
-    effectNames = Effect.entries.map { effect ->
-        when (effect) {
-            Effect.Hallucinating -> stringResource(Res.string.effect_hallucinating)
-            Effect.Imposters -> stringResource(Res.string.effect_imposters)
-            Effect.Confused -> stringResource(Res.string.effect_confused)
-            Effect.Hayfever -> stringResource(Res.string.effect_hayfever)
-            Effect.Greedy -> stringResource(Res.string.effect_greedy)
-            Effect.Ravenous -> stringResource(Res.string.effect_ravenous)
-            Effect.Lazy -> stringResource(Res.string.effect_lazy)
-            Effect.Cannibal -> stringResource(Res.string.effect_cannibal)
+    powerDownNames = PowerDown.entries.map { powerDown ->
+        when (powerDown) {
+            PowerDown.Hallucinating -> stringResource(Res.string.power_down_hallucinating)
+            PowerDown.Imposters -> stringResource(Res.string.power_down_imposters)
+            PowerDown.Confused -> stringResource(Res.string.power_down_confused)
+            PowerDown.Hayfever -> stringResource(Res.string.power_down_hayfever)
+            PowerDown.Greedy -> stringResource(Res.string.power_down_greedy)
+            PowerDown.Ravenous -> stringResource(Res.string.power_down_ravenous)
+            PowerDown.Lazy -> stringResource(Res.string.power_down_lazy)
+            PowerDown.Cannibal -> stringResource(Res.string.power_down_cannibal)
         }
     },
     powerUpNames = PowerUp.entries.map { powerUp ->

@@ -278,13 +278,13 @@ class GameWorldIntroTest {
         val toad = world.critters.single() as Critter.Toad
         assertEquals(ToadKind.Pink, toad.kind)
         world.playUntil(120f) { world.intro!!.stage == IntroStage.Dizzy }
-        assertTrue(world.effects.isOn(Effect.Confused))
+        assertTrue(world.powerDowns.isOn(PowerDown.Confused))
         // A dizzy snake ignores a tap
         val direction = world.snake.turnDirection
         world.tap()
         assertEquals(direction, world.snake.turnDirection)
         world.playUntil(60f) { world.intro!!.stage == IntroStage.Bird }
-        assertFalse(world.effects.isOn(Effect.Confused))
+        assertFalse(world.powerDowns.isOn(PowerDown.Confused))
     }
 
     @Test
@@ -521,7 +521,7 @@ class GameWorldIntroTest {
         world.jumpToLesson(IntroStage.Hunger)
         // Some way into the lessons: the belly has run down, the snake is poisoned and has a power up
         world.play(IntroTuning.hungerTextSeconds + 1.5f)
-        world.applyEffect(ToadKind.Pink)
+        world.applyPowerDown(ToadKind.Pink)
         world.powerUps.apply(BirdKind.BlueTit)
         assertTrue(world.hunger.level < 1f)
         assertEquals(IntroStage.Sprint, world.intro!!.stage)
@@ -546,5 +546,5 @@ class GameWorldIntroTest {
 
     /** Whether anything of the lessons is left over: a belly that is not full, a poison, a power up, an animal. */
     private fun GameWorld.hasMoreThanTheStart(): Boolean =
-        hunger.level < 0.95f || Effect.entries.any { effects.isOn(it) } || PowerUp.entries.any { powerUps.isOn(it) } || critters.isNotEmpty()
+        hunger.level < 0.95f || PowerDown.entries.any { powerDowns.isOn(it) } || PowerUp.entries.any { powerUps.isOn(it) } || critters.isNotEmpty()
 }

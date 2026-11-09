@@ -9,7 +9,7 @@ sealed interface Critter : CritterBody {
         Critter,
         CritterBody by MouseBody(x, y, lifetime, tameTarget, speedFactor)
 
-    /** Sits still, then hops a short way in a random direction. Eating one has the effect of its [kind]. */
+    /** Sits still, then hops a short way in a random direction. Eating one has the power down of its [kind]. */
     class Toad(override val id: Int, val kind: ToadKind, x: Float, y: Float, lifetime: Float, tameTarget: Vec2? = null) :
         Critter,
         CritterBody by ToadBody(x, y, lifetime, tameTarget)

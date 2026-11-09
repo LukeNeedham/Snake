@@ -244,7 +244,7 @@ private fun GameTutorialDizzyScreenshot() {
         GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Tutorial).also {
             it.start()
             it.jumpToLesson(IntroStage.Dizzy)
-            it.applyEffect(ToadKind.Pink)
+            it.applyPowerDown(ToadKind.Pink)
             repeat(30) { _ -> it.update(1f / 60f) }
         }
     }
@@ -380,7 +380,7 @@ private fun GamePageHallucinatingScreenshot() {
             it.start()
             repeat(720) { _ -> it.update(1f / 60f) }
             it.score = 7
-            it.applyEffect(ToadKind.Purple)
+            it.applyPowerDown(ToadKind.Purple)
             repeat(75) { _ -> it.update(1f / 60f) }
         }
     }
@@ -413,8 +413,8 @@ private fun GamePageStatusScreenshot() {
             it.start()
             repeat(720) { _ -> it.update(1f / 60f) }
             it.score = 7
-            it.applyEffect(ToadKind.Olive)
-            it.applyEffect(ToadKind.Brown)
+            it.applyPowerDown(ToadKind.Olive)
+            it.applyPowerDown(ToadKind.Brown)
             it.powerUps.apply(BirdKind.BlueTit)
             repeat(120) { _ -> it.update(1f / 60f) }
             it.openOverlay(PausePage.Status)
