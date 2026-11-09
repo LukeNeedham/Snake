@@ -30,9 +30,12 @@ The snake is always hungry: a bar at the top of the screen runs down, a mouse fi
 snake starves when it is empty. Hold the corner at the bottom left to sprint (you can move it to the right in the settings), which is faster but burns
 the bar quicker, while your other thumb taps anywhere else to turn. The button at the top left pauses the game and opens a
 menu with Resume, Restart and Settings.
-The game opens with a little story: the snake sleeps curled up in its den, a ring of rocks in the grass, until its stomach
-rumbles and it dreams of a mouse. Then the first tap of the game teaches the one control there is, and the player steers the
-snake out of its den and along the path through the grass into the oval. Only the first game starts like this: a restart goes straight to the oval.
+The game opens with a little story: the snake sleeps curled up on the stone floor of its den, a ring of rocks in the grass, until the
+player taps to wake it. It wakes up, blinks, flicks its tongue, and its stomach rumbles; it dreams of a mouse, and then it starts to
+circle. A tap turns it the other way, and that is the whole lesson of the turn. Then the player steers it out of its den and along
+the path through the grass: the path goes on and on until the player has learned to hold the sprint corner (to zoom) for a couple of seconds,
+and then it leads into the oval. Only the first game starts like this: a restart goes straight to the oval. The snake can always
+leave the oval by the path and go home to its den.
 
 The mice run from a snake they see coming, but they cannot see what is behind them.
 
@@ -42,11 +45,12 @@ The mice run from a snake they see coming, but they cannot see what is behind th
 <img src="docs/screenshots/02-GamePageRumble.png" width="240" alt="Game Page Rumble">
 <img src="docs/screenshots/03-GamePageThinking.png" width="240" alt="Game Page Thinking">
 <img src="docs/screenshots/04-GamePageLesson.png" width="240" alt="Game Page Lesson">
-<img src="docs/screenshots/05-GamePage.png" width="240" alt="Game Page">
-<img src="docs/screenshots/06-GamePageBirds.png" width="240" alt="Game Page Birds">
-<img src="docs/screenshots/07-GamePageHallucinating.png" width="240" alt="Game Page Hallucinating">
-<img src="docs/screenshots/08-GamePagePaused.png" width="240" alt="Game Page Paused">
-<img src="docs/screenshots/09-GamePageGameOver.png" width="240" alt="Game Page Game Over">
+<img src="docs/screenshots/05-GamePageZoom.png" width="240" alt="Game Page Zoom">
+<img src="docs/screenshots/06-GamePage.png" width="240" alt="Game Page">
+<img src="docs/screenshots/07-GamePageBirds.png" width="240" alt="Game Page Birds">
+<img src="docs/screenshots/08-GamePageHallucinating.png" width="240" alt="Game Page Hallucinating">
+<img src="docs/screenshots/09-GamePagePaused.png" width="240" alt="Game Page Paused">
+<img src="docs/screenshots/10-GamePageGameOver.png" width="240" alt="Game Page Game Over">
 
 ## Getting started as a user
 
