@@ -19,6 +19,13 @@ class PowerUpTracker {
         bannerTime = bannerSeconds
     }
 
+    /** Takes all the power ups off at once, and the banner with them: the tutorial starts again as it was. */
+    fun clear() {
+        remaining.fill(0f)
+        bannerKind = null
+        bannerTime = 0f
+    }
+
     fun remaining(powerUp: PowerUp): Float = remaining[powerUp.ordinal]
 
     fun isOn(powerUp: PowerUp): Boolean = remaining[powerUp.ordinal] > 0f

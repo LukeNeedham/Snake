@@ -19,6 +19,14 @@ class EffectTracker {
         bannerTime = bannerSeconds
     }
 
+    /** Takes all the effects off at once, and the banner with them: the tutorial starts again as it was. */
+    fun clear() {
+        remaining.fill(0f)
+        levels.fill(0f)
+        bannerKind = null
+        bannerTime = 0f
+    }
+
     /** 0 to 1: how strongly the effect shows, so that it fades in and out. */
     fun level(effect: Effect): Float = levels[effect.ordinal]
 

@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import com.lukeneedham.snake.game.GameWorld
 import com.lukeneedham.snake.game.IntroDirector
+import com.lukeneedham.snake.game.IntroStage
 import com.lukeneedham.snake.game.SnakeTuning
 import kotlin.math.PI
 import kotlin.math.abs
@@ -25,6 +26,35 @@ internal fun DrawScope.drawIntroOverlay(world: GameWorld) {
     if (intro.rumble > 0f) drawRumble(world, intro)
     drawBubbles(world, intro)
     if (intro.popProgress > 0f) drawPop(world, intro)
+    drawWayArrow(world, intro)
+}
+
+/**
+ * The arrow that shows the way, in the world, in the middle of the path it points along: to the left, out of the house, to the room of the
+ * tutorial; to the right, out of the room, back to the house; and up, out of the house, to the stage. It bobs a little the way it points.
+ */
+private fun DrawScope.drawWayArrow(world: GameWorld, intro: IntroDirector) {
+    val layout = world.layout
+    val nudge = ((sin(world.time * 6f) + 1f) * bobRange / 2f).roundToInt()
+    when (intro.stage) {
+        IntroStage.Steering -> if (intro.isTutorial) {
+            // The path to the left, between the left wall of the house and the left edge of the screen of the house
+            val wall = layout.houseX - layout.house.radiusAt(PI.toFloat())
+            val middle = (world.cameraX + wall) / 2f
+            drawArrow((middle - arrowLength / 2f).roundToInt() + bobRange - nudge, layout.houseY.roundToInt(), ArrowDirection.Left)
+        }
+        IntroStage.Return -> {
+            // The path out of the room to the right, which goes on to the house: its tip at the edge of the screen of the room
+            drawArrow((world.cameraX + world.arena.width).roundToInt() - 1 - bobRange + nudge, layout.room.centerY.roundToInt(), ArrowDirection.Right)
+        }
+        IntroStage.Leaving -> {
+            // The path up, between the top wall of the house and the top edge of the screen of the house
+            val wall = layout.houseY - layout.house.radiusAt(-PI.toFloat() / 2f)
+            val middle = (world.cameraY + wall) / 2f
+            drawArrow(layout.houseX.roundToInt(), (middle - arrowLength / 2f).roundToInt() - nudge, ArrowDirection.Up)
+        }
+        else -> Unit
+    }
 }
 
 /** Zs come out of the mouth of the sleeping snake one after another, float up and to the side, and grow and fade. */
@@ -124,3 +154,6 @@ private const val mouseScale = 2
 
 /** The ring of the pop only lasts the first part of it. */
 private const val popRingPart = 0.45f
+
+/** How many pixels the arrow that shows the way bobs along the way it points. */
+private const val bobRange = 3

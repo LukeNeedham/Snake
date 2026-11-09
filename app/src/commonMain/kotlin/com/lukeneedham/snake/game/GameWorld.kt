@@ -274,6 +274,8 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
         if (director.stage != stageBefore) onStageEntered(director.stage)
         stepSnake(dt, director.snakeSpeed * (1f + boosts.sprintBoost * sprint.level) * boosts.speedFactor)
         director.trackSprint(sprint.isHeld, dt)
+        // Going into the room again, from the house, starts the lessons over as they were at the start, wherever they had got to
+        if (entersRoom() && director.stage >= IntroStage.Hunger) restartLessons(director)
         if (layout.room.signedDistance(snake.x, snake.y) < -DenTuning.roomDepth) director.enteredRoom()
         if (director.stage.isLesson) updateLesson(dt, director)
         // Back in the house the stones that blocked the path up are gone, and it can be taken
@@ -352,6 +354,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
             cameraX = 0f
         } else {
             snake = layout.snakeInRoom()
+            wasInRoom = true
             isRoomView = true
             cameraX = layout.roomCameraX
         }
@@ -393,6 +396,20 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
         replay.jumpTo(IntroStage.Hunger)
         intro = replay
         phase = GamePhase.Intro
+        resetLessonState()
+    }
+
+    /** The lessons start over from the hunger bar, with everything as it was at the start of them. */
+    private fun restartLessons(director: IntroDirector) {
+        director.jumpTo(IntroStage.Hunger)
+        resetLessonState()
+    }
+
+    /** Everything the lessons change goes back to how it was at the start of them: a full belly, no poison, no power up, no animal, no sprint. */
+    private fun resetLessonState() {
+        hunger.refill()
+        effects.clear()
+        powerUps.clear()
         mutableCritters.clear()
         sprint.clear()
     }

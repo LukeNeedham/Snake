@@ -408,4 +408,38 @@ class GameWorldIntroTest {
         assertEquals(y, world.snake.y)
         assertEquals(GamePhase.GameOver, world.phase)
     }
+
+    @Test
+    fun goingIntoTheRoomAgainStartsTheLessonsOverAsTheyWereAtTheStart() {
+        val world = newWorld()
+        world.start()
+        world.jumpToLesson(IntroStage.Hunger)
+        // Some way into the lessons: the belly has run down, the snake is poisoned and has a power up
+        world.play(IntroTuning.hungerTextSeconds + 1.5f)
+        world.applyEffect(ToadKind.Pink)
+        world.powerUps.apply(BirdKind.BlueTit)
+        assertTrue(world.hunger.level < 1f)
+        assertEquals(IntroStage.Sprint, world.intro!!.stage)
+        // It leaves the room, by the path to the house...
+        var seconds = 0f
+        while (world.layout.room.signedDistance(world.snake.x, world.snake.y) < 4f && seconds < 60f) {
+            world.steerToward(world.layout.houseX, world.layout.houseY)
+            world.update(1f / 60f)
+            seconds += 1f / 60f
+        }
+        assertTrue(world.layout.room.signedDistance(world.snake.x, world.snake.y) >= 4f, "the snake did not get out")
+        // ...and goes back in: everything is as it was at the start of the lessons
+        seconds = 0f
+        while (world.layout.room.signedDistance(world.snake.x, world.snake.y) > -DenTuning.roomDepth - 1f && seconds < 60f) {
+            world.steerToward(world.layout.room.centerX, world.layout.room.centerY)
+            world.update(1f / 60f)
+            seconds += 1f / 60f
+        }
+        assertEquals(IntroStage.Hunger, world.intro!!.stage)
+        assertFalse(world.hasMoreThanTheStart())
+    }
+
+    /** Whether anything of the lessons is left over: a belly that is not full, a poison, a power up, an animal. */
+    private fun GameWorld.hasMoreThanTheStart(): Boolean =
+        hunger.level < 0.95f || Effect.entries.any { effects.isOn(it) } || PowerUp.entries.any { powerUps.isOn(it) } || critters.isNotEmpty()
 }

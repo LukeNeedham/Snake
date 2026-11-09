@@ -40,6 +40,13 @@ class Hunger {
         }
     }
 
+    /** Fills the bar up again at once: the tutorial starts again as it was. */
+    fun refill() {
+        level = 1f
+        filled = 1f
+        gainWait = 0f
+    }
+
     /** Lets what was just eaten fill in, but does not drain the bar: nothing starves in the lessons. */
     fun settle(dt: Float) {
         if (filled < level) fillIn(dt)
