@@ -7,13 +7,10 @@ import com.lukeneedham.snake.game.Effect
 import com.lukeneedham.snake.game.GameWorld
 import com.lukeneedham.snake.game.PowerUp
 import com.lukeneedham.snake.game.ToadKind
-import kotlin.math.roundToInt
-
-private const val barWidth = 32
 
 /**
- * One bar per effect of a toad and per power up of a bird that is on, at the bottom of the screen between the corners, in the colour
- * of its animal; each runs down with the time left. The effects come first, then the power ups.
+ * One arrow per effect of a toad (pointing down) and per power up of a bird (pointing up) that is on, at the bottom of the screen
+ * between the corners, in the colour of its animal; each one empties from the top down as the time runs out. The effects come first, then the power ups.
  */
 internal fun DrawScope.drawEffectBars(world: GameWorld) {
     var row = 0
@@ -21,26 +18,21 @@ internal fun DrawScope.drawEffectBars(world: GameWorld) {
         val remaining = world.effects.remaining(effect)
         if (remaining <= 0f) continue
         val kind = ToadKind.entries.first { it.effect == effect }
-        drawTimerBar(world, row, remaining / effect.durationSeconds, kind.body, kind.light)
+        drawTimerArrow(world, row, isUp = false, remaining / effect.durationSeconds, kind.body)
         row++
     }
     for (powerUp in PowerUp.entries) {
         val remaining = world.powerUps.remaining(powerUp)
         if (remaining <= 0f) continue
         val palette = birdPalette(BirdKind.entries.first { it.powerUp == powerUp })
-        drawTimerBar(world, row, remaining / powerUp.durationSeconds, palette.bar, palette.barLight)
+        drawTimerArrow(world, row, isUp = true, remaining / powerUp.durationSeconds, palette.barLight)
         row++
     }
 }
 
-/** A bar with a small badge in front of it; [row] counts up from the bottom of the screen, and [fraction] is how much of the bar is left. */
-private fun DrawScope.drawTimerBar(world: GameWorld, row: Int, fraction: Float, color: Color, light: Color) {
-    val centerX = world.arena.width.toInt() / 2
-    val y = world.arena.height.toInt() - 9 - row * 8
-    pixelRect(centerX - 22, y - 1, 7, 7, PixelFont.outline)
-    pixelRect(centerX - 21, y, 5, 5, color)
-    pixel(centerX - 20, y + 1, light)
-    pixelRect(centerX - 13, y, barWidth + 2, 5, PixelFont.outline)
-    pixelRect(centerX - 12, y + 1, barWidth, 3, HudPalette.barBack)
-    pixelRect(centerX - 12, y + 1, (barWidth * fraction).roundToInt(), 3, color)
+/** An arrow that is filled by the time left; [row] counts up from the bottom of the screen, and [fraction] is how much time is left. */
+private fun DrawScope.drawTimerArrow(world: GameWorld, row: Int, isUp: Boolean, fraction: Float, color: Color) {
+    val left = world.arena.width.toInt() / 2 - ArrowIcon.width / 2
+    val top = world.arena.height.toInt() - 11 - row * 11
+    drawFilledArrow(left, top, isUp, fraction, color)
 }
