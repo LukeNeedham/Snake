@@ -16,6 +16,7 @@
     <string name="new_best">New best!</string>
     <string name="tap_to_retry">Tap to retry</string>
     <string name="paused">Paused</string>
+    <string name="menu_title">Menu</string>
     <string name="effect_hallucinating">Trippy!</string>
     <string name="effect_imposters">Imposters!</string>
     <string name="effect_confused">Dizzy!</string>
@@ -30,8 +31,8 @@
     <string name="power_up_bigger_mouth">Big mouth!</string>
     <string name="power_up_toad_free">Toad-free!</string>
     <string name="power_up_cheese">Cheese!</string>
-    <string name="status_title">Active</string>
-    <string name="status_empty">Nothing is on</string>
+    <string name="status_title">Effects</string>
+    <string name="status_empty">No effects active</string>
     <string name="hunger_title">Hunger</string>
     <string name="hunger_fills">Eating fills</string>
     <string name="effect_hallucinating_description">The whole screen goes wavy.</string>

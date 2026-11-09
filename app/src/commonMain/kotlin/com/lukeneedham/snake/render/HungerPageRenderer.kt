@@ -20,7 +20,7 @@ private const val spriteColumn = 24
  */
 internal fun DrawScope.drawHungerPage(world: GameWorld, texts: SceneTexts, topInset: Int) {
     val width = world.arena.width.toInt()
-    drawCenteredPixelText(texts.hungerTitle, width / 2, topInset + 8, HudPalette.gold, scale = 2)
+    drawCenteredPixelText(texts.hungerTitle, width / 2, topInset + PageTitle.top, HudPalette.gold, scale = 2)
     val stomachSize = StomachLayout.size * stomachScale
     var y = topInset + 30
     drawStomachAt(world, (width - stomachSize) / 2, y, stomachScale)

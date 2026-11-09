@@ -23,7 +23,7 @@ internal fun DrawScope.drawPauseOverlay(world: GameWorld, texts: SceneTexts, top
         if (abs(pagesAway) >= 1f) continue
         translate(left = (pagesAway * width).roundToInt().toFloat()) {
             when (page) {
-                PausePage.Pause -> drawPausePage(world, texts)
+                PausePage.Pause -> drawPausePage(world, texts, topInset)
                 PausePage.Hunger -> drawHungerPage(world, texts, topInset)
                 PausePage.Status -> drawStatusPage(world, texts, topInset)
             }

@@ -13,6 +13,7 @@ internal data class SceneTexts(
     val newBest: String,
     val tapToRetry: String,
     val paused: String,
+    val menuTitle: String,
     val menuResume: String,
     val menuBack: String,
     val menuRestart: String,

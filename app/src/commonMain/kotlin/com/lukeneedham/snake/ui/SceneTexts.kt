@@ -28,6 +28,7 @@ import com.lukeneedham.snake.generated.resources.hunger_title
 import com.lukeneedham.snake.generated.resources.menu_back
 import com.lukeneedham.snake.generated.resources.menu_restart
 import com.lukeneedham.snake.generated.resources.menu_resume
+import com.lukeneedham.snake.generated.resources.menu_title
 import com.lukeneedham.snake.generated.resources.menu_settings
 import com.lukeneedham.snake.generated.resources.new_best
 import com.lukeneedham.snake.generated.resources.paused
@@ -62,6 +63,7 @@ internal fun sceneTexts(score: Int, bestScore: Int, isNewBest: Boolean): SceneTe
     newBest = if (isNewBest) stringResource(Res.string.new_best) else "",
     tapToRetry = stringResource(Res.string.tap_to_retry),
     paused = stringResource(Res.string.paused),
+    menuTitle = stringResource(Res.string.menu_title),
     menuResume = stringResource(Res.string.menu_resume),
     menuBack = stringResource(Res.string.menu_back),
     menuRestart = stringResource(Res.string.menu_restart),
