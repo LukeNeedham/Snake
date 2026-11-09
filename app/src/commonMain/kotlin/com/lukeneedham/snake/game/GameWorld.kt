@@ -171,7 +171,7 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     }
 
     private fun updatePlaying(dt: Float) {
-        snake.step(dt, (1f + boosts.sprintBoost * sprint.level) * boosts.speedFactor)
+        snake.step(dt, (1f + boosts.sprintBoost * sprint.level) * boosts.speedFactor * sluggishFactor())
         hunger.update(dt, sprint.level, boosts.sprintDrainFactor)
         val touchedGrass = snake.bounceCount != seenBounces
         dustAtNewBounces()
@@ -181,6 +181,9 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
         effectParticles.emit(effects, sprint.level, snake, critters)
         if (hunger.isStarving || (effects.isOn(Effect.HayFever) && touchedGrass) || (effects.isOn(Effect.Cannibal) && snake.hitsItself())) endGame()
     }
+
+    /** Sluggish slows the snake down, and fades in and out like its bar. */
+    private fun sluggishFactor(): Float = 1f + (EffectTuning.sluggishSpeedFactor - 1f) * effects.level(Effect.Sluggish)
 
     private fun dustAtNewBounces() {
         if (snake.bounceCount == seenBounces) return

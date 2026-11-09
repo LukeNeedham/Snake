@@ -9,6 +9,7 @@ import com.lukeneedham.snake.generated.resources.effect_confused
 import com.lukeneedham.snake.generated.resources.effect_disguised
 import com.lukeneedham.snake.generated.resources.effect_hallucinating
 import com.lukeneedham.snake.generated.resources.effect_hay_fever
+import com.lukeneedham.snake.generated.resources.effect_sluggish
 import com.lukeneedham.snake.generated.resources.effect_cannibal
 import com.lukeneedham.snake.generated.resources.game_over
 import com.lukeneedham.snake.generated.resources.game_title
@@ -51,6 +52,7 @@ internal fun sceneTexts(score: Int, bestScore: Int, isNewBest: Boolean): SceneTe
             Effect.Disguised -> stringResource(Res.string.effect_disguised)
             Effect.Confused -> stringResource(Res.string.effect_confused)
             Effect.HayFever -> stringResource(Res.string.effect_hay_fever)
+            Effect.Sluggish -> stringResource(Res.string.effect_sluggish)
             Effect.Cannibal -> stringResource(Res.string.effect_cannibal)
         }
     },

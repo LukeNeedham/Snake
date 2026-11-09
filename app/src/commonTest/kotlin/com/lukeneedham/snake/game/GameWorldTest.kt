@@ -140,6 +140,20 @@ class GameWorldTest {
     }
 
     @Test
+    fun aSluggishSnakeGoesSlower() {
+        fun distanceInASecond(sluggish: Boolean): Float {
+            val world = GameWorld(Arena(400f, 400f), seed = 11)
+            world.start()
+            if (sluggish) world.applyEffect(ToadKind.Olive)
+            repeat(60) { world.update(1f / 60f) }
+            val start = world.snake.totalDistance
+            repeat(60) { world.update(1f / 60f) }
+            return world.snake.totalDistance - start
+        }
+        assertTrue(distanceInASecond(sluggish = true) < distanceInASecond(sluggish = false) * 0.8f)
+    }
+
+    @Test
     fun eatingAGreyToadGivesHayFever() {
         val world = newWorld()
         world.start()
