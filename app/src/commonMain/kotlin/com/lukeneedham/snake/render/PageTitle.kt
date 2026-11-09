@@ -1,7 +1,9 @@
 package com.lukeneedham.snake.render
 
-/** Every page of the pause overlay has its title at the same place at the top. */
+import com.lukeneedham.snake.game.MenuLayout
+
+/** Every page of the pause overlay has its title at the same place at the top; the close button is centred on it. */
 internal object PageTitle {
     /** How far under the status bar the title is, in art pixels. */
-    const val top = 8
+    val top: Int = MenuLayout.pageTitleTop.toInt()
 }

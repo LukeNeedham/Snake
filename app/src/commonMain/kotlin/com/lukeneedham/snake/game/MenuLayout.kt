@@ -19,6 +19,10 @@ object MenuLayout {
 
     private const val closeSize = 12f
 
+    /** The title of a page of the overlay is this far under the status bar, and is this tall (the pixel font at the scale of 2). */
+    const val pageTitleTop = 8f
+    const val pageTitleHeight = 10f
+
     /** The dots of the page indicator at the bottom of the overlay. */
     const val dotSize = 5f
     private const val dotGap = 4f
@@ -40,8 +44,11 @@ object MenuLayout {
 
     fun isOnMenuButton(topInset: Int, x: Float, y: Float): Boolean = menuArea(topInset).contains(Offset(x, y))
 
-    /** The close button in the top left corner of the overlay, under the status bar of height [topInset]. */
-    fun closeButton(topInset: Int): Rect = Rect(margin, topInset + margin, margin + closeSize, topInset + margin + closeSize)
+    /** The close button in the top left corner of the overlay, under the status bar of height [topInset]: centred on the title of the page. */
+    fun closeButton(topInset: Int): Rect {
+        val top = topInset + pageTitleTop + pageTitleHeight / 2f - closeSize / 2f
+        return Rect(margin, top, margin + closeSize, top + closeSize)
+    }
 
     fun isOnCloseButton(topInset: Int, x: Float, y: Float): Boolean {
         val rect = closeButton(topInset)
