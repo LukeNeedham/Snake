@@ -7,7 +7,9 @@ import com.lukeneedham.snake.game.Arena
 import com.lukeneedham.snake.game.BirdKind
 import com.lukeneedham.snake.game.BirdLanding
 import com.lukeneedham.snake.game.Critter
+import com.lukeneedham.snake.game.DeathCause
 import com.lukeneedham.snake.game.GameWorld
+import com.lukeneedham.snake.game.PausePage
 import com.lukeneedham.snake.game.ToadKind
 import com.lukeneedham.snake.game.Vec2
 import com.lukeneedham.snake.ui.GamePageContent
@@ -84,6 +86,42 @@ private fun GamePageHallucinatingScreenshot() {
     AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
 }
 
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageHunger.png. */
+@Preview(widthDp = 360, heightDp = 800)
+@Composable
+private fun GamePageHungerScreenshot() {
+    val world = remember {
+        GameWorld(Arena(108f, 240f), seed = 7).also {
+            it.start()
+            repeat(720) { _ -> it.update(1f / 60f) }
+            it.score = 7
+            it.openOverlay(PausePage.Hunger)
+        }
+    }
+    val state = GameUiState(world = world, phase = world.phase, score = world.score, bestScore = 12, isNewBest = false)
+    AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
+}
+
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageStatus.png. */
+@Preview(widthDp = 360, heightDp = 800)
+@Composable
+private fun GamePageStatusScreenshot() {
+    val world = remember {
+        GameWorld(Arena(108f, 240f), seed = 7).also {
+            it.start()
+            repeat(720) { _ -> it.update(1f / 60f) }
+            it.score = 7
+            it.applyEffect(ToadKind.Olive)
+            it.applyEffect(ToadKind.Brown)
+            it.powerUps.apply(BirdKind.BlueTit)
+            repeat(120) { _ -> it.update(1f / 60f) }
+            it.openOverlay(PausePage.Status)
+        }
+    }
+    val state = GameUiState(world = world, phase = world.phase, score = world.score, bestScore = 12, isNewBest = false)
+    AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
+}
+
 /** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageGameOver.png. */
 @Preview(widthDp = 360, heightDp = 800)
 @Composable
@@ -93,7 +131,7 @@ private fun GamePageGameOverScreenshot() {
             it.start()
             repeat(720) { _ -> it.update(1f / 60f) }
             it.score = 13
-            it.endGame()
+            it.endGame(DeathCause.Starvation)
             repeat(75) { _ -> it.update(1f / 60f) }
         }
     }

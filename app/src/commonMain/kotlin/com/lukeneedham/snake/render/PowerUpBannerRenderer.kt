@@ -12,12 +12,14 @@ internal fun DrawScope.drawPowerUpBanner(world: GameWorld, texts: SceneTexts) {
     val palette = birdPalette(kind)
     val fade = (time / 0.5f).coerceIn(0f, 1f)
     val rise = ((2f - time) * 4f).coerceAtMost(8f).roundToInt()
-    drawCenteredPixelText(
-        text = texts.powerUpNames[kind.powerUp.ordinal],
-        centerX = world.arena.width.toInt() / 2,
-        y = world.arena.height.toInt() / 4 + 14 - rise,
-        color = palette.barLight.copy(alpha = fade),
-        scale = 2,
-        outline = PixelFont.outline.copy(alpha = fade),
-    )
+    val text = texts.powerUpNames[kind.powerUp.ordinal]
+    val textWidth = PixelFont.width(text, scale = 2)
+    val left = world.arena.width.toInt() / 2 - (ArrowIcon.width + arrowGap + textWidth) / 2
+    val y = world.arena.height.toInt() / 4 + 14 - rise
+    drawArrow(left, y + 1, isUp = true, color = palette.barLight.copy(alpha = fade), outline = PixelFont.outline.copy(alpha = fade))
+    drawPixelText(text, left + ArrowIcon.width + arrowGap, y, palette.barLight.copy(alpha = fade), scale = 2, outline = PixelFont.outline.copy(alpha = fade))
 }
+
+/** The space between the arrow and the name. */
+private const val arrowGap = 3
+

@@ -63,7 +63,7 @@ class Snake(arena: Arena) {
         body.update(dt, totalDistance, heading)
     }
 
-    /** Whether the head touches a part of the body that is not the neck. It only kills the snake under the lupus curse. */
+    /** Whether the head touches a part of the body that is not the neck. It only kills the snake under the cannibal effect. */
     fun hitsItself(): Boolean = body.touches(x, y)
 
     private fun advance(distance: Float) {

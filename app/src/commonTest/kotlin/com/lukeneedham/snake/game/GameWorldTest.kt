@@ -91,15 +91,15 @@ class GameWorldTest {
         assertTrue(world.effects.remaining(Effect.Hallucinating) < Effect.Hallucinating.durationSeconds - 0.9f)
     }
 
-    /** Runs a long snake round its circle for [seconds], keeping it fed so that only the curse can kill it; true if it hit itself. */
-    private fun GameWorld.runLongSnakeFed(seconds: Int, isCursed: Boolean): Boolean {
+    /** Runs a long snake round its circle for [seconds], keeping it fed so that only cannibal can kill it; true if it hit itself. */
+    private fun GameWorld.runLongSnakeFed(seconds: Int, isCannibal: Boolean): Boolean {
         snake.grow(20)
         var touched = false
         repeat(60 * seconds) {
             if (phase == GamePhase.Playing) {
                 hunger.feed(1f)
-                // Toad-free keeps the toads away, so that no other curse changes the outcome
-                if (isCursed) applyEffect(ToadKind.Grey) else powerUps.apply(BirdKind.Crow)
+                // Toad-free keeps the toads away, so that no other effect changes the outcome
+                if (isCannibal) applyEffect(ToadKind.Brown) else powerUps.apply(BirdKind.Crow)
                 update(1f / 60f)
                 if (snake.hitsItself()) touched = true
             }
@@ -108,30 +108,86 @@ class GameWorldTest {
     }
 
     @Test
-    fun theSnakeSurvivesTouchingItselfWithoutTheCurse() {
+    fun theSnakeSurvivesTouchingItselfWithoutCannibal() {
         val world = newWorld()
         world.start()
-        assertTrue(world.runLongSnakeFed(seconds = 30, isCursed = false))
+        assertTrue(world.runLongSnakeFed(seconds = 30, isCannibal = false))
         assertEquals(GamePhase.Playing, world.phase)
     }
 
     @Test
-    fun theGameEndsWhenACursedSnakeTouchesItself() {
+    fun theGameEndsWhenACannibalSnakeTouchesItself() {
         val world = newWorld()
         world.start()
-        world.runLongSnakeFed(seconds = 30, isCursed = true)
+        world.runLongSnakeFed(seconds = 30, isCannibal = true)
         assertEquals(GamePhase.GameOver, world.phase)
+        assertEquals(DeathCause.Cannibalism, world.deathCause)
         repeat(60) { world.update(1f / 60f) }
         assertTrue(world.canRestart)
     }
 
     @Test
-    fun eatingAGreyToadPutsTheLupusCurseOn() {
+    fun aSnakeWithHayfeverDiesWhenItTouchesTheGrass() {
+        val world = GameWorld(Arena(60f, 60f), seed = 11)
+        world.start()
+        repeat(60 * 30) {
+            if (world.phase == GamePhase.Playing) {
+                world.hunger.feed(1f)
+                world.applyEffect(ToadKind.Grey)
+                world.update(1f / 60f)
+            }
+        }
+        assertEquals(GamePhase.GameOver, world.phase)
+        assertEquals(DeathCause.Allergies, world.deathCause)
+    }
+
+    @Test
+    fun aSnakeThatRunsOutOfHungerDiesOfStarvation() {
+        val world = newWorld()
+        world.start()
+        assertEquals(null, world.deathCause)
+        world.hunger.update(100f, sprintLevel = 0f)
+        world.update(1f / 60f)
+        assertEquals(GamePhase.GameOver, world.phase)
+        assertEquals(DeathCause.Starvation, world.deathCause)
+    }
+
+    @Test
+    fun aGreedySnakeGetsOnlyHalfTheFood() {
+        fun hungerAfterAMouse(greedy: Boolean): Float {
+            val world = newWorld()
+            world.hunger.update(10f, sprintLevel = 0f)
+            world.start()
+            if (greedy) world.applyEffect(ToadKind.Red)
+            world.placeMouseInFrontOfTheMouth()
+            repeat(30) { world.update(1f / 60f) }
+            assertEquals(1, world.score)
+            return world.hunger.level
+        }
+        assertTrue(hungerAfterAMouse(greedy = true) < hungerAfterAMouse(greedy = false))
+    }
+
+    @Test
+    fun aLazySnakeGoesSlower() {
+        fun distanceInASecond(lazy: Boolean): Float {
+            val world = GameWorld(Arena(400f, 400f), seed = 11)
+            world.start()
+            if (lazy) world.applyEffect(ToadKind.Olive)
+            repeat(60) { world.update(1f / 60f) }
+            val start = world.snake.totalDistance
+            repeat(60) { world.update(1f / 60f) }
+            return world.snake.totalDistance - start
+        }
+        assertTrue(distanceInASecond(lazy = true) < distanceInASecond(lazy = false) * 0.8f)
+    }
+
+    @Test
+    fun eatingAGreyToadGivesHayfever() {
         val world = newWorld()
         world.start()
         world.placeToadInFrontOfTheMouth(ToadKind.Grey)
         world.update(1f / 60f)
-        assertTrue(world.effects.isOn(Effect.Lupus))
+        assertTrue(world.effects.isOn(Effect.Hayfever))
     }
 
     @Test

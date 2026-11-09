@@ -13,17 +13,19 @@ Snake is a one-button arcade game in pixel art. The snake never goes straight: i
 thing you can do is tap to change the direction of the turn. Steer it by twisting out of its own spiral, bounce it off the
 edge of the oval, and eat the mice that run out of the tall grass. Each mouse makes the snake one section longer, with
 a skin pattern that repeats as it grows. The snake can cross its own body without harm: the only things that kill it are
-hunger and the lupus curse.
+hunger, hayfever and cannibalism, and the game over screen says in red which one it was: starvation, allergies or cannibalism.
 
 Beware the toads that hop out of the grass: each colour is poisonous in its own way. One makes the whole screen wavy,
 one turns every animal into a weird monster, one makes the snake so dizzy that it ignores your taps for a few seconds, and
-the grey one puts the lupus curse on the snake: for a few seconds, touching itself is deadly.
+the grey one gives the snake hayfever: for a few seconds, touching the grass is deadly, the red one makes the snake greedy so that food feeds it only half as much, the olive one slows the snake right down, and the brown one makes it a cannibal: for a few seconds, touching itself is deadly.
 
 Birds fly in from off the screen and land in the oval: blue tits, robins and sparrows, blackbirds, crows and pigeons. Each kind is
 worth a little more than a mouse and gives the snake a different power up for a few seconds: it goes faster, sprints for less, is
 sneakier, eats from further away, blows up every toad and keeps new ones away, or carries a piece of cheese that brings mice
 running from all over (but with its mouth full, the snake cannot eat until the cheese is gone). Power ups stack with each other
-and with the toads' poison. Birds are rare, only one at a time, and extremely skittish: they fly off the moment the snake gets
+and with the toads' poison. What is on shows as arrows in the bottom right corner, which empty as the time runs out.
+All the pause menus are pages of one pause overlay that you swipe between: the buttons, the stomach (tap it in the corner to open
+it) with how much each animal fills it, and what is on (tap the arrows) with each one's name, what it does and the seconds left. Birds are rare, only one at a time, and extremely skittish: they fly off the moment the snake gets
 close, so catching one takes a sprint.
 
 The snake is always hungry: a bar at the top of the screen runs down, a mouse fills it, a toad hardly does, and the
@@ -39,7 +41,9 @@ The mice run from a snake they see coming, but they cannot see what is behind th
 <img src="docs/screenshots/03-GamePageBirds.png" width="240" alt="Game Page Birds">
 <img src="docs/screenshots/04-GamePageHallucinating.png" width="240" alt="Game Page Hallucinating">
 <img src="docs/screenshots/05-GamePagePaused.png" width="240" alt="Game Page Paused">
-<img src="docs/screenshots/06-GamePageGameOver.png" width="240" alt="Game Page Game Over">
+<img src="docs/screenshots/06-GamePageHunger.png" width="240" alt="Game Page Hunger">
+<img src="docs/screenshots/07-GamePageStatus.png" width="240" alt="Game Page Status">
+<img src="docs/screenshots/08-GamePageGameOver.png" width="240" alt="Game Page Game Over">
 
 ## Getting started as a user
 
