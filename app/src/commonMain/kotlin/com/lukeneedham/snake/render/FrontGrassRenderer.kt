@@ -20,7 +20,7 @@ internal fun createFrontGrass(den: DenLayout): List<GrassBlade> {
     val height = den.worldHeight.toInt()
     val blades = ArrayList<GrassBlade>()
     val random = Random(99)
-    repeat(frontBladeTrials * 3) {
+    repeat((frontBladeTrials * den.worldHeight / arena.height).toInt()) {
         val x = random.nextInt(width)
         val y = random.nextInt(height)
         // The stretch of the path that repeats gets its blades below, one period of them over and over

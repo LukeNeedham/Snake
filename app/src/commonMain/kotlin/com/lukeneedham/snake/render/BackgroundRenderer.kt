@@ -101,7 +101,7 @@ private fun stoneColor(x: Int, y: Int): Color {
 private fun DrawScope.drawBackBlades(den: DenLayout, width: Int, height: Int) {
     val blades = ArrayList<GrassBlade>()
     val random = Random(4242)
-    repeat(backBladeTrials * 3) {
+    repeat((backBladeTrials * den.worldHeight / den.arena.height).toInt()) {
         val x = random.nextInt(width)
         val y = random.nextInt(height + 10)
         // The stretch of the path that repeats gets its blades below, one period of them over and over
