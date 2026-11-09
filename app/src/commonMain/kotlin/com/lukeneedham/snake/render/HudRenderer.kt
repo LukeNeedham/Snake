@@ -11,9 +11,9 @@ import com.lukeneedham.snake.game.GameWorld
 internal fun DrawScope.drawHud(world: GameWorld, texts: SceneTexts, topInset: Int) {
     when (world.phase) {
         GamePhase.Ready -> drawTitle(world, texts, topInset)
-        GamePhase.Intro -> drawIntroHud(world, texts)
+        GamePhase.Intro -> drawIntroHud(world, texts, topInset)
         GamePhase.Playing -> drawPlayingHud(world, texts, topInset)
-        GamePhase.Paused -> if (world.isIntro) drawIntroHud(world, texts) else drawPlayingHud(world, texts, topInset)
+        GamePhase.Paused -> if (world.isIntro) drawIntroHud(world, texts, topInset) else drawPlayingHud(world, texts, topInset)
         GamePhase.GameOver -> drawGameOver(world, texts)
     }
     if (world.isMenuOpen) drawMenu(world, texts) else drawMenuButton(world, topInset)

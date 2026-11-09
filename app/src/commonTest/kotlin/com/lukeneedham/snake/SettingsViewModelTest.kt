@@ -28,6 +28,13 @@ class SettingsViewModelTest {
         override suspend fun setSprintSide(side: SprintSide) {
             stored.value = side
         }
+
+        val tutorialDone = MutableStateFlow(false)
+        override val isTutorialDone: Flow<Boolean> = tutorialDone
+
+        override suspend fun setTutorialDone(isDone: Boolean) {
+            tutorialDone.value = isDone
+        }
     }
 
     private val dispatcher = StandardTestDispatcher()

@@ -9,6 +9,7 @@ import com.lukeneedham.snake.game.Arena
 import com.lukeneedham.snake.game.GamePhase
 import com.lukeneedham.snake.game.GameWorld
 import com.lukeneedham.snake.game.MenuItem
+import com.lukeneedham.snake.game.Opening
 import com.lukeneedham.snake.game.PressTarget
 import com.lukeneedham.snake.game.SprintSide
 import com.lukeneedham.snake.game.WorldTuning
@@ -19,10 +20,13 @@ import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 /** Connects the game to the page: it steps the world every frame, passes the fingers and the pause on, and publishes what the page shows. */
-class GameViewModel(bestScoreStore: BestScoreStore, settingsStore: SettingsStore) : ViewModel() {
+class GameViewModel(bestScoreStore: BestScoreStore, private val settingsStore: SettingsStore) : ViewModel() {
 
     private var sprintSide = SprintSide.Left
-    private var world = GameWorld(Arena(WorldTuning.width.toFloat(), defaultHeight), hasIntro = true)
+
+    /** Whether the player has been through the whole tutorial: from then on the path is short. Until the settings are read it is not known. */
+    private var isTutorialDone = false
+    private var world = GameWorld(Arena(WorldTuning.width.toFloat(), defaultHeight), Opening.Tutorial)
     private val bestScores = BestScoreTracker(bestScoreStore, viewModelScope) { publish() }
 
     private val _uiState = MutableStateFlow(buildState())
@@ -30,6 +34,13 @@ class GameViewModel(bestScoreStore: BestScoreStore, settingsStore: SettingsStore
 
     init {
         bestScores.start()
+        viewModelScope.launch {
+            settingsStore.isTutorialDone.collect { isDone ->
+                isTutorialDone = isDone
+                // The title is already up, with the long path: a player who knows it all gets the short one
+                if (isDone && world.phase == GamePhase.Ready && world.opening == Opening.Tutorial) newWorld(world.arena.height, Opening.ShortPath)
+            }
+        }
         viewModelScope.launch {
             settingsStore.sprintSide.collect {
                 sprintSide = it
@@ -44,12 +55,22 @@ class GameViewModel(bestScoreStore: BestScoreStore, settingsStore: SettingsStore
         val height = (WorldTuning.width.toFloat() * heightPx / widthPx).roundToInt()
         if (height == world.arena.height.toInt()) return
         // A game in progress is lost when the screen changes size; the title or the story begins again
-        newWorld(height.toFloat(), hasIntro = world.phase == GamePhase.Ready || world.isIntro)
+        val keepsOpening = world.phase == GamePhase.Ready || world.isIntro
+        newWorld(height.toFloat(), if (keepsOpening) world.opening else Opening.Oval)
     }
 
     /** Called once per frame with the seconds since the last frame. */
     fun onFrame(seconds: Float) {
         world.update(seconds.coerceIn(0f, maxStep))
+        if (world.hasCompletedTutorial && !isTutorialDone) {
+            isTutorialDone = true
+            viewModelScope.launch { settingsStore.setTutorialDone(true) }
+        }
+        // The snake opened the door of its den: the tutorial starts again, with the snake already awake
+        if (world.wantsTutorial) {
+            newWorld(world.arena.height, Opening.Tutorial)
+            world.start()
+        }
         if (world.phase == GamePhase.GameOver) bestScores.gameOver(world.score)
         publish()
     }
@@ -85,7 +106,7 @@ class GameViewModel(bestScoreStore: BestScoreStore, settingsStore: SettingsStore
         when (item) {
             MenuItem.Resume -> world.closeMenu()
             MenuItem.Restart -> {
-                newWorld(world.arena.height, hasIntro = false)
+                newWorld(world.arena.height, Opening.Oval)
                 world.start()
             }
             MenuItem.Settings -> Unit // the page opens it
@@ -94,7 +115,7 @@ class GameViewModel(bestScoreStore: BestScoreStore, settingsStore: SettingsStore
 
     private fun restartIfAllowed() {
         if (!world.canRestart) return
-        newWorld(world.arena.height, hasIntro = false)
+        newWorld(world.arena.height, Opening.Oval)
         world.start()
     }
 
@@ -104,9 +125,9 @@ class GameViewModel(bestScoreStore: BestScoreStore, settingsStore: SettingsStore
         publish()
     }
 
-    /** The story at the start is only told in the first game: a restart goes straight to the oval. */
-    private fun newWorld(height: Float, hasIntro: Boolean) {
-        world = GameWorld(Arena(WorldTuning.width.toFloat(), height), seed = (world.time * 1000f).toInt(), hasIntro = hasIntro)
+    /** The story and the lessons at the start are only told in the first game, and again when the snake opens the door: a restart goes straight to the oval. */
+    private fun newWorld(height: Float, opening: Opening) {
+        world = GameWorld(Arena(WorldTuning.width.toFloat(), height), seed = (world.time * 1000f).toInt(), opening = opening)
             .also { it.sprintSide = sprintSide }
         bestScores.newGame()
         publish()

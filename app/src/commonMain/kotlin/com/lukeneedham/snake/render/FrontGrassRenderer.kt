@@ -63,7 +63,7 @@ private const val frontBladeTrials = 2400
 /** The blades sway all the time, and shake where an animal hides in the grass. */
 internal fun DrawScope.drawFrontGrass(blades: List<GrassBlade>, world: GameWorld) {
     val arena = world.arena
-    val hidden = world.critters.filter { arena.signedDistance(it.x, it.y) > -1f }
+    val hidden = world.critters.filter { world.den.ground.signedDistance(it.x, it.y) > -1f }
     val colors = GrassPalette.bladesFront
     val screenTop = world.cameraY - bladeReach
     val screenBottom = world.cameraY + arena.height + bladeReach

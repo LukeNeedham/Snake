@@ -18,6 +18,7 @@ internal class BirdBody(
     private val alarmDistance: Float,
     staySeconds: Float,
     isLanded: Boolean,
+    private val isTame: Boolean = false,
 ) : CritterBody {
     private val course = CritterCourse(x, y)
     private val flight = BirdFlight(course, landX, landY)
@@ -46,6 +47,11 @@ internal class BirdBody(
     override val isAirborne: Boolean get() = phase == BirdPhase.Arriving || phase == BirdPhase.Leaving
     override val isEdible: Boolean get() = height <= BirdTuning.eatHeight
 
+    override fun shiftDown(dy: Float) {
+        course.y += dy
+        flight.shiftDown(dy)
+    }
+
     override fun update(dt: Float, arena: Arena, random: Random, snakeHead: Vec2?, aura: SnakeAura) {
         when (phase) {
             BirdPhase.Arriving -> arrive(dt, arena, random, snakeHead)
@@ -56,7 +62,8 @@ internal class BirdBody(
     }
 
     private fun arrive(dt: Float, arena: Arena, random: Random, snakeHead: Vec2?) {
-        flight.approach(dt, arena, random, snakeHead)
+        // A tame bird comes down where it was sent, whatever the snake does
+        flight.approach(dt, arena, random, if (isTame) null else snakeHead)
         if (flight.hasLanded) {
             phase = BirdPhase.Perched
             landed = true
@@ -64,6 +71,7 @@ internal class BirdBody(
     }
 
     private fun sit(dt: Float, arena: Arena, random: Random, snakeHead: Vec2?, aura: SnakeAura) {
+        if (isTame) return
         perch.update(dt, arena, random)
         if (snakeHead != null && course.isNear(snakeHead.x, snakeHead.y, alarmDistance * aura.noticeScale)) {
             perch.freeze()

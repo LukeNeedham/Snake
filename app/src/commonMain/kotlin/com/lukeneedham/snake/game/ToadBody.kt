@@ -3,7 +3,7 @@ package com.lukeneedham.snake.game
 import kotlin.random.Random
 
 /** The body of a toad: it sits still, then hops a short way in a random direction. */
-internal class ToadBody(x: Float, y: Float, lifetime: Float) : CritterBody {
+internal class ToadBody(x: Float, y: Float, lifetime: Float, private val isTame: Boolean = false) : CritterBody {
     private val course = CritterCourse(x, y)
     private val visit = CritterVisit(lifetime)
     private val gait = ToadGait(course, visit)
@@ -11,7 +11,7 @@ internal class ToadBody(x: Float, y: Float, lifetime: Float) : CritterBody {
     override val x: Float get() = course.x
     override val y: Float get() = course.y
     override val facing: Int get() = course.facing
-    override val mode: CritterMode get() = visit.mode
+    override val mode: CritterMode get() = if (isTame) CritterMode.Roaming else visit.mode
     override val isMoving: Boolean get() = gait.isHopping
     override val isFleeing: Boolean get() = false
     override val height: Float get() = gait.height
@@ -22,7 +22,12 @@ internal class ToadBody(x: Float, y: Float, lifetime: Float) : CritterBody {
         }
     override val isGone: Boolean get() = visit.isGone
 
+    override fun shiftDown(dy: Float) {
+        course.y += dy
+    }
+
     override fun update(dt: Float, arena: Arena, random: Random, snakeHead: Vec2?, aura: SnakeAura) {
+        if (isTame) return
         if (visit.update(dt, arena.signedDistance(course.x, course.y))) gait.update(dt, arena, random)
     }
 }

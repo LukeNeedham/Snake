@@ -8,6 +8,8 @@ import com.lukeneedham.snake.game.BirdKind
 import com.lukeneedham.snake.game.BirdLanding
 import com.lukeneedham.snake.game.Critter
 import com.lukeneedham.snake.game.GameWorld
+import com.lukeneedham.snake.game.IntroStage
+import com.lukeneedham.snake.game.Opening
 import com.lukeneedham.snake.game.ToadKind
 import com.lukeneedham.snake.game.Vec2
 import com.lukeneedham.snake.ui.GamePageContent
@@ -22,7 +24,7 @@ import kotlin.random.Random
 @Composable
 private fun GamePageReadyScreenshot() {
     val world = remember {
-        GameWorld(Arena(108f, 240f), seed = 7, hasIntro = true).also { repeat(170) { _ -> it.update(1f / 60f) } }
+        GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Tutorial).also { repeat(170) { _ -> it.update(1f / 60f) } }
     }
     val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
     AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
@@ -34,7 +36,7 @@ private fun GamePageReadyScreenshot() {
 private fun GamePageRumbleScreenshot() {
     // The stomach of the snake rumbles in its den: zigzag lines along its body
     val world = remember {
-        GameWorld(Arena(108f, 240f), seed = 7, hasIntro = true).also {
+        GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Tutorial).also {
             it.start()
             repeat(300) { _ -> it.update(1f / 60f) }
         }
@@ -49,7 +51,7 @@ private fun GamePageRumbleScreenshot() {
 private fun GamePageThinkingScreenshot() {
     // The snake thinks of a mouse: three bubbles, the last with the mouse in it
     val world = remember {
-        GameWorld(Arena(108f, 240f), seed = 7, hasIntro = true).also {
+        GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Tutorial).also {
             it.start()
             repeat(504) { _ -> it.update(1f / 60f) }
         }
@@ -64,7 +66,7 @@ private fun GamePageThinkingScreenshot() {
 private fun GamePageLessonScreenshot() {
     // The bubble has popped, the snake turns, and a text tells the player to tap
     val world = remember {
-        GameWorld(Arena(108f, 240f), seed = 7, hasIntro = true).also {
+        GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Tutorial).also {
             it.start()
             repeat(660) { _ -> it.update(1f / 60f) }
         }
@@ -79,7 +81,7 @@ private fun GamePageLessonScreenshot() {
 private fun GamePageZoomScreenshot() {
     // Half way along the path the sprint button appears, with an arrow and the words that say to hold it
     val world = remember {
-        GameWorld(Arena(108f, 240f), seed = 7, hasIntro = true).also {
+        GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Tutorial).also {
             // A player who steers up the path: it taps whenever the snake turns away from straight up
             it.start()
             repeat(660) { _ -> it.update(1f / 60f) }
@@ -93,6 +95,66 @@ private fun GamePageZoomScreenshot() {
             }
             repeat(30) { _ -> it.update(1f / 60f) }
         }
+    }
+    val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
+    AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
+}
+
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageHunger.png. */
+@Preview(widthDp = 360, heightDp = 800)
+@Composable
+private fun GamePageHungerScreenshot() {
+    // The hunger bar shows for the first time, half empty, with an arrow, and a mouse sits on the path
+    val world = remember {
+        GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Tutorial).also {
+            it.start()
+            it.jumpToLesson(IntroStage.Hunger)
+            repeat(150) { _ -> it.update(1f / 60f) }
+        }
+    }
+    val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
+    AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
+}
+
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageToad.png. */
+@Preview(widthDp = 360, heightDp = 800)
+@Composable
+private fun GamePageToadScreenshot() {
+    // The pink toad sits on the path, and the words say that toads poison
+    val world = remember {
+        GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Tutorial).also {
+            it.start()
+            it.jumpToLesson(IntroStage.Toad)
+            repeat(20) { _ -> it.update(1f / 60f) }
+        }
+    }
+    val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
+    AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
+}
+
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageBird.png. */
+@Preview(widthDp = 360, heightDp = 800)
+@Composable
+private fun GamePageBirdScreenshot() {
+    // A bird has flown in and sits on the path
+    val world = remember {
+        GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Tutorial).also {
+            it.start()
+            it.jumpToLesson(IntroStage.Bird)
+            repeat(200) { _ -> it.update(1f / 60f) }
+        }
+    }
+    val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
+    AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
+}
+
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageDoor.png. */
+@Preview(widthDp = 360, heightDp = 800)
+@Composable
+private fun GamePageDoorScreenshot() {
+    // After the tutorial: a short path, and a door in the wall of the den that starts it again
+    val world = remember {
+        GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.ShortPath).also { repeat(170) { _ -> it.update(1f / 60f) } }
     }
     val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
     AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }

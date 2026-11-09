@@ -20,6 +20,7 @@ internal fun DrawScope.drawScene(
 ) {
     translate(top = -world.cameraY.roundToInt().toFloat()) {
         drawImage(background, filterQuality = FilterQuality.None)
+        drawTutorialDoor(world)
         drawButterflies(world)
         drawCritterShadows(world)
         drawCritters(world)

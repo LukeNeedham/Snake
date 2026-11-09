@@ -10,7 +10,7 @@ import kotlin.test.assertTrue
 
 class GameWorldIntroTest {
 
-    private fun newWorld() = GameWorld(Arena(108f, 234f), seed = 5, hasIntro = true)
+    private fun newWorld() = GameWorld(Arena(108f, 234f), seed = 5, opening = Opening.Tutorial)
 
     private fun GameWorld.play(seconds: Float) {
         repeat((seconds * 60f).toInt()) { update(1f / 60f) }
@@ -172,20 +172,17 @@ class GameWorldIntroTest {
             assertEquals(GamePhase.Intro, world.phase)
             assertTrue(world.snake.y > world.arena.height)
         }
-        // A finger held in the sprint corner for long enough gives the path an end
+        // A finger held in the sprint corner for long enough is the end of the lesson of the sprint, and the next lesson begins
         world.introPress(7L, isInSprintZone = true)
         seconds = 0f
-        while (world.phase == GamePhase.Intro && seconds < 60f) {
+        while (!world.intro!!.hasZoomed && seconds < 60f) {
             world.steerUpThePath()
             world.update(1f / 60f)
             seconds += 1f / 60f
         }
         assertTrue(world.intro!!.hasZoomed)
-        assertEquals(GamePhase.Playing, world.phase)
-        assertTrue(world.arena.signedDistance(world.snake.x, world.snake.y) < 0f)
-        world.sprintRelease(7L)
-        world.play(3f)
-        assertEquals(0f, world.cameraY)
+        assertEquals(IntroStage.Hunger, world.intro!!.stage)
+        assertEquals(GamePhase.Intro, world.phase)
     }
 
     @Test
@@ -225,5 +222,146 @@ class GameWorldIntroTest {
         }
         assertTrue(world.snake.y > world.arena.height + 60f, "the snake only got to ${world.snake.y}")
         assertTrue(world.cameraY > 0f)
+    }
+
+    /** Steers for the animal of the lesson if there is one, and up the path if not. */
+    private fun GameWorld.steerThroughTheLessons() {
+        val animal = critters.firstOrNull()
+        if (animal != null) steerToward(animal.x, animal.y) else steerUpThePath()
+    }
+
+    private fun GameWorld.playUntil(limitSeconds: Float, isDone: () -> Boolean) {
+        var seconds = 0f
+        while (!isDone() && seconds < limitSeconds) {
+            steerThroughTheLessons()
+            update(1f / 60f)
+            seconds += 1f / 60f
+        }
+    }
+
+    @Test
+    fun theHungerBarRunsDownAndThenAMouseSitsOnThePath() {
+        val world = newWorld()
+        world.start()
+        world.jumpToLesson(IntroStage.Hunger)
+        assertEquals(1f, world.hunger.level)
+        assertTrue(world.critters.isEmpty())
+        world.play(IntroTuning.hungerTextSeconds + 1f)
+        assertEquals(IntroStage.Mouse, world.intro!!.stage)
+        assertTrue(world.hunger.level <= IntroTuning.hungerDemoLevel + 0.01f)
+        val mouse = world.critters.single()
+        assertTrue(mouse is Critter.Mouse)
+        val x = mouse.x
+        world.play(3f)
+        assertEquals(x, world.critters.single().x)
+    }
+
+    @Test
+    fun eatingTheMouseFillsTheBarAndLeadsOn() {
+        val world = newWorld()
+        world.start()
+        world.jumpToLesson(IntroStage.Hunger)
+        world.play(IntroTuning.hungerTextSeconds + 1f)
+        val before = world.hunger.level
+        world.playUntil(60f) { world.intro!!.stage != IntroStage.Mouse }
+        assertEquals(IntroStage.WalkToToad, world.intro!!.stage)
+        assertTrue(world.hunger.level > before)
+        assertTrue(world.critters.isEmpty())
+        assertEquals(GamePhase.Intro, world.phase)
+    }
+
+    @Test
+    fun theToadComesLaterAndItsPoisonHasToRunOutBeforeTheBird() {
+        val world = newWorld()
+        world.start()
+        world.jumpToLesson(IntroStage.WalkToToad)
+        world.playUntil(60f) { world.intro!!.stage == IntroStage.Toad }
+        val toad = world.critters.single() as Critter.Toad
+        assertEquals(ToadKind.Pink, toad.kind)
+        world.playUntil(60f) { world.intro!!.stage == IntroStage.Dizzy }
+        assertTrue(world.effects.isOn(Effect.Confused))
+        // A dizzy snake ignores a tap
+        val direction = world.snake.turnDirection
+        world.tap()
+        assertEquals(direction, world.snake.turnDirection)
+        world.playUntil(60f) { world.intro!!.stage == IntroStage.WalkToBird }
+        assertFalse(world.effects.isOn(Effect.Confused))
+    }
+
+    @Test
+    fun theBirdFliesInAndStaysUntilItIsEaten() {
+        val world = newWorld()
+        world.start()
+        world.jumpToLesson(IntroStage.Bird)
+        val bird = world.critters.single() as Critter.Bird
+        assertTrue(bird.isAirborne)
+        // It does not fly off, whatever the snake does
+        world.play(8f)
+        assertEquals(1, world.critters.size)
+        assertEquals(IntroStage.Bird, world.intro!!.stage)
+    }
+
+    @Test
+    fun theWholeTutorialEndsInTheOvalAndIsDone() {
+        val world = newWorld()
+        world.start()
+        world.jumpToLesson(IntroStage.Hunger)
+        world.playUntil(400f) { world.phase == GamePhase.Playing }
+        assertEquals(GamePhase.Playing, world.phase)
+        assertTrue(world.hasCompletedTutorial)
+        assertEquals(0, world.score)
+        assertTrue(world.critters.isEmpty())
+        assertTrue(world.arena.signedDistance(world.snake.x, world.snake.y) < 0f)
+    }
+
+    @Test
+    fun theLessonsKeepThePathGoingOn() {
+        val world = newWorld()
+        world.start()
+        world.jumpToLesson(IntroStage.WalkToBird)
+        repeat(60 * 30) {
+            world.steerUpThePath()
+            world.update(1f / 60f)
+            if (world.intro!!.stage == IntroStage.WalkToBird || world.intro!!.stage == IntroStage.Bird) {
+                assertEquals(GamePhase.Intro, world.phase)
+                assertTrue(world.snake.y > world.arena.height)
+            }
+        }
+    }
+
+    @Test
+    fun aShortPathLeadsStraightFromTheDenToTheOvalWithoutLessons() {
+        val world = GameWorld(Arena(108f, 234f), seed = 5, opening = Opening.ShortPath)
+        assertTrue(world.den.worldHeight < world.arena.height * 2f)
+        assertTrue(world.den.hasDoor)
+        world.start()
+        world.play(IntroTuning.wakeSeconds + 0.2f)
+        assertEquals(IntroStage.Steering, world.intro!!.stage)
+        world.playUntil(60f) { world.phase == GamePhase.Playing }
+        assertEquals(GamePhase.Playing, world.phase)
+        assertFalse(world.hasCompletedTutorial)
+    }
+
+    @Test
+    fun theLongPathOfTheTutorialHasNoDoor() {
+        assertFalse(newWorld().den.hasDoor)
+        assertFalse(GameWorld(Arena(108f, 234f)).den.isLong)
+    }
+
+    @Test
+    fun theSnakeOpensTheDoorOfTheDenAndTheTutorialCanStartAgain() {
+        val world = GameWorld(Arena(108f, 234f), seed = 5, opening = Opening.ShortPath)
+        world.start()
+        world.play(IntroTuning.wakeSeconds + 0.2f)
+        world.playUntil(60f) { world.phase == GamePhase.Playing }
+        assertFalse(world.wantsTutorial)
+        // It goes back down the path and into the den, to the door in the wall at the bottom of it
+        var seconds = 0f
+        while (!world.wantsTutorial && seconds < 90f && world.phase == GamePhase.Playing) {
+            world.steerToward(world.den.doorX, world.den.doorY)
+            world.update(1f / 60f)
+            seconds += 1f / 60f
+        }
+        assertTrue(world.wantsTutorial, "the door stayed shut at ${world.snake.x}, ${world.snake.y}, ${world.doorOpen}")
     }
 }

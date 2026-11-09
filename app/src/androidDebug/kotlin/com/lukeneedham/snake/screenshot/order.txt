@@ -3,6 +3,10 @@ GamePageRumble
 GamePageThinking
 GamePageLesson
 GamePageZoom
+GamePageHunger
+GamePageToad
+GamePageBird
+GamePageDoor
 GamePage
 GamePageBirds
 GamePageHallucinating

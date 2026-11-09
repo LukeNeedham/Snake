@@ -141,4 +141,21 @@ class HungerTest {
         hunger.update(0.1f, sprintLevel = 1f)
         assertEquals(level, hunger.level, 1e-6f)
     }
+
+    @Test
+    fun theDemoDrainsFastDownToItsFloorAndNoFurther() {
+        val hunger = Hunger()
+        repeat(60 * 10) { hunger.drainDemo(1f / 60f, 0.5f) }
+        assertEquals(0.5f, hunger.level, 1e-3f)
+    }
+
+    @Test
+    fun settlingFillsInWhatWasEatenButNeverDrains() {
+        val hunger = Hunger()
+        repeat(60 * 10) { hunger.drainDemo(1f / 60f, 0.5f) }
+        hunger.feed(0.3f)
+        repeat(60 * 10) { hunger.settle(1f / 60f) }
+        assertEquals(0.8f, hunger.level, 1e-3f)
+        assertEquals(0.8f, hunger.filled, 1e-3f)
+    }
 }

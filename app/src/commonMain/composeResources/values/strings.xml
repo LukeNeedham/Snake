@@ -13,6 +13,9 @@
     <string name="tap_to_wake">Tap to wake</string>
     <string name="tap_to_turn">Tap to turn</string>
     <string name="hold_to_zoom">Hold to zoom</string>
+    <string name="eat_to_not_starve">Eat to\nnot starve</string>
+    <string name="toads_poison_you">Toads\npoison you</string>
+    <string name="birds_give_powers">Birds give\npowers</string>
     <string name="game_over">Game over</string>
     <string name="score_value">Score %1$d</string>
     <string name="best_value">Best %1$d</string>

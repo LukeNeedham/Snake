@@ -18,6 +18,17 @@ object IntroTuning {
     /** How long the rumble takes to fade in and out. */
     const val rumbleFadeSeconds = 0.4f
 
+    /** In the lesson of the hunger the bar is shown for this long before the mouse comes, and runs down to this level. */
+    const val hungerTextSeconds = 2.2f
+    const val hungerDemoLevel = 0.5f
+
+    /** How far the snake goes between one lesson and the next. */
+    const val walkDistance = 150f
+
+    /** How far ahead of the snake the animal of a lesson sits, and how far behind it the animal has to be to be put ahead again. */
+    const val lessonAhead = 70f
+    const val lessonBehind = 55f
+
     /** How long the sprint corner has to be held, without letting go, to have learned to zoom. */
     const val zoomSeconds = 2f
 }

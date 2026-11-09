@@ -5,10 +5,12 @@ import com.lukeneedham.snake.game.Effect
 import com.lukeneedham.snake.game.PowerUp
 import com.lukeneedham.snake.generated.resources.Res
 import com.lukeneedham.snake.generated.resources.best_value
+import com.lukeneedham.snake.generated.resources.birds_give_powers
 import com.lukeneedham.snake.generated.resources.effect_confused
 import com.lukeneedham.snake.generated.resources.effect_disguised
 import com.lukeneedham.snake.generated.resources.effect_hallucinating
 import com.lukeneedham.snake.generated.resources.effect_lupus
+import com.lukeneedham.snake.generated.resources.eat_to_not_starve
 import com.lukeneedham.snake.generated.resources.game_over
 import com.lukeneedham.snake.generated.resources.game_title
 import com.lukeneedham.snake.generated.resources.menu_back
@@ -26,6 +28,7 @@ import com.lukeneedham.snake.generated.resources.power_up_zoom
 import com.lukeneedham.snake.generated.resources.score_value
 import com.lukeneedham.snake.generated.resources.hold_to_zoom
 import com.lukeneedham.snake.generated.resources.tap_to_retry
+import com.lukeneedham.snake.generated.resources.toads_poison_you
 import com.lukeneedham.snake.generated.resources.tap_to_start
 import com.lukeneedham.snake.generated.resources.tap_to_turn
 import com.lukeneedham.snake.generated.resources.tap_to_wake
@@ -40,6 +43,9 @@ internal fun sceneTexts(score: Int, bestScore: Int, isNewBest: Boolean): SceneTe
     tapToWake = stringResource(Res.string.tap_to_wake),
     tapToTurn = stringResource(Res.string.tap_to_turn),
     holdToZoom = stringResource(Res.string.hold_to_zoom),
+    eatToNotStarve = stringResource(Res.string.eat_to_not_starve),
+    toadsPoisonYou = stringResource(Res.string.toads_poison_you),
+    birdsGivePowers = stringResource(Res.string.birds_give_powers),
     gameOver = stringResource(Res.string.game_over),
     score = stringResource(Res.string.score_value, score),
     best = stringResource(Res.string.best_value, bestScore),

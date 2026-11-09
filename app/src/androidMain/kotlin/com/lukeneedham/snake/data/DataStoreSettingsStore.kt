@@ -2,6 +2,7 @@ package com.lukeneedham.snake.data
 
 import android.content.Context
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStoreFile
@@ -25,8 +26,17 @@ class DataStoreSettingsStore(context: Context) : SettingsStore {
         dataStore.edit { it[sprintSideKey] = side.name }
     }
 
+    override val isTutorialDone: Flow<Boolean> = dataStore.data
+        .map { preferences -> preferences[tutorialDoneKey] ?: false }
+        .catch { emit(false) }
+
+    override suspend fun setTutorialDone(isDone: Boolean) {
+        dataStore.edit { it[tutorialDoneKey] = isDone }
+    }
+
     private companion object {
         const val fileName = "settings"
         val sprintSideKey = stringPreferencesKey("sprint_side")
+        val tutorialDoneKey = booleanPreferencesKey("tutorial_done")
     }
 }

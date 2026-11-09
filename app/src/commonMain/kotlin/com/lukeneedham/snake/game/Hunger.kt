@@ -37,6 +37,21 @@ class Hunger {
         }
     }
 
+    /** Lets what was just eaten fill in, but does not drain the bar: nothing starves in the lessons. */
+    fun settle(dt: Float) {
+        if (filled < level) fillIn(dt)
+    }
+
+    /** Drains the bar fast, down to [floor], to show how it goes down: the lesson of the hunger. */
+    fun drainDemo(dt: Float, floor: Float) {
+        if (filled < level) {
+            fillIn(dt)
+        } else if (level > floor) {
+            level = max(floor, level - HungerTuning.demoDrainPerSecond * dt)
+            filled = level
+        }
+    }
+
     fun feed(amount: Float) {
         level = min(1f, level + amount)
         gainWait = HungerTuning.gainShowSeconds

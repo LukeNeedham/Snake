@@ -43,16 +43,21 @@ into its own doc when work on it starts.
   snake catches the curse (an item, a critter or a boss?) and how long it lasts, then show it on the screen like the other effects and
   power ups. Until it exists, nothing kills the snake but hunger. Check how the snake is drawn when its body crosses itself.
 
-- [x] **Intro story and tutorial.** Done: the world is three screens tall (`DenLayout`): the oval, a long path of bare ground through the grass,
-  and the snake's den (a misshapen stone floor ringed with rocks) at the bottom. The snake can go anywhere on the oval, the path and the den
-  (a wall bounce turns it the other way, like a tap), and the camera follows it along the path. `GamePhase.Intro` plays `IntroDirector`'s
-  stages: the snake sleeps with its eyes shut and Zs until the player taps to wake it, it wakes up and blinks, sticks its tongue out, its
-  stomach rumbles (zigzag lines along the body), three thought bubbles end in a mouse, the bubble pops and the snake starts to circle
-  clockwise, "Tap to turn" (a tap turns it, taps before that do nothing), then the player steers out along the path. Half way along it the
-  sprint button appears with an arrow and "Hold to zoom", and the path repeats endlessly (the snake and the camera are put back a stretch,
-  and the ground is the same every period) until the sprint corner has been held for 2 seconds without a break; then the path leads
-  into the oval. Only the first game has it; a restart skips it. Possible later: remember that the player has done it and skip it on
-  later launches.
+- [x] **Intro story and tutorial.** Done: the world is a screen with the oval and, under it, the snake's den (a misshapen stone floor ringed with
+  rocks) with a path of bare ground through the grass (`DenLayout`). The snake can go anywhere on the oval, the path and the den (a wall
+  bounce turns it the other way, like a tap), and the camera follows it along the path. `GamePhase.Intro` plays `IntroDirector`'s stages.
+  - The story: the snake sleeps with its eyes shut and Zs until the player taps to wake it, it wakes up and blinks, sticks its tongue out,
+    its stomach rumbles (zigzag lines along the body), three thought bubbles end in a mouse, the bubble pops and the snake starts to circle
+    clockwise, "Tap to turn" (a tap turns it, taps before that do nothing).
+  - The lessons (`Opening.Tutorial`, a long path that repeats: the snake, the camera and the animals are put back a stretch, and the ground is
+    the same every period): half way along the path the sprint button shows with an arrow and "Hold to zoom" until the corner has been held for
+    2 seconds; then the hunger bar shows for the first time, full, with an arrow and "Eat to not starve", runs down, and a mouse sits on the
+    path to be eaten; after a walk the pink (dizzy) toad, "Toads poison you", which has to be eaten and its dizziness has to run out; after
+    another walk a bird that flies in, "Birds give powers", which has to be eaten; then the path ends in the oval. The animals of the lessons
+    are tame (`isTame`): they do not run, hop or fly off. Nothing starves in the lessons.
+  - Afterwards: the player has done the tutorial (`SettingsStore.isTutorialDone`), and every game opens in `Opening.ShortPath`: the snake wakes in
+    its den and a short path, with no lessons, leads to the oval. A restart is `Opening.Oval`. A door in the wall of the den (`DenLayout.hasDoor`)
+    starts the tutorial again when the snake stays near it.
 
 ## Power ups
 

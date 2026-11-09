@@ -7,6 +7,7 @@ import com.lukeneedham.snake.game.DenTuning
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.cos
+import kotlin.math.hypot
 import kotlin.math.roundToInt
 import kotlin.math.sin
 import kotlin.random.Random
@@ -31,6 +32,8 @@ internal fun DrawScope.drawDenRocks(den: DenLayout) {
         val y = den.denY + sin(angle) * reach
         val size = 2.3f + random.nextFloat() * 1.2f
         if (abs(x - den.denX) < DenTuning.pathHalfWidth + 1f && y < den.denY) continue
+        // The door of the tutorial takes the place of some rocks
+        if (den.hasDoor && hypot(x - den.doorX, y - den.doorY) < doorGap) continue
         rocks.add(Triple(x, y, size))
     }
     for ((x, y, size) in rocks.sortedBy { it.second }) drawRock(x, y, size)
@@ -43,3 +46,6 @@ private fun DrawScope.drawRock(x: Float, y: Float, size: Float) {
     val shadeY = y.roundToInt() + size.toInt()
     pixelRect(x.roundToInt() - size.toInt() + 1, shadeY, size.toInt() * 2 - 1, 1, rockShade)
 }
+
+/** How far from the middle of the door of the tutorial there are no rocks. */
+private const val doorGap = 9f

@@ -1,15 +1,16 @@
 package com.lukeneedham.snake.game
 
 /**
- * The world is three screens tall. The first is the level (the oval). At the bottom of the third is the snake's den, a misshapen floor
- * ringed with rocks, and a path of bare ground leads from it up through the grass into the oval. The snake can go anywhere on the oval, the path
- * and the den: the camera follows it. At the start of the first game the path goes on and on, a stretch that repeats, until the player has
- * learned to sprint.
+ * The first screen of the world is the level (the oval). At the bottom of the world is the snake's den, a misshapen floor ringed with rocks,
+ * and a path of bare ground leads from it up through the grass into the oval. The snake can go anywhere on the oval, the path and the
+ * den: the camera follows it. With a [isLong] path (the first game, with the tutorial) the world is three screens tall, and the path goes on
+ * and on, a stretch that repeats, until the player has learned the lessons along it. Otherwise the path is short, and the den has a door
+ * in its wall that starts the tutorial again when the snake opens it.
  */
-class DenLayout(val arena: Arena) {
+class DenLayout(val arena: Arena, val isLong: Boolean = false) {
 
     /** The height of the whole world. */
-    val worldHeight = arena.height * 3f
+    val worldHeight = arena.height * (if (isLong) 3f else shortWorldScreens)
 
     /** Where the camera is, as a world y, when it shows the den at the bottom of the world. */
     val denCameraY = worldHeight - arena.height
@@ -41,6 +42,13 @@ class DenLayout(val arena: Arena) {
     /** Half way along the path from the den to the oval. */
     val halfwayY = ((denY - DenTuning.denRadius) + arena.height) / 2f
 
+    /** Whether the den has the door of the tutorial: only when the player has learned it already, and can do it again. */
+    val hasDoor = !isLong
+
+    /** The door is in the wall of the den, at the bottom: the snake opens it by going close to it. */
+    val doorX = denX
+    val doorY = denY + den.radiusAt(halfPi)
+
     /** The bubbles of the snake's thought, from the smallest one up: the last one is the big one with the mouse in it. */
     val bubbles = listOf(
         ThoughtBubble(denX + 10f, denY - 22f, 1.8f),
@@ -64,6 +72,9 @@ class DenLayout(val arena: Arena) {
             den.signedDistance(x, baseY - height / 2f) < margin ||
             den.signedDistance(x, baseY - height) < margin
 
+    /** A snake that has just left the den: on the path at [y], going up, with its body straight behind it. For the lessons to start from. */
+    fun snakeOnPath(y: Float): Snake = Snake(arena, ground, arena.centerX, y, -halfPi)
+
     /** The snake curled up in its den: it circles the middle of the den, and it has gone round long enough for its whole body to follow the circle. */
     fun curledSnake(): Snake {
         val heading = -halfPi
@@ -76,5 +87,8 @@ class DenLayout(val arena: Arena) {
     private companion object {
         const val halfPi = 1.5707964f
         const val warmUpFrames = 60f
+
+        /** A short world is the oval and a little more than half a screen under it, where the den is. */
+        const val shortWorldScreens = 1.5f
     }
 }

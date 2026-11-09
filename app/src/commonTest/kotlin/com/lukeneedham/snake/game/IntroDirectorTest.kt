@@ -152,4 +152,95 @@ class IntroDirectorTest {
         director.trackSprint(true, 1f)
         assertTrue(director.hasZoomed)
     }
+
+    private fun lessonDirector(): IntroDirector {
+        val director = taughtDirector()
+        director.turned()
+        director.halfway()
+        director.trackSprint(true, IntroTuning.zoomSeconds + 0.1f)
+        return director
+    }
+
+    @Test
+    fun learningToSprintStartsTheLessonOfTheHunger() {
+        val director = lessonDirector()
+        assertEquals(IntroStage.Hunger, director.stage)
+        assertTrue(director.showsHunger)
+        assertTrue(director.loopsPath)
+    }
+
+    @Test
+    fun theMouseComesOnceTheBarHasShownAndRunDown() {
+        val director = lessonDirector()
+        director.hungerShown(0.3f)
+        assertEquals(IntroStage.Hunger, director.stage)
+        director.play(IntroTuning.hungerTextSeconds + 0.1f)
+        director.hungerShown(1f)
+        assertEquals(IntroStage.Hunger, director.stage)
+        director.hungerShown(IntroTuning.hungerDemoLevel)
+        assertEquals(IntroStage.Mouse, director.stage)
+    }
+
+    @Test
+    fun eatingAnythingButTheMouseDoesNotLearnTheLessonOfTheMouse() {
+        val director = lessonDirector()
+        director.play(IntroTuning.hungerTextSeconds + 0.1f)
+        director.hungerShown(0.4f)
+        director.ate(Critter.Toad(1, ToadKind.Pink, 0f, 0f, 10f))
+        assertEquals(IntroStage.Mouse, director.stage)
+        director.ate(Critter.Mouse(2, 0f, 0f, 10f))
+        assertEquals(IntroStage.WalkToToad, director.stage)
+    }
+
+    @Test
+    fun theToadComesAfterTheSnakeHasWalkedAWhile() {
+        val director = lessonDirector()
+        director.play(IntroTuning.hungerTextSeconds + 0.1f)
+        director.hungerShown(0.4f)
+        director.ate(Critter.Mouse(2, 0f, 0f, 10f))
+        director.walked(IntroTuning.walkDistance - 10f)
+        assertEquals(IntroStage.WalkToToad, director.stage)
+        director.walked(20f)
+        assertEquals(IntroStage.Toad, director.stage)
+    }
+
+    @Test
+    fun theSnakeHasToBeDizzyAndGetOverItBeforeTheBird() {
+        val director = lessonDirector()
+        director.jumpTo(IntroStage.Toad)
+        director.dizzy(false)
+        assertEquals(IntroStage.Toad, director.stage)
+        director.ate(Critter.Toad(3, ToadKind.Pink, 0f, 0f, 10f))
+        assertEquals(IntroStage.Dizzy, director.stage)
+        director.dizzy(false)
+        assertEquals(IntroStage.Dizzy, director.stage)
+        director.dizzy(true)
+        assertEquals(IntroStage.Dizzy, director.stage)
+        director.dizzy(false)
+        assertEquals(IntroStage.WalkToBird, director.stage)
+    }
+
+    @Test
+    fun theBirdIsTheLastLessonAndThenThePathHasAnEnd() {
+        val director = lessonDirector()
+        director.jumpTo(IntroStage.WalkToBird)
+        director.walked(IntroTuning.walkDistance + 1f)
+        assertEquals(IntroStage.Bird, director.stage)
+        director.ate(Critter.Bird(4, BirdKind.BlueTit, 0f, 0f, 0f, 0f, 10f))
+        assertEquals(IntroStage.Leaving, director.stage)
+        assertFalse(director.loopsPath)
+    }
+
+    @Test
+    fun withoutTheTutorialTheSnakeJustWakesUpAndGoes() {
+        val director = IntroDirector(isTutorial = false)
+        director.wake()
+        director.play(IntroTuning.wakeSeconds + 0.1f)
+        assertEquals(IntroStage.Steering, director.stage)
+        assertEquals(1f, director.snakeSpeed)
+        assertFalse(director.loopsPath)
+        assertFalse(director.showsHunger)
+        director.halfway()
+        assertFalse(director.reachedHalfway)
+    }
 }

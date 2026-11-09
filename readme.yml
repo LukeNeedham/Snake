@@ -26,11 +26,12 @@ description: |
   snake starves when it is empty. Hold the corner at the bottom left to sprint (you can move it to the right in the settings), which is faster but burns
   the bar quicker, while your other thumb taps anywhere else to turn. The button at the top left pauses the game and opens a
   menu with Resume, Restart and Settings.
-  The game opens with a little story: the snake sleeps curled up on the stone floor of its den, a ring of rocks in the grass, until the
-  player taps to wake it. It wakes up, blinks, flicks its tongue, and its stomach rumbles; it dreams of a mouse, and then it starts to
-  circle. A tap turns it the other way, and that is the whole lesson of the turn. Then the player steers it out of its den and along
-  the path through the grass: the path goes on and on until the player has learned to hold the sprint corner (to zoom) for a couple of seconds,
-  and then it leads into the oval. Only the first game starts like this: a restart goes straight to the oval. The snake can always
-  leave the oval by the path and go home to its den.
+  The first time, the game opens with a story and a tutorial: the snake sleeps curled up on the stone floor of its den, a ring of rocks in
+  the grass, until the player taps to wake it. It wakes up, blinks, flicks its tongue, and its stomach rumbles; it dreams of a mouse, and then
+  it starts to circle. A tap turns it the other way. Then the player steers it out of its den and along a path through the grass, and
+  learns on the way: to hold the sprint corner (to zoom), that the hunger bar goes down and a mouse fills it, that a toad poisons (the dizzy
+  one), and that a bird gives a power. The path goes on and on until each lesson is learned by doing it, and then it leads into the oval. After
+  that the path from the den is short, with no lessons, and the snake can go home any time: the door in the wall of its den starts the
+  tutorial again when the snake opens it. A restart goes straight to the oval.
 
   The mice run from a snake they see coming, but they cannot see what is behind them.

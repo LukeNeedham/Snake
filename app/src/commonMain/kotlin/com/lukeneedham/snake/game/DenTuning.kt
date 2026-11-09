@@ -31,4 +31,9 @@ object DenTuning {
 
     /** How long one stretch of the path that repeats is, as a part of the height of the screen. */
     const val loopPeriodFactor = 0.35f
+
+    /** How close the snake has to be to the door of the tutorial, in the wall of the den, for the door to open, and how long it takes to open and to close. */
+    const val doorReach = 10f
+    const val doorOpenSeconds = 0.4f
+    const val doorCloseSeconds = 1.2f
 }
