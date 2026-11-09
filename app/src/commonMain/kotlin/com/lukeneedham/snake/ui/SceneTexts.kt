@@ -1,10 +1,14 @@
 package com.lukeneedham.snake.ui
 
 import androidx.compose.runtime.Composable
+import com.lukeneedham.snake.game.DeathCause
 import com.lukeneedham.snake.game.Effect
 import com.lukeneedham.snake.game.PowerUp
 import com.lukeneedham.snake.generated.resources.Res
 import com.lukeneedham.snake.generated.resources.best_value
+import com.lukeneedham.snake.generated.resources.death_allergies
+import com.lukeneedham.snake.generated.resources.death_cannibalism
+import com.lukeneedham.snake.generated.resources.death_starvation
 import com.lukeneedham.snake.generated.resources.effect_cannibal
 import com.lukeneedham.snake.generated.resources.effect_cannibal_description
 import com.lukeneedham.snake.generated.resources.effect_confused
@@ -21,15 +25,14 @@ import com.lukeneedham.snake.generated.resources.effect_lazy
 import com.lukeneedham.snake.generated.resources.effect_lazy_description
 import com.lukeneedham.snake.generated.resources.effect_ravenous
 import com.lukeneedham.snake.generated.resources.effect_ravenous_description
-import com.lukeneedham.snake.generated.resources.game_over
 import com.lukeneedham.snake.generated.resources.game_title
 import com.lukeneedham.snake.generated.resources.hunger_fills
 import com.lukeneedham.snake.generated.resources.hunger_title
 import com.lukeneedham.snake.generated.resources.menu_back
 import com.lukeneedham.snake.generated.resources.menu_restart
 import com.lukeneedham.snake.generated.resources.menu_resume
-import com.lukeneedham.snake.generated.resources.menu_title
 import com.lukeneedham.snake.generated.resources.menu_settings
+import com.lukeneedham.snake.generated.resources.menu_title
 import com.lukeneedham.snake.generated.resources.new_best
 import com.lukeneedham.snake.generated.resources.paused
 import com.lukeneedham.snake.generated.resources.power_up_bigger_mouth
@@ -57,7 +60,13 @@ import org.jetbrains.compose.resources.stringResource
 internal fun sceneTexts(score: Int, bestScore: Int, isNewBest: Boolean): SceneTexts = SceneTexts(
     title = stringResource(Res.string.game_title),
     tapToStart = stringResource(Res.string.tap_to_start),
-    gameOver = stringResource(Res.string.game_over),
+    deathCauseNames = DeathCause.entries.map { cause ->
+        when (cause) {
+            DeathCause.Starvation -> stringResource(Res.string.death_starvation)
+            DeathCause.Allergies -> stringResource(Res.string.death_allergies)
+            DeathCause.Cannibalism -> stringResource(Res.string.death_cannibalism)
+        }
+    },
     score = stringResource(Res.string.score_value, score),
     best = stringResource(Res.string.best_value, bestScore),
     newBest = if (isNewBest) stringResource(Res.string.new_best) else "",

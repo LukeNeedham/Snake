@@ -7,6 +7,7 @@ import com.lukeneedham.snake.game.Arena
 import com.lukeneedham.snake.game.BirdKind
 import com.lukeneedham.snake.game.BirdLanding
 import com.lukeneedham.snake.game.Critter
+import com.lukeneedham.snake.game.DeathCause
 import com.lukeneedham.snake.game.GameWorld
 import com.lukeneedham.snake.game.PausePage
 import com.lukeneedham.snake.game.ToadKind
@@ -130,7 +131,7 @@ private fun GamePageGameOverScreenshot() {
             it.start()
             repeat(720) { _ -> it.update(1f / 60f) }
             it.score = 13
-            it.endGame()
+            it.endGame(DeathCause.Starvation)
             repeat(75) { _ -> it.update(1f / 60f) }
         }
     }

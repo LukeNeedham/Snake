@@ -7,7 +7,6 @@ import androidx.compose.runtime.Immutable
 internal data class SceneTexts(
     val title: String,
     val tapToStart: String,
-    val gameOver: String,
     val score: String,
     val best: String,
     val newBest: String,
@@ -26,6 +25,8 @@ internal data class SceneTexts(
     val effectDescriptions: List<String>,
     /** What each power up does, in the order of the `PowerUp` entries. */
     val powerUpDescriptions: List<String>,
+    /** What the snake died of, in the order of the `DeathCause` entries. */
+    val deathCauseNames: List<String>,
     /** The name of each effect, in the order of the `Effect` entries. */
     val effectNames: List<String>,
     /** The name of each power up, in the order of the `PowerUp` entries. */

@@ -31,6 +31,10 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     var gameOverTime = 0f
         private set
 
+    /** What the snake died of, once the game is over. */
+    var deathCause: DeathCause? = null
+        private set
+
     /** How hard the screen shakes after the snake hit itself. */
     var shake = 0f
         private set
@@ -149,9 +153,10 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
         mutableCritters.add(critter)
     }
 
-    fun endGame() {
+    fun endGame(cause: DeathCause) {
         if (phase != GamePhase.Playing) return
         phase = GamePhase.GameOver
+        deathCause = cause
         sprint.clear()
         gameOverTime = 0f
         shake = startingShake
@@ -191,7 +196,7 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
         updateCritters(dt)
         feeding.update(dt, snake, mutableCritters, boosts.mouthFactor, boosts.mouthIsFull).forEach { eat(it) }
         effectParticles.emit(effects, sprint.level, snake, critters)
-        if (hunger.isStarving || (effects.isOn(Effect.Hayfever) && touchedGrass) || (effects.isOn(Effect.Cannibal) && snake.hitsItself())) endGame()
+        causeOfDeath(touchedGrass)?.let { endGame(it) }
     }
 
     /** How much of the bar [amount] of food fills right now: a greedy snake gets only part of it. */
@@ -204,6 +209,14 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
 
     /** Lazy slows the snake down, and fades in and out like its bar. */
     private fun lazyFactor(): Float = 1f + (EffectTuning.lazySpeedFactor - 1f) * effects.level(Effect.Lazy)
+
+    /** What kills the snake right now, if anything. */
+    private fun causeOfDeath(touchedGrass: Boolean): DeathCause? = when {
+        hunger.isStarving -> DeathCause.Starvation
+        effects.isOn(Effect.Hayfever) && touchedGrass -> DeathCause.Allergies
+        effects.isOn(Effect.Cannibal) && snake.hitsItself() -> DeathCause.Cannibalism
+        else -> null
+    }
 
     private fun dustAtNewBounces() {
         if (snake.bounceCount == seenBounces) return

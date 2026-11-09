@@ -121,6 +121,7 @@ class GameWorldTest {
         world.start()
         world.runLongSnakeFed(seconds = 30, isCannibal = true)
         assertEquals(GamePhase.GameOver, world.phase)
+        assertEquals(DeathCause.Cannibalism, world.deathCause)
         repeat(60) { world.update(1f / 60f) }
         assertTrue(world.canRestart)
     }
@@ -137,6 +138,18 @@ class GameWorldTest {
             }
         }
         assertEquals(GamePhase.GameOver, world.phase)
+        assertEquals(DeathCause.Allergies, world.deathCause)
+    }
+
+    @Test
+    fun aSnakeThatRunsOutOfHungerDiesOfStarvation() {
+        val world = newWorld()
+        world.start()
+        assertEquals(null, world.deathCause)
+        world.hunger.update(100f, sprintLevel = 0f)
+        world.update(1f / 60f)
+        assertEquals(GamePhase.GameOver, world.phase)
+        assertEquals(DeathCause.Starvation, world.deathCause)
     }
 
     @Test

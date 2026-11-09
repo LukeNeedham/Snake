@@ -15,7 +15,8 @@ internal fun DrawScope.drawGameOver(world: GameWorld, texts: SceneTexts) {
     pixelRect(0, 0, width, height, Color.Black.copy(alpha = dim))
     if (world.gameOverTime > resultDelay) {
         val top = height / 2 - 24
-        drawCenteredPixelText(texts.gameOver, centerX, top, HudPalette.red, scale = 2)
+        val cause = world.deathCause
+        if (cause != null) drawCenteredPixelText(texts.deathCauseNames[cause.ordinal], centerX, top, HudPalette.red, scale = 2)
         drawCenteredPixelText(texts.score, centerX, top + 16, HudPalette.white, scale = 2)
         drawCenteredPixelText(texts.best, centerX, top + 32, HudPalette.ice)
         if (texts.newBest.isNotEmpty()) {
