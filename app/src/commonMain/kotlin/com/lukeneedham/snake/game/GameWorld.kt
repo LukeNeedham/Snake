@@ -39,13 +39,11 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     var rejectedTapTime = 0f
         private set
 
-    /** Whether the menu is over the scene. A paused game always has it open. */
-    var isMenuOpen = false
-        private set
+    /** The pause overlay, which all the menus are pages of. A paused game always has it open. */
+    val overlay = PauseOverlay()
 
-    /** Whether the list of the effects and power ups that are on is over the scene. The game is paused while it is. */
-    var isStatusOpen = false
-        private set
+    /** Whether the pause overlay is over the scene. */
+    val isMenuOpen: Boolean get() = overlay.isOpen
 
     /** The corner of the screen that sprints: it comes from the settings. */
     var sprintSide = SprintSide.Left
@@ -84,11 +82,14 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
         spawner.reset()
     }
 
-    /** Pausing opens the menu: the game carries on when it is closed. */
-    fun pause() {
+    /** Pausing opens the overlay: the game carries on when it is closed. */
+    fun pause() = openOverlay(PausePage.Pause)
+
+    /** Pauses the game, if it is being played, and opens the overlay on [page]. */
+    fun openOverlay(page: PausePage) {
         if (phase != GamePhase.Playing) return
         phase = GamePhase.Paused
-        isMenuOpen = true
+        overlay.open(page)
         sprint.clear()
         redraw()
     }
@@ -96,7 +97,7 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     fun resume() {
         if (phase != GamePhase.Paused) return
         phase = GamePhase.Playing
-        isMenuOpen = false
+        overlay.close()
         redraw()
     }
 
@@ -105,7 +106,7 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
         if (phase == GamePhase.Playing) {
             pause()
         } else if (phase != GamePhase.Paused) {
-            isMenuOpen = true
+            overlay.open(PausePage.Pause)
             redraw()
         }
     }
@@ -114,25 +115,9 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
         if (phase == GamePhase.Paused) {
             resume()
         } else {
-            isMenuOpen = false
+            overlay.close()
             redraw()
         }
-    }
-
-    /** Pauses the game and lists what is on, with the time left. Only a game that is being played, with something on, can. */
-    fun openStatus() {
-        if (phase != GamePhase.Playing || statuses.isEmpty()) return
-        phase = GamePhase.Paused
-        isStatusOpen = true
-        sprint.clear()
-        redraw()
-    }
-
-    fun closeStatus() {
-        if (!isStatusOpen) return
-        isStatusOpen = false
-        phase = GamePhase.Playing
-        redraw()
     }
 
     /** A paused world is not stepped, so the drawing is told by hand to draw again when the menu opens or closes. */
@@ -174,7 +159,11 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     }
 
     fun update(dt: Float) {
-        if (phase == GamePhase.Paused) return
+        overlay.update(dt)
+        if (phase == GamePhase.Paused) {
+            tick++
+            return
+        }
         time += dt
         sprint.update(dt, canSprint = phase == GamePhase.Playing)
         effects.update(dt, isCountingDown = phase == GamePhase.Playing, isShowing = phase != GamePhase.GameOver)
@@ -205,10 +194,10 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
         if (hunger.isStarving || (effects.isOn(Effect.Hayfever) && touchedGrass) || (effects.isOn(Effect.Cannibal) && snake.hitsItself())) endGame()
     }
 
-    /** Feeds the snake: a greedy snake gets only part of it. */
-    private fun feed(amount: Float) {
-        hunger.feed(if (effects.isOn(Effect.Greedy)) amount * EffectTuning.greedyFeedFactor else amount)
-    }
+    /** How much of the bar [amount] of food fills right now: a greedy snake gets only part of it. */
+    fun foodValue(amount: Float): Float = if (effects.isOn(Effect.Greedy)) amount * EffectTuning.greedyFeedFactor else amount
+
+    private fun feed(amount: Float) = hunger.feed(foodValue(amount))
 
     /** Ravenous makes the hunger bar drain faster, and fades in and out like its arrow. */
     private fun ravenousFactor(): Float = 1f + (EffectTuning.ravenousDrainFactor - 1f) * effects.level(Effect.Ravenous)

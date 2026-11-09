@@ -31,7 +31,9 @@
     <string name="power_up_toad_free">Toad-free!</string>
     <string name="power_up_cheese">Cheese!</string>
     <string name="status_title">Active</string>
-    <string name="status_close">Tap to close</string>
+    <string name="status_empty">Nothing is on</string>
+    <string name="hunger_title">Hunger</string>
+    <string name="hunger_fills">Eating fills</string>
     <string name="effect_hallucinating_description">The whole screen goes wavy.</string>
     <string name="effect_imposters_description">Animals look like other animals and shuffle along together.</string>
     <string name="effect_confused_description">The snake ignores your taps.</string>

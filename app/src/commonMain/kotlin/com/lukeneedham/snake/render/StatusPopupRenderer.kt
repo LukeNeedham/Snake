@@ -1,6 +1,5 @@
 package com.lukeneedham.snake.render
 
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import com.lukeneedham.snake.game.GameWorld
 import com.lukeneedham.snake.game.StatusEntry
@@ -14,19 +13,21 @@ private const val entryGap = 5
 private const val lineChars = 21
 
 /**
- * The list of what is on, over the dimmed scene while the game is paused: for each effect and power up its arrow, filled by the time
- * left, its name, the seconds left on the right, and under them what it does.
+ * The third page of the pause overlay, the list of what is on: for each effect and power up its arrow, filled by the time left, its
+ * name, the seconds left on the right, and under them what it does.
  */
-internal fun DrawScope.drawStatusPopup(world: GameWorld, texts: SceneTexts, topInset: Int) {
+internal fun DrawScope.drawStatusPage(world: GameWorld, texts: SceneTexts, topInset: Int) {
     val width = world.arena.width.toInt()
-    val height = world.arena.height.toInt()
-    pixelRect(0, 0, width, height, Color(0xCC000000))
     drawCenteredPixelText(texts.statusTitle, width / 2, topInset + 8, HudPalette.gold, scale = 2)
+    val statuses = world.statuses
+    if (statuses.isEmpty()) {
+        drawCenteredPixelText(texts.statusEmpty, width / 2, world.arena.height.toInt() / 2 - 3, HudPalette.white.copy(alpha = 0.7f))
+        return
+    }
     var y = topInset + 28
-    for (entry in world.statuses) {
+    for (entry in statuses) {
         y += drawEntry(entry, texts, width, y) + entryGap
     }
-    drawCenteredPixelText(texts.statusClose, width / 2, height - 12, HudPalette.white.copy(alpha = 0.7f))
 }
 
 /** Draws one entry with its top at [top], and returns how tall it is. */

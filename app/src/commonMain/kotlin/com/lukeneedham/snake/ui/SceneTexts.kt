@@ -23,6 +23,8 @@ import com.lukeneedham.snake.generated.resources.effect_ravenous
 import com.lukeneedham.snake.generated.resources.effect_ravenous_description
 import com.lukeneedham.snake.generated.resources.game_over
 import com.lukeneedham.snake.generated.resources.game_title
+import com.lukeneedham.snake.generated.resources.hunger_fills
+import com.lukeneedham.snake.generated.resources.hunger_title
 import com.lukeneedham.snake.generated.resources.menu_back
 import com.lukeneedham.snake.generated.resources.menu_restart
 import com.lukeneedham.snake.generated.resources.menu_resume
@@ -42,7 +44,7 @@ import com.lukeneedham.snake.generated.resources.power_up_toad_free_description
 import com.lukeneedham.snake.generated.resources.power_up_zoom
 import com.lukeneedham.snake.generated.resources.power_up_zoom_description
 import com.lukeneedham.snake.generated.resources.score_value
-import com.lukeneedham.snake.generated.resources.status_close
+import com.lukeneedham.snake.generated.resources.status_empty
 import com.lukeneedham.snake.generated.resources.status_title
 import com.lukeneedham.snake.generated.resources.tap_to_retry
 import com.lukeneedham.snake.generated.resources.tap_to_start
@@ -65,7 +67,9 @@ internal fun sceneTexts(score: Int, bestScore: Int, isNewBest: Boolean): SceneTe
     menuRestart = stringResource(Res.string.menu_restart),
     menuSettings = stringResource(Res.string.menu_settings),
     statusTitle = stringResource(Res.string.status_title),
-    statusClose = stringResource(Res.string.status_close),
+    statusEmpty = stringResource(Res.string.status_empty),
+    hungerTitle = stringResource(Res.string.hunger_title),
+    hungerFills = stringResource(Res.string.hunger_fills),
     effectDescriptions = Effect.entries.map { effect ->
         when (effect) {
             Effect.Hallucinating -> stringResource(Res.string.effect_hallucinating_description)

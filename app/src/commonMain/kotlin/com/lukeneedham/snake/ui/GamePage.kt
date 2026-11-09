@@ -33,6 +33,8 @@ fun GamePage(onOpenSettings: () -> Unit) {
         state = state,
         onPress = viewModel::onPress,
         onRelease = viewModel::onRelease,
+        onPageDrag = viewModel::onPageDrag,
+        onPageRelease = viewModel::onPageRelease,
         onSceneSize = viewModel::onSceneSize,
         onOpenSettings = onOpenSettings,
     )

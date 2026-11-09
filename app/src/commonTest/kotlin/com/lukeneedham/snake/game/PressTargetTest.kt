@@ -2,6 +2,7 @@ package com.lukeneedham.snake.game
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 
 class PressTargetTest {
 
@@ -75,15 +76,41 @@ class PressTargetTest {
     }
 
     @Test
-    fun openingTheStatusListPausesTheGameAndClosingItCarriesOn() {
+    fun theStomachInTheTopRightCornerOpensTheHungerPage() {
         world.start()
-        world.openStatus()
-        assertEquals(GamePhase.Playing, world.phase)
-        world.powerUps.apply(BirdKind.Crow)
-        world.openStatus()
+        assertEquals(PressTarget.Stomach, target(100f, 12f))
+        assertEquals(PressTarget.Turn, target(54f, 12f))
+    }
+
+    @Test
+    fun openingAPageOfTheOverlayPausesTheGameAndTheCloseButtonCarriesOn() {
+        world.start()
+        world.openOverlay(PausePage.Hunger)
         assertEquals(GamePhase.Paused, world.phase)
+        assertEquals(PausePage.Hunger, world.overlay.page)
+        val close = MenuLayout.closeButton(topInset)
+        assertEquals(PressTarget.CloseButton, target(close.center.x, close.center.y))
         assertEquals(PressTarget.Backdrop, target(54f, 117f))
-        world.closeStatus()
+        world.closeMenu()
         assertEquals(GamePhase.Playing, world.phase)
+        assertFalse(world.isMenuOpen)
+    }
+
+    @Test
+    fun theButtonsAreOnlyOnTheFirstPage() {
+        world.start()
+        world.openOverlay(PausePage.Status)
+        val first = MenuLayout.item(world.arena, world.menuItems.size, 0)
+        assertEquals(PressTarget.Backdrop, target(first.center.x, first.center.y))
+        world.overlay.goTo(PausePage.Pause, animate = false)
+        assertEquals(PressTarget.Item(MenuItem.Resume), target(first.center.x, first.center.y))
+    }
+
+    @Test
+    fun theDotsOfThePageIndicatorSelectPages() {
+        world.start()
+        world.pause()
+        val dot = MenuLayout.pageDot(world.arena, PausePage.Status.ordinal)
+        assertEquals(PressTarget.PageDot(PausePage.Status), target(dot.center.x, dot.center.y))
     }
 }

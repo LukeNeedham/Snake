@@ -3,4 +3,6 @@ GamePage
 GamePageBirds
 GamePageHallucinating
 GamePagePaused
+GamePageHunger
+GamePageStatus
 GamePageGameOver

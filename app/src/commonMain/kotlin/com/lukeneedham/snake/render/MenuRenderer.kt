@@ -1,6 +1,5 @@
 package com.lukeneedham.snake.render
 
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import com.lukeneedham.snake.game.GamePhase
 import com.lukeneedham.snake.game.GameWorld
@@ -8,11 +7,9 @@ import com.lukeneedham.snake.game.MenuItem
 import com.lukeneedham.snake.game.MenuLayout
 import kotlin.math.roundToInt
 
-/** The menu over the scene: it is dimmed, and the buttons are stacked in the middle of the screen. */
-internal fun DrawScope.drawMenu(world: GameWorld, texts: SceneTexts) {
+/** The first page of the pause overlay: the buttons are stacked in the middle of the screen. */
+internal fun DrawScope.drawPausePage(world: GameWorld, texts: SceneTexts) {
     val width = world.arena.width.toInt()
-    val height = world.arena.height.toInt()
-    pixelRect(0, 0, width, height, Color(0xAA000000))
     val items = world.menuItems
     items.forEachIndexed { index, item ->
         val rect = MenuLayout.item(world.arena, items.size, index)

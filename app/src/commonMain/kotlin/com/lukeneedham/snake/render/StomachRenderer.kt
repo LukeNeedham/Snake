@@ -3,9 +3,8 @@ package com.lukeneedham.snake.render
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import com.lukeneedham.snake.game.GameWorld
+import com.lukeneedham.snake.game.StomachLayout
 import kotlin.math.roundToInt
-
-private const val margin = 4
 
 private val shape = listOf(
     "..###..........",
@@ -33,13 +32,16 @@ private val shapeHeight = shape.size
  * which then fills in.
  */
 internal fun DrawScope.drawStomach(world: GameWorld, topInset: Int) {
-    val left = world.arena.width.toInt() - margin - shapeWidth
-    val top = topInset + 3
+    drawStomachAt(world, StomachLayout.left(world.arena), StomachLayout.top(topInset), scale = 1)
+}
+
+/** The stomach with its top left corner at [left], [top], each of its pixels [scale] pixels wide and high. */
+internal fun DrawScope.drawStomachAt(world: GameWorld, left: Int, top: Int, scale: Int) {
     val hunger = world.hunger
     val filledRows = (shapeHeight * hunger.filled).roundToInt()
     val totalRows = (shapeHeight * hunger.level).roundToInt()
     val fillColor = hungerColor(world)
-    forEachCell { column, row -> pixelRect(left + column - 1, top + row - 1, 3, 3, PixelFont.outline) }
+    forEachCell { column, row -> pixelRect(left + column * scale - 1, top + row * scale - 1, scale + 2, scale + 2, PixelFont.outline) }
     forEachCell { column, row ->
         val fromBottom = shapeHeight - 1 - row
         val color = when {
@@ -47,7 +49,7 @@ internal fun DrawScope.drawStomach(world: GameWorld, topInset: Int) {
             fromBottom < totalRows -> HudPalette.hungerGain
             else -> HudPalette.barBack
         }
-        pixel(left + column, top + row, color)
+        pixelRect(left + column * scale, top + row * scale, scale, scale, color)
     }
 }
 

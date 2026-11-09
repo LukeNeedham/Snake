@@ -39,6 +39,8 @@ internal fun GameScene(
     texts: SceneTexts,
     onPress: (pointerId: Long, target: PressTarget) -> Unit,
     onRelease: (pointerId: Long) -> Unit,
+    onPageDrag: (pages: Float) -> Unit = {},
+    onPageRelease: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val arena = world.arena
@@ -55,26 +57,46 @@ internal fun GameScene(
     val topInsetPx = WindowInsets.safeDrawing.getTop(density)
     val currentOnPress by rememberUpdatedState(onPress)
     val currentOnRelease by rememberUpdatedState(onRelease)
+    val currentOnPageDrag by rememberUpdatedState(onPageDrag)
+    val currentOnPageRelease by rememberUpdatedState(onPageRelease)
 
     Canvas(
         modifier = modifier
             .fillMaxSize()
             .pointerInput(world, topInsetPx) {
+                // Fingers that went down on the open overlay: they press when they let go, unless they dragged the pages
+                val overlayTouches = HashMap<Long, OverlayTouch>()
                 awaitPointerEventScope {
                     while (true) {
                         val event = awaitPointerEvent()
                         for (change in event.changes) {
+                            val id = change.id.value
+                            val scale = size.width.toFloat() / sceneWidth
                             if (change.changedToDownIgnoreConsumed()) {
-                                val scale = size.width.toFloat() / sceneWidth
                                 val target = PressTarget.at(
                                     world = world,
                                     topInset = (topInsetPx / scale).toInt(),
                                     x = change.position.x / scale,
                                     y = change.position.y / scale,
                                 )
-                                currentOnPress(change.id.value, target)
+                                if (world.isMenuOpen) {
+                                    overlayTouches[id] = OverlayTouch(target, change.position.x)
+                                } else {
+                                    currentOnPress(id, target)
+                                }
+                            } else if (change.changedToUpIgnoreConsumed()) {
+                                val touch = overlayTouches.remove(id)
+                                if (touch != null) {
+                                    if (touch.isDragging) currentOnPageRelease() else currentOnPress(id, touch.target)
+                                }
+                                currentOnRelease(id)
+                            } else {
+                                val touch = overlayTouches[id]
+                                if (touch != null) {
+                                    val moved = touch.moveTo(change.position.x, slop = dragSlop * scale)
+                                    if (moved != 0f) currentOnPageDrag(moved / scale / sceneWidth)
+                                }
                             }
-                            if (change.changedToUpIgnoreConsumed()) currentOnRelease(change.id.value)
                         }
                     }
                 }
@@ -87,6 +109,30 @@ internal fun GameScene(
             drawScene(world, background, frontGrass, texts, topInset)
         }
         presentScene(sceneBitmap, world)
+    }
+}
+
+/** The distance in world units that a finger on the overlay has to move before it drags the pages instead of pressing. */
+private const val dragSlop = 4f
+
+/** A finger that went down on the open pause overlay on [target]; it is dragging the pages once it has moved far enough. */
+private class OverlayTouch(val target: PressTarget, private var lastX: Float) {
+    private val startX = lastX
+    var isDragging = false
+        private set
+
+    /** The finger moved to [x]: returns how far it dragged the pages since the last move, in pixels, or 0 if it is not dragging. */
+    fun moveTo(x: Float, slop: Float): Float {
+        if (!isDragging && kotlin.math.abs(x - startX) > slop) {
+            isDragging = true
+            val moved = x - startX
+            lastX = x
+            return moved
+        }
+        if (!isDragging) return 0f
+        val moved = x - lastX
+        lastX = x
+        return moved
     }
 }
 
