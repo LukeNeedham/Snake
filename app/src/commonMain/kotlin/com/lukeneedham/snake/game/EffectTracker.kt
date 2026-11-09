@@ -19,6 +19,11 @@ class EffectTracker {
         bannerTime = bannerSeconds
     }
 
+    /** Turns an effect on without a toad or a banner: the tests use it for the effects that no toad gives. */
+    internal fun turnOn(effect: Effect) {
+        remaining[effect.ordinal] = effect.durationSeconds
+    }
+
     /** 0 to 1: how strongly the effect shows, so that it fades in and out. */
     fun level(effect: Effect): Float = levels[effect.ordinal]
 

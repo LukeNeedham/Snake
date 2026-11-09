@@ -99,7 +99,7 @@ class GameWorldTest {
             if (phase == GamePhase.Playing) {
                 hunger.feed(1f)
                 // Toad-free keeps the toads away, so that no other curse changes the outcome
-                if (isCursed) applyEffect(ToadKind.Grey) else powerUps.apply(BirdKind.Crow)
+                if (isCursed) effects.turnOn(Effect.Lupus) else powerUps.apply(BirdKind.Crow)
                 update(1f / 60f)
                 if (snake.hitsItself()) touched = true
             }
@@ -126,12 +126,26 @@ class GameWorldTest {
     }
 
     @Test
-    fun eatingAGreyToadPutsTheLupusCurseOn() {
+    fun aSnakeWithHayFeverDiesWhenItTouchesTheGrass() {
+        val world = GameWorld(Arena(60f, 60f), seed = 11)
+        world.start()
+        repeat(60 * 30) {
+            if (world.phase == GamePhase.Playing) {
+                world.hunger.feed(1f)
+                world.applyEffect(ToadKind.Grey)
+                world.update(1f / 60f)
+            }
+        }
+        assertEquals(GamePhase.GameOver, world.phase)
+    }
+
+    @Test
+    fun eatingAGreyToadGivesHayFever() {
         val world = newWorld()
         world.start()
         world.placeToadInFrontOfTheMouth(ToadKind.Grey)
         world.update(1f / 60f)
-        assertTrue(world.effects.isOn(Effect.Lupus))
+        assertTrue(world.effects.isOn(Effect.HayFever))
     }
 
     @Test
