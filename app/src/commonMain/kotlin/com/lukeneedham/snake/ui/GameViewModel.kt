@@ -38,7 +38,7 @@ class GameViewModel(bestScoreStore: BestScoreStore, private val settingsStore: S
             settingsStore.isTutorialDone.collect { isDone ->
                 isTutorialDone = isDone
                 // The title is already up, with the long path: a player who knows it all gets the short one
-                if (isDone && world.phase == GamePhase.Ready && world.opening == Opening.Tutorial) newWorld(world.arena.height, Opening.ShortPath)
+                if (isDone && world.phase == GamePhase.Ready && world.opening == Opening.Tutorial) newWorld(world.arena.height, Opening.Returning)
             }
         }
         viewModelScope.launch {
@@ -65,11 +65,6 @@ class GameViewModel(bestScoreStore: BestScoreStore, private val settingsStore: S
         if (world.hasCompletedTutorial && !isTutorialDone) {
             isTutorialDone = true
             viewModelScope.launch { settingsStore.setTutorialDone(true) }
-        }
-        // The snake opened the door of its den: the tutorial starts again, with the snake already awake
-        if (world.wantsTutorial) {
-            newWorld(world.arena.height, Opening.Tutorial)
-            world.start()
         }
         if (world.phase == GamePhase.GameOver) bestScores.gameOver(world.score)
         publish()
@@ -125,7 +120,7 @@ class GameViewModel(bestScoreStore: BestScoreStore, private val settingsStore: S
         publish()
     }
 
-    /** The story and the lessons at the start are only told in the first game, and again when the snake opens the door: a restart goes straight to the oval. */
+    /** The story and the lessons at the start are only told in the first game: a restart goes straight to the oval. */
     private fun newWorld(height: Float, opening: Opening) {
         world = GameWorld(Arena(WorldTuning.width.toFloat(), height), seed = (world.time * 1000f).toInt(), opening = opening)
             .also { it.sprintSide = sprintSide }

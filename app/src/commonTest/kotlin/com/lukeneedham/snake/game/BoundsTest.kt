@@ -78,4 +78,39 @@ class BoundsTest {
         assertEquals(1f, normal.x, 1e-4f)
         assertEquals(0f, normal.y, 1e-4f)
     }
+
+    @Test
+    fun anOvalIsNegativeInsideAndPositiveOutside() {
+        val oval = OvalBounds(0f, 0f, 40f, 20f)
+        assertTrue(oval.signedDistance(0f, 0f) < 0f)
+        assertEquals(0f, oval.signedDistance(40f, 0f), 1e-3f)
+        assertTrue(oval.signedDistance(50f, 0f) > 5f)
+        assertTrue(oval.signedDistance(0f, 30f) > 5f)
+    }
+
+    @Test
+    fun theStonesOfAGateCutItOutOfTheGroundWhileItIsClosed() {
+        var isClosed = true
+        val path = BoxBounds(0f, 0f, 10f, 100f)
+        val gate = BoxBounds(0f, 20f, 13f, 7f)
+        val ground = GateBounds(path, gate) { isClosed }
+        // On the stones it is outside the ground, and on both sides it is still inside
+        assertTrue(ground.signedDistance(0f, 20f) > 0f)
+        assertTrue(ground.signedDistance(0f, 60f) < 0f)
+        assertTrue(ground.signedDistance(0f, -20f) < 0f)
+        isClosed = false
+        assertTrue(ground.signedDistance(0f, 20f) < 0f)
+    }
+
+    @Test
+    fun theWallOfAClosedGateFacesTheStones() {
+        val path = BoxBounds(0f, 0f, 10f, 100f)
+        val gate = BoxBounds(0f, 20f, 13f, 7f)
+        val ground = GateBounds(path, gate) { true }
+        // Below the stones, close to them: the wall faces up, into them
+        val below = ground.normal(0f, 30f)
+        assertEquals(-1f, below.y, 1e-3f)
+        val above = ground.normal(0f, 10f)
+        assertEquals(1f, above.y, 1e-3f)
+    }
 }

@@ -15,8 +15,6 @@ import com.lukeneedham.snake.game.Vec2
 import com.lukeneedham.snake.ui.GamePageContent
 import com.lukeneedham.snake.ui.GameUiState
 import com.lukeneedham.snake.ui.theme.AppTheme
-import kotlin.math.atan2
-import kotlin.math.sin
 import kotlin.random.Random
 
 /** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageReady.png. */
@@ -75,25 +73,34 @@ private fun GamePageLessonScreenshot() {
     AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
 }
 
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageSteering.png. */
+@Preview(widthDp = 360, heightDp = 800)
+@Composable
+private fun GamePageSteeringScreenshot() {
+    // The path up is blocked by stones, and an arrow points to the path to the left
+    val world = remember {
+        GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Tutorial).also {
+            it.start()
+            // The story is over and the snake has turned: the stones block the path up, and an arrow shows the way to the left
+            repeat(660) { _ -> it.update(1f / 60f) }
+            it.tap()
+            repeat(30) { _ -> it.update(1f / 60f) }
+        }
+    }
+    val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
+    AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
+}
+
 /** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageZoom.png. */
 @Preview(widthDp = 360, heightDp = 800)
 @Composable
 private fun GamePageZoomScreenshot() {
-    // Half way along the path the sprint button appears, with an arrow and the words that say to hold it
+    // In the room of the tutorial the sprint button shows, with an arrow and the words that say to hold it
     val world = remember {
         GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Tutorial).also {
-            // A player who steers up the path: it taps whenever the snake turns away from straight up
             it.start()
-            repeat(660) { _ -> it.update(1f / 60f) }
-            it.tap()
-            var frames = 0
-            while (!it.intro!!.reachedHalfway && frames++ < 6000) {
-                val wanted = atan2(-30f, 0f + it.arena.centerX - it.snake.x)
-                val direction = if (sin(wanted - it.snake.heading) >= 0f) 1f else -1f
-                if (direction != it.snake.turnDirection) it.tap()
-                it.update(1f / 60f)
-            }
-            repeat(30) { _ -> it.update(1f / 60f) }
+            it.jumpToLesson(IntroStage.Sprint)
+            repeat(60) { _ -> it.update(1f / 60f) }
         }
     }
     val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
@@ -104,12 +111,12 @@ private fun GamePageZoomScreenshot() {
 @Preview(widthDp = 360, heightDp = 800)
 @Composable
 private fun GamePageHungerScreenshot() {
-    // The hunger bar shows for the first time, half empty, with an arrow, and a mouse sits on the path
+    // The hunger bar shows for the first time, half empty, with an arrow, and a mouse has run into the room
     val world = remember {
         GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Tutorial).also {
             it.start()
             it.jumpToLesson(IntroStage.Hunger)
-            repeat(150) { _ -> it.update(1f / 60f) }
+            repeat(330) { _ -> it.update(1f / 60f) }
         }
     }
     val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
@@ -120,12 +127,12 @@ private fun GamePageHungerScreenshot() {
 @Preview(widthDp = 360, heightDp = 800)
 @Composable
 private fun GamePageToadScreenshot() {
-    // The pink toad sits on the path, and the words say that toads poison
+    // The pink toad has hopped to the middle of the room, and the words say that toads poison
     val world = remember {
         GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Tutorial).also {
             it.start()
             it.jumpToLesson(IntroStage.Toad)
-            repeat(20) { _ -> it.update(1f / 60f) }
+            repeat(600) { _ -> it.update(1f / 60f) }
         }
     }
     val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
@@ -136,25 +143,41 @@ private fun GamePageToadScreenshot() {
 @Preview(widthDp = 360, heightDp = 800)
 @Composable
 private fun GamePageBirdScreenshot() {
-    // A bird has flown in and sits on the path
+    // A bird has flown in to the middle of the room
     val world = remember {
         GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Tutorial).also {
             it.start()
             it.jumpToLesson(IntroStage.Bird)
-            repeat(200) { _ -> it.update(1f / 60f) }
+            repeat(420) { _ -> it.update(1f / 60f) }
         }
     }
     val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
     AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
 }
 
-/** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageDoor.png. */
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageLeaving.png. */
 @Preview(widthDp = 360, heightDp = 800)
 @Composable
-private fun GamePageDoorScreenshot() {
-    // After the tutorial: a short path, and a door in the wall of the den that starts it again
+private fun GamePageLeavingScreenshot() {
+    // Back in the house the stones are gone, and an arrow points up the path to the stage
     val world = remember {
-        GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.ShortPath).also { repeat(170) { _ -> it.update(1f / 60f) } }
+        GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Tutorial).also {
+            it.start()
+            it.jumpToLesson(IntroStage.Leaving)
+            repeat(30) { _ -> it.update(1f / 60f) }
+        }
+    }
+    val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
+    AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
+}
+
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageReturning.png. */
+@Preview(widthDp = 360, heightDp = 800)
+@Composable
+private fun GamePageReturningScreenshot() {
+    // After the tutorial: the path up is open, with no stones
+    val world = remember {
+        GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Returning).also { repeat(170) { _ -> it.update(1f / 60f) } }
     }
     val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
     AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }

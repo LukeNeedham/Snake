@@ -43,21 +43,24 @@ into its own doc when work on it starts.
   snake catches the curse (an item, a critter or a boss?) and how long it lasts, then show it on the screen like the other effects and
   power ups. Until it exists, nothing kills the snake but hunger. Check how the snake is drawn when its body crosses itself.
 
-- [x] **Intro story and tutorial.** Done: the world is a screen with the oval and, under it, the snake's den (a misshapen stone floor ringed with
-  rocks) with a path of bare ground through the grass (`DenLayout`). The snake can go anywhere on the oval, the path and the den (a wall
-  bounce turns it the other way, like a tap), and the camera follows it along the path. `GamePhase.Intro` plays `IntroDirector`'s stages.
-  - The story: the snake sleeps with its eyes shut and Zs until the player taps to wake it, it wakes up and blinks, sticks its tongue out,
-    its stomach rumbles (zigzag lines along the body), three thought bubbles end in a mouse, the bubble pops and the snake starts to circle
-    clockwise, "Tap to turn" (a tap turns it, taps before that do nothing).
-  - The lessons (`Opening.Tutorial`, a long path that repeats: the snake, the camera and the animals are put back a stretch, and the ground is
-    the same every period): half way along the path the sprint button shows with an arrow and "Hold to zoom" until the corner has been held for
-    2 seconds; then the hunger bar shows for the first time, full, with an arrow and "Eat to not starve", runs down, and a mouse sits on the
-    path to be eaten; after a walk the pink (dizzy) toad, "Toads poison you", which has to be eaten and its dizziness has to run out; after
-    another walk a bird that flies in, "Birds give powers", which has to be eaten; then the path ends in the oval. The animals of the lessons
-    are tame (`isTame`): they do not run, hop or fly off. Nothing starves in the lessons.
-  - Afterwards: the player has done the tutorial (`SettingsStore.isTutorialDone`), and every game opens in `Opening.ShortPath`: the snake wakes in
-    its den and a short path, with no lessons, leads to the oval. A restart is `Opening.Oval`. A door in the wall of the den (`DenLayout.hasDoor`)
-    starts the tutorial again when the snake stays near it.
+- [x] **Intro story and tutorial.** Done: the map (`WorldLayout`) is the stage (the oval) at the top, a path of bare ground through the grass one screen
+  long that leads down to the snake's house (a misshapen floor of raw stone with pebbles, ringed with rocks), and, to the left of the house,
+  a wide path that leads to the room of the tutorial (an oval of sand, like the stage, on the screen to the left). The snake can go anywhere
+  on the map (a wall bounce turns it the other way, like a tap), and the camera follows it down the path, and goes from the house to the room
+  and back. `GamePhase.Intro` plays `IntroDirector`'s stages.
+  - The story, in the house: the snake sleeps with its eyes shut and Zs until the player taps to wake it, it wakes up and blinks, sticks its
+    tongue out, its stomach rumbles (zigzag lines along the body), three thought bubbles end in a mouse, the bubble pops and the snake starts to
+    circle clockwise, "Tap to turn" (a tap turns it, taps before that do nothing). In the first game (`Opening.Tutorial`) a pile of stones blocks
+    the path up (`GateBounds`), and an arrow points to the path to the left.
+  - The lessons, in the room: the sprint button with an arrow and "Hold to zoom" until the corner has been held for 2 seconds; the hunger bar
+    shows for the first time, full, with an arrow and "Eat to not starve", runs down, and a mouse runs in from the grass to the middle of the
+    room to be eaten; the pink (dizzy) toad hops in, "Toads poison you", and has to be eaten and its dizziness has to run out; a bird flies in,
+    "Birds give powers", and has to be eaten. The animals are tame (`tameTarget`, `isTame`): they go to the middle and wait, and do not
+    run, hop or fly off. Nothing starves in the lessons. Then an arrow shows the way back to the house; there the stones are gone and an
+    arrow points up the path to the stage.
+  - Afterwards: the player has done the tutorial (`SettingsStore.isTutorialDone`), and every game opens in `Opening.Returning`: the snake wakes
+    in its house, the path up is open, and no lessons are told. A restart is `Opening.Oval`. The room of the tutorial is the way to do the
+    tutorial again: when the snake goes into it, the lessons start again from the sprint (a replay ends once the bird is eaten).
 
 ## Power ups
 

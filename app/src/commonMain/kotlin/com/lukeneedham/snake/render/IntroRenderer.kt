@@ -81,7 +81,7 @@ private fun DrawScope.pixelLine(fromX: Int, fromY: Int, toX: Int, toY: Int, colo
 
 /** Three bubbles that come up one after the other: two small ones and the big one, with the mouse the snake thinks of in it. */
 private fun DrawScope.drawBubbles(world: GameWorld, intro: IntroDirector) {
-    val bubbles = world.den.bubbles
+    val bubbles = world.layout.bubbles
     for ((index, bubble) in bubbles.withIndex()) {
         val growth = intro.bubbleGrowth(index)
         if (growth <= 0f) continue
@@ -101,7 +101,7 @@ private fun DrawScope.drawBubbles(world: GameWorld, intro: IntroDirector) {
 
 /** The big bubble bursts: a ring that grows and breaks into dashes as it fades (the sparkles are particles). */
 private fun DrawScope.drawPop(world: GameWorld, intro: IntroDirector) {
-    val bubble = world.den.bubbles.last()
+    val bubble = world.layout.bubbles.last()
     val progress = intro.popProgress
     if (progress > popRingPart) return
     val t = progress / popRingPart

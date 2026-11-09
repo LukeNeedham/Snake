@@ -42,14 +42,6 @@ class SnakeBody(headX: Float, headY: Float, heading: Float) {
         rebuild(initialDistance, heading)
     }
 
-    /** Moves the whole body [dy] down: the trail it follows and the discs already drawn from it. */
-    fun shift(dy: Float) {
-        val moved = trail.map { TrailPoint(it.x, it.y + dy, it.distance) }
-        trail.clear()
-        trail.addAll(moved)
-        points = points.map { BodyPoint(it.x, it.y + dy, it.dirX, it.dirY, it.index, it.cumulative, it.distanceFromHead, it.distanceFromTail) }
-    }
-
     /** Records where the head is, after it travelled [totalDistance] in all. */
     fun record(x: Float, y: Float, totalDistance: Float) {
         trail.addLast(TrailPoint(x, y, totalDistance))

@@ -30,9 +30,6 @@ interface CritterBody {
     /** In the air and flapping: a bird that flies in or flies off. */
     val isAirborne: Boolean get() = false
 
-    /** Moves the critter [dy] down: the path that repeats puts the snake back a stretch, and the critters of the lessons with it. */
-    fun shiftDown(dy: Float)
-
     /**
      * Steps the critter; [snakeHead] is where the head of the snake is, for the critters that run from it, and [aura] is what the
      * snake gives off while it has a power up.

@@ -53,12 +53,6 @@ class Snake(
         totalDistance = body.initialDistance
     }
 
-    /** Moves the snake [dy] down, all of it: the path that repeats puts it back a stretch, and nobody can tell. */
-    fun shift(dy: Float) {
-        y += dy
-        body.shift(dy)
-    }
-
     fun toggleTurn() {
         turnDirection = -turnDirection
     }

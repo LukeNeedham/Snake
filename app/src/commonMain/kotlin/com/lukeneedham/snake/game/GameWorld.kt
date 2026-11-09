@@ -4,19 +4,22 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import kotlin.math.PI
 import kotlin.math.abs
+import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.sin
 import kotlin.random.Random
 
 /**
  * One game: the phase it is in, the snake and the animals. The parts with a job of their own are classes of their own
  * ([EffectTracker], [PowerUpTracker], [CritterSpawner], [Feeding], [ToadBlast], [ParticleSystem], [Hunger], [SprintControl]); this one only steps them in order. It is mutable and is
  * stepped with [update] once per frame; [tick] changes with every step so that a drawing that reads it is drawn again. A world that is not
- * opened in the [Opening.Oval] starts with the snake asleep in its den, under the oval: the first tap wakes it, and it hands over to
- * [GamePhase.Playing] once the player has steered the snake out of the den and along the path into the oval. With the [Opening.Tutorial]
- * the story and the lessons come first, along a path that goes on and on until they are learned. After that the snake can go anywhere on
- * the oval, the path and the den, and in a world with a door the snake can open it to be taught everything again.
+ * opened in the [Opening.Oval] starts with the snake asleep in its house, a screen under the stage: the first tap wakes it, and it hands over to
+ * [GamePhase.Playing] once the player has steered the snake out of the house and up the path into the oval. With the [Opening.Tutorial]
+ * the path up is blocked by stones, and the snake has to go to the room of the tutorial, to the left, where the lessons are, and come back.
+ * The snake can go anywhere on the map ([WorldLayout]); going into the room of the tutorial again teaches the lessons again.
  */
 class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.Oval) {
 
@@ -64,29 +67,30 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     val menuItems: List<MenuItem>
         get() = if (phase == GamePhase.Paused) listOf(MenuItem.Resume, MenuItem.Restart, MenuItem.Settings) else listOf(MenuItem.Resume, MenuItem.Settings)
 
-    val den = DenLayout(arena, isLong = opening == Opening.Tutorial)
+    val layout = WorldLayout(arena).also { it.isGateClosed = opening == Opening.Tutorial }
 
-    /** The story and the lessons at the start, or null in a world that has none (the snake wakes and goes, without a tutorial, in a short path). */
-    val intro: IntroDirector? = if (hasIntro) IntroDirector(isTutorial = opening == Opening.Tutorial) else null
+    /** The story and the lessons at the start, or null in a world that has none. They come again when the snake goes into the room of the tutorial. */
+    var intro: IntroDirector? = if (hasIntro) IntroDirector(isTutorial = opening == Opening.Tutorial) else null
+        private set
 
     /** Set once the player has been through the whole tutorial, and the snake is out in the oval: the page saves it. */
     var hasCompletedTutorial = false
         private set
 
-    /** How far open the door of the tutorial is, from 0 to 1: the snake opens it by staying close to it. */
-    var doorOpen = 0f
+    var snake: Snake = if (hasIntro) layout.curledSnake() else Snake(arena, layout.ground)
         private set
 
-    /** Set when the snake has opened the door: the page starts the tutorial again. */
-    var wantsTutorial = false
+    /** The world x and y at the top left of the screen: the screen shows the stage, unless the snake is on the path or in the house or the room, and the camera follows it. */
+    var cameraX = 0f
+        private set
+    var cameraY = if (hasIntro) layout.maxCameraY else 0f
         private set
 
-    var snake: Snake = if (hasIntro) den.curledSnake() else Snake(arena, den.ground)
-        private set
+    /** Whether the camera shows the room of the tutorial, to the left of the house, and not the house. */
+    private var isRoomView = false
 
-    /** The world y at the top of the screen: the screen shows the oval, unless the snake is on the path and the camera follows it. */
-    var cameraY = if (hasIntro) den.denCameraY else 0f
-        private set
+    /** Whether the snake was in the room of the tutorial a moment ago: it only teaches the lessons again when it goes in. */
+    private var wasInRoom = false
 
     private val mutableCritters = ArrayList<Critter>()
 
@@ -101,7 +105,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     private val random = Random(seed)
     val particleSystem = ParticleSystem(random)
     private val spawner = CritterSpawner(arena, random)
-    private val feeding = Feeding(den.ground)
+    private val feeding = Feeding(layout.ground)
     private val toadBlast = ToadBlast(particleSystem)
     private val effectParticles = EffectParticleEmitter(particleSystem, random)
     private var seenBounces = 0
@@ -193,7 +197,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     fun introPress(pointerId: Long, isInSprintZone: Boolean) {
         if (phase != GamePhase.Intro) return
         val director = intro ?: return
-        if (isInSprintZone && director.reachedHalfway) sprint.press(pointerId) else tap()
+        if (isInSprintZone && director.showsSprintButton) sprint.press(pointerId) else tap()
     }
 
     /** A finger went down in the [SprintZone]: the snake sprints for as long as it is held. It never turns the snake. */
@@ -246,26 +250,28 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
         val stageBefore = director.stage
         director.update(dt)
         if (director.stage != stageBefore) onStageEntered(director.stage)
-        val distanceBefore = snake.totalDistance
         stepSnake(dt, director.snakeSpeed * (1f + boosts.sprintBoost * sprint.level) * boosts.speedFactor)
-        director.walked(snake.totalDistance - distanceBefore)
-        if (snake.y < den.halfwayY) director.halfway()
         director.trackSprint(sprint.isHeld, dt)
+        if (layout.room.signedDistance(snake.x, snake.y) < -DenTuning.roomDepth) director.enteredRoom()
         if (director.stage.isLesson) updateLesson(dt, director)
-        // While the lessons last the path goes on and on: the snake is put back a stretch, with the camera and the animals, and nobody can tell
-        if (director.loopsPath && snake.y < den.loopWrapY) {
-            snake.shift(den.loopPeriod)
-            cameraY += den.loopPeriod
-            for (critter in mutableCritters) critter.shiftDown(den.loopPeriod)
+        // Back in the house the stones that blocked the path up are gone, and it can be taken
+        if (director.stage == IntroStage.Return && layout.house.signedDistance(snake.x, snake.y) < -DenTuning.homeDepth) {
+            layout.isGateClosed = false
+            director.arrivedHome()
         }
         followSnake(dt)
-        if (arena.signedDistance(snake.x, snake.y) < -DenTuning.exitDepth) finishIntro()
+        if (director.isReplay && director.stage == IntroStage.Return) {
+            endReplay()
+        } else if (arena.signedDistance(snake.x, snake.y) < -DenTuning.exitDepth) {
+            finishIntro()
+        }
     }
 
-    /** One step of the lessons after the sprint: the hunger bar, and the animals that the snake has to eat to go on. */
+    /** One step of the lessons in the room of the tutorial: the hunger bar, and the animals that the snake has to eat to go on. */
     private fun updateLesson(dt: Float, director: IntroDirector) {
         if (director.stage == IntroStage.Hunger) hunger.drainDemo(dt, IntroTuning.hungerDemoLevel) else hunger.settle(dt)
         director.hungerShown(hunger.level)
+        if (director.takeAnimalDue()) placeLessonAnimal(director.stage)
         val snakeHead = Vec2(snake.x, snake.y)
         for (critter in critters) critter.update(dt, arena, random, snakeHead, boosts.aura)
         feeding.update(dt, snake, mutableCritters, boosts.mouthFactor, boosts.mouthIsFull).forEach {
@@ -273,42 +279,56 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
             director.ate(it)
         }
         director.dizzy(effects.isOn(Effect.Confused))
-        // An animal that the snake went past is put ahead of it again
-        val stage = director.stage
-        if (stage == IntroStage.Mouse || stage == IntroStage.Toad || stage == IntroStage.Bird) {
-            val animal = critters.firstOrNull()
-            if (animal == null || animal.y > snake.y + IntroTuning.lessonBehind) placeLessonAnimal(stage)
-        }
     }
 
-    /** Something happens when a part of the story begins: the bubble pops, and the animal of a lesson shows. */
+    /** Something happens when a part of the story begins: the bubble pops. */
     private fun onStageEntered(stage: IntroStage) {
         if (stage == IntroStage.Popped) popBubble()
-        if (stage == IntroStage.Mouse || stage == IntroStage.Toad || stage == IntroStage.Bird) placeLessonAnimal(stage)
     }
 
-    /** Puts the animal that the lesson of [stage] is about on the path, ahead of the snake: it does not run, hop or fly off. The bird flies in. */
+    /**
+     * Sends in the animal that the lesson of [stage] is about, from the grass at the edge of the room to the middle of it, where it stays until
+     * it is eaten and does not mind the snake. It never comes from the side of the path to the house. The bird flies in from off the screen.
+     */
     private fun placeLessonAnimal(stage: IntroStage) {
         mutableCritters.clear()
-        val x = arena.centerX + (random.nextFloat() - 0.5f) * lessonSpread
-        val y = snake.y - IntroTuning.lessonAhead
+        val room = layout.room
+        val angle = lessonAngleFromPath + random.nextFloat() * (2f * PI.toFloat() - 2f * lessonAngleFromPath)
+        val reach = WorldTuning.grassDepth * 0.75f
+        val x = room.centerX + (room.radiusX + reach) * cos(angle)
+        val y = room.centerY + (room.radiusY + reach) * sin(angle)
+        val middle = Vec2(room.centerX, room.centerY)
         mutableCritters.add(
             when (stage) {
-                IntroStage.Mouse -> Critter.Mouse(lessonAnimalId, x, y, lifetime = lessonLifetime, isTame = true)
-                IntroStage.Toad -> Critter.Toad(lessonAnimalId, ToadKind.Pink, x, y, lifetime = lessonLifetime, isTame = true)
-                else -> Critter.Bird(lessonAnimalId, BirdKind.BlueTit, x + 25f, y - 45f, x, y, staySeconds = lessonLifetime, isTame = true)
+                IntroStage.Mouse -> Critter.Mouse(lessonAnimalId, x, y, lifetime = lessonLifetime, tameTarget = middle)
+                IntroStage.Toad -> Critter.Toad(lessonAnimalId, ToadKind.Pink, x, y, lifetime = lessonLifetime, tameTarget = middle)
+                else -> Critter.Bird(
+                    lessonAnimalId, BirdKind.BlueTit, room.centerX - birdStartAside, room.centerY - birdStartAbove,
+                    middle.x, middle.y, staySeconds = lessonLifetime, isTame = true,
+                )
             },
         )
     }
 
-    /** Puts the snake on the path in the lesson [stage], as if the player had got that far: for the tests and the screenshots. */
+    /**
+     * Puts the snake where the player would be in the lesson [stage], as if everything before it was done: in the middle of the room of the
+     * tutorial, or in the house for the way up to the stage, which is open. For the tests and the screenshots.
+     */
     internal fun jumpToLesson(stage: IntroStage) {
         val director = intro ?: return
         phase = GamePhase.Intro
         director.jumpTo(stage)
-        snake = den.snakeOnPath(den.loopWrapY + 40f)
-        cameraY = (snake.y - arena.height * DenTuning.followLine).coerceIn(0f, den.denCameraY)
-        onStageEntered(stage)
+        if (stage == IntroStage.Leaving) {
+            layout.isGateClosed = false
+            snake = layout.curledSnake()
+            isRoomView = false
+            cameraX = 0f
+        } else {
+            snake = layout.snakeInRoom()
+            isRoomView = true
+            cameraX = layout.roomCameraX
+        }
+        cameraY = layout.maxCameraY
     }
 
     /** Steps the snake, unless it lies still. */
@@ -317,14 +337,14 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     }
 
     private fun popBubble() {
-        val bubble = den.bubbles.last()
+        val bubble = layout.bubbles.last()
         particleSystem.sparkles(bubble.x, bubble.y, 18, listOf(Color(0xFFFFFFFF), Color(0xFFBFE3FF), Color(0xFFF28FA9)))
     }
 
     /** The snake is in the oval: from here on it is the game. After the whole tutorial the score starts again from nothing. */
     private fun finishIntro() {
         phase = GamePhase.Playing
-        if (opening == Opening.Tutorial) {
+        if (opening == Opening.Tutorial && !hasCompletedTutorial) {
             hasCompletedTutorial = true
             score = 0
             mutableCritters.clear()
@@ -332,26 +352,58 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
         spawner.reset()
     }
 
-    /** The snake opens the door in the wall of the den by staying near it; once it is open the page starts the tutorial again. */
-    private fun updateDoor(dt: Float) {
-        if (!den.hasDoor) return
-        val dx = snake.x - den.doorX
-        val dy = snake.y - den.doorY
-        val isAtDoor = dx * dx + dy * dy < DenTuning.doorReach * DenTuning.doorReach
-        doorOpen = (doorOpen + if (isAtDoor) dt / DenTuning.doorOpenSeconds else -dt / DenTuning.doorCloseSeconds).coerceIn(0f, 1f)
-        if (doorOpen >= 1f) wantsTutorial = true
+    /** The lessons of a replay are done: the snake goes on playing, in the room, until it leaves it. */
+    private fun endReplay() {
+        phase = GamePhase.Playing
+        mutableCritters.clear()
+        wasInRoom = true
+        spawner.reset()
     }
 
-    /** The screen stays on the oval, and follows the snake once it leaves the oval for the path, to the den and back. */
+    /** The snake goes into the room of the tutorial: the lessons start again, from the sprint, for as long as it takes to eat the bird. */
+    private fun startReplay() {
+        val replay = IntroDirector(isTutorial = true, isReplay = true)
+        replay.jumpTo(IntroStage.Sprint)
+        intro = replay
+        phase = GamePhase.Intro
+        mutableCritters.clear()
+        sprint.clear()
+    }
+
+    /** Whether the snake has just gone into the room of the tutorial, and not just stays in it. */
+    private fun entersRoom(): Boolean {
+        val isInRoom = layout.room.signedDistance(snake.x, snake.y) < -DenTuning.roomDepth
+        val enters = isInRoom && !wasInRoom
+        wasInRoom = isInRoom
+        return enters
+    }
+
+    /**
+     * The camera shows the stage, unless the snake leaves it down the path: then it follows the snake, to the house. In the house, and in the
+     * room of the tutorial to the left of it, the camera is still, and goes from one to the other when the snake passes between them.
+     */
     private fun followSnake(dt: Float) {
-        val target = if (snake.y > den.mouthY) (snake.y - arena.height * DenTuning.followLine).coerceIn(0f, den.denCameraY) else 0f
-        cameraY += (target - cameraY) * min(1f, dt * DenTuning.cameraEase)
-        if (abs(target - cameraY) < cameraSettleDistance) cameraY = target
+        if (snake.x < -DenTuning.roomSwitch) isRoomView = true else if (snake.x > DenTuning.roomSwitch) isRoomView = false
+        val targetX = if (isRoomView) layout.roomCameraX else 0f
+        val targetY = when {
+            isRoomView -> layout.maxCameraY
+            layout.house.signedDistance(snake.x, snake.y) < 0f -> layout.maxCameraY
+            snake.y > layout.mouthY -> (snake.y - arena.height * DenTuning.followLine).coerceIn(0f, layout.maxCameraY)
+            else -> 0f
+        }
+        val ease = min(1f, dt * DenTuning.cameraEase)
+        cameraX += (targetX - cameraX) * ease
+        cameraY += (targetY - cameraY) * ease
+        if (abs(targetX - cameraX) < cameraSettleDistance) cameraX = targetX
+        if (abs(targetY - cameraY) < cameraSettleDistance) cameraY = targetY
     }
 
     private fun updatePlaying(dt: Float) {
         followSnake(dt)
-        updateDoor(dt)
+        if (entersRoom()) {
+            startReplay()
+            return
+        }
         snake.step(dt, (1f + boosts.sprintBoost * sprint.level) * boosts.speedFactor)
         hunger.update(dt, sprint.level, boosts.sprintDrainFactor)
         dustAtNewBounces()
@@ -429,10 +481,12 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
         const val shakeDecay = 5f
         const val rejectedTapSeconds = 0.4f
 
-        /** The animals of the lessons: how far to the side of the middle of the path they sit at the most, their id, and how long they stay. */
-        const val lessonSpread = 14f
+        /** The animals of the lessons: their id, how long they stay, and how they come in: not from the side of the path to the house, and the bird from above and to the side of the middle. */
         const val lessonAnimalId = 900
         const val lessonLifetime = 100000f
+        const val lessonAngleFromPath = 0.7f
+        const val birdStartAside = 60f
+        const val birdStartAbove = 125f
 
         /** The camera is close enough to where it is going to be there. */
         const val cameraSettleDistance = 0.05f

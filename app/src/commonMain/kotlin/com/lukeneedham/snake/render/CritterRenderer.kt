@@ -14,7 +14,7 @@ private val shadowColor = Color(0x44000000)
 private val tailColor = Color(0xFFF28FA9)
 
 /** A bird in the air is over the grass, not in it. */
-private fun GameWorld.isHidden(critter: Critter): Boolean = !critter.isAirborne && den.ground.signedDistance(critter.x, critter.y) > hiddenDepth
+private fun GameWorld.isHidden(critter: Critter): Boolean = !critter.isAirborne && layout.ground.signedDistance(critter.x, critter.y) > hiddenDepth
 
 internal fun DrawScope.drawCritterShadows(world: GameWorld) {
     for (critter in world.critters) {

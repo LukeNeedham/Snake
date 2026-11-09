@@ -22,12 +22,10 @@ object IntroTuning {
     const val hungerTextSeconds = 2.2f
     const val hungerDemoLevel = 0.5f
 
-    /** How far the snake goes between one lesson and the next. */
-    const val walkDistance = 150f
-
-    /** How far ahead of the snake the animal of a lesson sits, and how far behind it the animal has to be to be put ahead again. */
-    const val lessonAhead = 70f
-    const val lessonBehind = 55f
+    /** How long after a lesson begins its animal comes in from the grass. */
+    const val mouseDelay = 0.4f
+    const val toadDelay = 1.6f
+    const val birdDelay = 1.2f
 
     /** How long the sprint corner has to be held, without letting go, to have learned to zoom. */
     const val zoomSeconds = 2f

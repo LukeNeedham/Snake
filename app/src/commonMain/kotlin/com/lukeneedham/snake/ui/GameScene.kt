@@ -50,8 +50,8 @@ internal fun GameScene(
     val sceneBitmap = remember(arena) { ImageBitmap(sceneWidth, sceneHeight) }
     val sceneCanvas = remember(sceneBitmap) { GraphicsCanvas(sceneBitmap) }
     val sceneDrawScope = remember { CanvasDrawScope() }
-    val background = remember(world.den, density, layoutDirection) { createBackground(world.den, density, layoutDirection) }
-    val frontGrass = remember(world.den) { createFrontGrass(world.den) }
+    val background = remember(world.layout, density, layoutDirection) { createBackground(world.layout, density, layoutDirection) }
+    val frontGrass = remember(world.layout) { createFrontGrass(world.layout) }
     val topInsetPx = WindowInsets.safeDrawing.getTop(density)
     val currentOnPress by rememberUpdatedState(onPress)
     val currentOnRelease by rememberUpdatedState(onRelease)

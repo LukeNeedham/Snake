@@ -47,11 +47,6 @@ internal class BirdBody(
     override val isAirborne: Boolean get() = phase == BirdPhase.Arriving || phase == BirdPhase.Leaving
     override val isEdible: Boolean get() = height <= BirdTuning.eatHeight
 
-    override fun shiftDown(dy: Float) {
-        course.y += dy
-        flight.shiftDown(dy)
-    }
-
     override fun update(dt: Float, arena: Arena, random: Random, snakeHead: Vec2?, aura: SnakeAura) {
         when (phase) {
             BirdPhase.Arriving -> arrive(dt, arena, random, snakeHead)

@@ -26,12 +26,14 @@ description: |
   snake starves when it is empty. Hold the corner at the bottom left to sprint (you can move it to the right in the settings), which is faster but burns
   the bar quicker, while your other thumb taps anywhere else to turn. The button at the top left pauses the game and opens a
   menu with Resume, Restart and Settings.
-  The first time, the game opens with a story and a tutorial: the snake sleeps curled up on the stone floor of its den, a ring of rocks in
-  the grass, until the player taps to wake it. It wakes up, blinks, flicks its tongue, and its stomach rumbles; it dreams of a mouse, and then
-  it starts to circle. A tap turns it the other way. Then the player steers it out of its den and along a path through the grass, and
-  learns on the way: to hold the sprint corner (to zoom), that the hunger bar goes down and a mouse fills it, that a toad poisons (the dizzy
-  one), and that a bird gives a power. The path goes on and on until each lesson is learned by doing it, and then it leads into the oval. After
-  that the path from the den is short, with no lessons, and the snake can go home any time: the door in the wall of its den starts the
-  tutorial again when the snake opens it. A restart goes straight to the oval.
+  The first time, the game opens with a story and a tutorial. The snake sleeps curled up on the raw stone floor of its house, a ring of
+  rocks in the grass, until the player taps to wake it. It wakes up, blinks, flicks its tongue, and its stomach rumbles; it dreams of a mouse,
+  and then it starts to circle. A tap turns it the other way. The path up to the oval is blocked by a pile of stones, so the player steers
+  it out by the wide path to the left, to the room of the tutorial: an oval of sand just like the stage. There it learns to hold the sprint
+  corner (to zoom), that the hunger bar goes down and a mouse that runs in from the grass fills it, that a toad that hops in poisons (the dizzy
+  one), and that a bird that flies in gives a power. Each is learned by doing it, and then an arrow shows the way back to the house, where
+  the stones are gone and an arrow shows the way up the path to the oval, which is one screen long: the house and the oval cannot be seen
+  from each other. Later games start with the snake waking in its house and the path up open. The snake can go home any time, and going
+  into the room of the tutorial again teaches the lessons again. A restart goes straight to the oval.
 
   The mice run from a snake they see coming, but they cannot see what is behind them.

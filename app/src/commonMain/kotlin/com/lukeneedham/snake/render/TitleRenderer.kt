@@ -15,13 +15,13 @@ internal fun DrawScope.drawTitle(world: GameWorld, texts: SceneTexts, topInset: 
     drawCenteredPixelText(texts.title, centerX, topInset + 18 + bounce, HudPalette.gold, scale = 3)
     if ((world.time * 1.6f).toInt() % 2 == 0) {
         if (world.intro != null) {
-            val aboveDen = (world.den.denY - world.cameraY).roundToInt() - wakeAboveDen
-            drawCenteredPixelText(texts.tapToWake, centerX, aboveDen, HudPalette.white, scale = 2)
+            val aboveHouse = (world.layout.houseY - world.cameraY).roundToInt() - wakeAboveHouse
+            drawCenteredPixelText(texts.tapToWake, centerX, aboveHouse, HudPalette.white, scale = 2)
         } else {
             drawCenteredPixelText(texts.tapToStart, centerX, world.arena.height.toInt() - 30, HudPalette.white)
         }
     }
 }
 
-/** How far above the middle of the den the line that says to wake the snake is. */
-private const val wakeAboveDen = 66
+/** How far above the middle of the house the line that says to wake the snake is. */
+private const val wakeAboveHouse = 66

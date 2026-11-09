@@ -5,9 +5,9 @@ enum class Opening {
     /** The snake starts in the middle of the oval, with nothing to tell: a restart. */
     Oval,
 
-    /** The first game: the snake sleeps in its den until it is woken, then the story, and the lessons along a long path to the oval. */
+    /** The first game: the snake sleeps in its den until it is woken, then the story, and the lessons in the room of the tutorial, to the left, before the stones on the path up are gone. */
     Tutorial,
 
-    /** Every game after that has been learned: the snake wakes in its den and a short path leads to the oval. */
-    ShortPath,
+    /** Every game after the tutorial: the snake wakes in its house, the path up is open, and no lessons are told. */
+    Returning,
 }

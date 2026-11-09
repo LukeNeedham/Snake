@@ -2,11 +2,13 @@ GamePageReady
 GamePageRumble
 GamePageThinking
 GamePageLesson
+GamePageSteering
 GamePageZoom
 GamePageHunger
 GamePageToad
 GamePageBird
-GamePageDoor
+GamePageLeaving
+GamePageReturning
 GamePage
 GamePageBirds
 GamePageHallucinating

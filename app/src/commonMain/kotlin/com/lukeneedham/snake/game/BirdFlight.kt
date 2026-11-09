@@ -44,11 +44,6 @@ internal class BirdFlight(private val course: CritterCourse, private var targetX
         height = BirdTuning.flightHeight * closeness
     }
 
-    /** Moves the landing spot [dy] down. */
-    fun shiftDown(dy: Float) {
-        targetY += dy
-    }
-
     /** Turns to fly straight away from the snake. */
     fun pointAwayFrom(head: Vec2) = course.runAwayFrom(head.x, head.y)
 

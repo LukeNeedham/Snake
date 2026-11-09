@@ -5,9 +5,10 @@ import kotlin.math.min
 /**
  * Plays the story and the lessons at the start from one [IntroStage] to the next: it only knows what time it is in the story and what
  * the player has done, and the world and the drawing ask it what to do. Nothing here moves the snake. Without [isTutorial] there is no
- * story and there are no lessons: the snake only wakes up and goes.
+ * story and there are no lessons: the snake only wakes up and goes. A [isReplay] is the lessons again, from the sprint on, in the room
+ * of the tutorial, for a player who knows the way: it is over once the bird is eaten.
  */
-class IntroDirector(val isTutorial: Boolean = true) {
+class IntroDirector(val isTutorial: Boolean = true, val isReplay: Boolean = false) {
 
     var stage = IntroStage.Sleeping
         private set
@@ -16,28 +17,24 @@ class IntroDirector(val isTutorial: Boolean = true) {
     var stageTime = 0f
         private set
 
-    /** Whether the snake is half way along the path: the lesson of the sprint starts there. */
-    var reachedHalfway = false
-        private set
-
-    /** Whether the player has held the sprint corner for long enough: the path that goes on and on has an end from then on. */
+    /** Whether the player has held the sprint corner for long enough. */
     var hasZoomed = false
         private set
 
     /** How long the sprint corner has been held without a break. */
     private var zoomHeldSeconds = 0f
 
-    /** How far the snake has gone since the last lesson, in the parts of the path where it walks on. */
-    private var walked = 0f
-
     /** Whether the snake has been dizzy in the lesson of the toad: it must stay that way until it is over. */
     private var wasDizzy = false
 
-    /** Whether the path goes on and on: until the lessons are learned, and never without them. */
-    val loopsPath: Boolean get() = isTutorial && stage != IntroStage.Leaving
+    /** Whether the animal of the lesson has been sent in already. */
+    private var animalSent = false
 
     /** Whether the hunger bar is on the screen: from the lesson of the hunger on. */
-    val showsHunger: Boolean get() = isTutorial && stage.isLesson
+    val showsHunger: Boolean get() = isTutorial && stage >= IntroStage.Hunger
+
+    /** Whether the sprint button is on the screen: from the lesson of the sprint on. */
+    val showsSprintButton: Boolean get() = isTutorial && stage >= IntroStage.Sprint
 
     fun update(dt: Float) {
         stageTime += dt
@@ -59,13 +56,14 @@ class IntroDirector(val isTutorial: Boolean = true) {
         if (stage == IntroStage.Teaching) enter(IntroStage.Steering)
     }
 
-    fun halfway() {
-        if (stage == IntroStage.Steering && isTutorial) reachedHalfway = true
+    /** The snake is in the room of the tutorial: the lesson of the sprint begins. */
+    fun enteredRoom() {
+        if (stage == IntroStage.Steering && isTutorial) enter(IntroStage.Sprint)
     }
 
-    /** Called every step: [isHeld] is whether a finger is in the sprint corner. Only counts once the lesson of the sprint has begun. */
+    /** Called every step: [isHeld] is whether a finger is in the sprint corner. Only counts in the lesson of the sprint. */
     fun trackSprint(isHeld: Boolean, dt: Float) {
-        if (!reachedHalfway || hasZoomed) return
+        if (stage != IntroStage.Sprint) return
         zoomHeldSeconds = if (isHeld) zoomHeldSeconds + dt else 0f
         if (zoomHeldSeconds >= IntroTuning.zoomSeconds) {
             hasZoomed = true
@@ -78,31 +76,41 @@ class IntroDirector(val isTutorial: Boolean = true) {
         if (stage == IntroStage.Hunger && stageTime >= IntroTuning.hungerTextSeconds && level <= IntroTuning.hungerDemoLevel) enter(IntroStage.Mouse)
     }
 
+    /** True once, when it is time for the animal of the lesson to come in from the grass. */
+    fun takeAnimalDue(): Boolean {
+        val delay = when (stage) {
+            IntroStage.Mouse -> IntroTuning.mouseDelay
+            IntroStage.Toad -> IntroTuning.toadDelay
+            IntroStage.Bird -> IntroTuning.birdDelay
+            else -> return false
+        }
+        if (animalSent || stageTime < delay) return false
+        animalSent = true
+        return true
+    }
+
     /** The snake ate [critter]: the lesson of that animal is learned. */
     fun ate(critter: Critter) {
         when {
-            stage == IntroStage.Mouse && critter is Critter.Mouse -> enter(IntroStage.WalkToToad)
+            stage == IntroStage.Mouse && critter is Critter.Mouse -> enter(IntroStage.Toad)
             stage == IntroStage.Toad && critter is Critter.Toad -> enter(IntroStage.Dizzy)
-            stage == IntroStage.Bird && critter is Critter.Bird -> enter(IntroStage.Leaving)
+            stage == IntroStage.Bird && critter is Critter.Bird -> enter(IntroStage.Return)
         }
-    }
-
-    /** The snake went [distance] further: after a while on the path the next animal shows. */
-    fun walked(distance: Float) {
-        if (stage != IntroStage.WalkToToad && stage != IntroStage.WalkToBird) return
-        walked += distance
-        if (walked >= IntroTuning.walkDistance) enter(if (stage == IntroStage.WalkToToad) IntroStage.Toad else IntroStage.Bird)
     }
 
     /** Called every step with whether the snake is dizzy: the lesson of the toad is over once it has been dizzy and is not any more. */
     fun dizzy(isDizzy: Boolean) {
         if (stage != IntroStage.Dizzy) return
-        if (isDizzy) wasDizzy = true else if (wasDizzy) enter(IntroStage.WalkToBird)
+        if (isDizzy) wasDizzy = true else if (wasDizzy) enter(IntroStage.Bird)
     }
 
-    /** Jumps to a lesson, as if everything before it was done: for the tests and the screenshots. */
+    /** The snake is home again, after the lessons. */
+    fun arrivedHome() {
+        if (stage == IntroStage.Return) enter(IntroStage.Leaving)
+    }
+
+    /** Jumps to a part of the lessons, as if everything before it was done: for the tests and the screenshots. */
     internal fun jumpTo(target: IntroStage) {
-        reachedHalfway = target >= IntroStage.Steering
         hasZoomed = target >= IntroStage.Hunger
         enter(target)
     }
@@ -110,7 +118,7 @@ class IntroDirector(val isTutorial: Boolean = true) {
     private fun enter(next: IntroStage) {
         stage = next
         stageTime = 0f
-        walked = 0f
+        animalSent = false
     }
 
     /** How fast the snake moves, as a part of its normal speed: it lies still until the bubble pops, and then it speeds up. */
