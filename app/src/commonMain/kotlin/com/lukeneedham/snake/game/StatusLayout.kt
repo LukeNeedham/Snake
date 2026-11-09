@@ -14,14 +14,15 @@ object StatusLayout {
     fun arrowLeft(arena: Arena): Int = arena.width.toInt() - arrowInset
 
     /** The top of the arrow of the [row]th entry, counted up from the bottom: above the sprint button when that is on the right. */
-    fun arrowTop(arena: Arena, side: SprintSide, row: Int): Int = arena.height.toInt() - rowHeight - buttonRoom(side) - row * rowHeight
+    fun arrowTop(arena: Arena, side: SprintSide, row: Int): Int =
+        (arena.height - arena.bottomInset).toInt() - rowHeight - buttonRoom(side) - row * rowHeight
 
     /** Whether a finger at [x], [y] is on the column of [count] arrows. */
     fun contains(arena: Arena, side: SprintSide, count: Int, x: Float, y: Float): Boolean {
         if (count <= 0) return false
         if (x < arrowLeft(arena) - touchSlack) return false
         val top = arrowTop(arena, side, count - 1) - touchSlack
-        val bottom = arena.height - buttonRoom(side)
+        val bottom = arena.height - arena.bottomInset - buttonRoom(side)
         return y >= top && y < bottom
     }
 

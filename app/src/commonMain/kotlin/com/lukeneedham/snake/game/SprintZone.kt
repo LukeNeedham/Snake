@@ -16,7 +16,7 @@ object SprintZone {
     const val buttonRadius = 8f
 
     fun contains(arena: Arena, side: SprintSide, x: Float, y: Float): Boolean {
-        if (y < arena.height - size) return false
+        if (y < arena.height - arena.bottomInset - size) return false
         return when (side) {
             SprintSide.Left -> x <= size
             SprintSide.Right -> x >= arena.width - size
@@ -28,5 +28,5 @@ object SprintZone {
         SprintSide.Right -> arena.width - buttonInset
     }
 
-    fun buttonY(arena: Arena): Float = arena.height - buttonInset
+    fun buttonY(arena: Arena): Float = arena.height - arena.bottomInset - buttonInset
 }

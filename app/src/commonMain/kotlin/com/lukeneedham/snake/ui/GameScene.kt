@@ -9,7 +9,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
 import androidx.compose.ui.graphics.Canvas as GraphicsCanvas
@@ -55,6 +59,7 @@ internal fun GameScene(
     val background = remember(arena, density, layoutDirection) { createBackground(arena, density, layoutDirection) }
     val frontGrass = remember(arena) { createFrontGrass(arena) }
     val topInsetPx = WindowInsets.safeDrawing.getTop(density)
+    val bottomInsetPx = WindowInsets.safeDrawing.getBottom(density)
     val currentOnPress by rememberUpdatedState(onPress)
     val currentOnRelease by rememberUpdatedState(onRelease)
     val currentOnPageDrag by rememberUpdatedState(onPageDrag)
@@ -63,7 +68,7 @@ internal fun GameScene(
     Canvas(
         modifier = modifier
             .fillMaxSize()
-            .pointerInput(world, topInsetPx) {
+            .pointerInput(world, topInsetPx, bottomInsetPx) {
                 // Fingers that went down on the open overlay: they press when they let go, unless they dragged the pages
                 val overlayTouches = HashMap<Long, OverlayTouch>()
                 awaitPointerEventScope {
@@ -72,6 +77,7 @@ internal fun GameScene(
                         for (change in event.changes) {
                             val id = change.id.value
                             val scale = size.width.toFloat() / sceneWidth
+                            arena.bottomInset = bottomInsetPx / scale
                             if (change.changedToDownIgnoreConsumed()) {
                                 val target = PressTarget.at(
                                     world = world,
@@ -104,11 +110,40 @@ internal fun GameScene(
     ) {
         // Reading the tick makes this draw again after every step of the world
         if (world.tick < 0L) return@Canvas
-        val topInset = (topInsetPx / (size.width / sceneWidth)).toInt()
+        val scale = size.width / sceneWidth
+        val topInset = (topInsetPx / scale).toInt()
+        arena.bottomInset = bottomInsetPx / scale
         sceneDrawScope.draw(density, layoutDirection, sceneCanvas, Size(sceneWidth.toFloat(), sceneHeight.toFloat())) {
             drawScene(world, background, frontGrass, texts, topInset)
         }
         presentScene(sceneBitmap, world)
+        drawSystemBarFades(topInsetPx.toFloat(), bottomInsetPx.toFloat())
+    }
+}
+
+/** How dark the edge of the screen is under the status bar and the navigation bar. */
+private const val systemBarFadeAlpha = 0.7f
+
+/**
+ * The game is drawn edge to edge, behind the system bars. So that their icons can be read, the scene fades to black under them: from
+ * clear on the side of the game to [systemBarFadeAlpha] black at the edge of the screen.
+ */
+private fun DrawScope.drawSystemBarFades(topBarHeight: Float, bottomBarHeight: Float) {
+    val edge = Color.Black.copy(alpha = systemBarFadeAlpha)
+    if (topBarHeight > 0f) {
+        drawRect(
+            brush = Brush.verticalGradient(listOf(edge, Color.Transparent), startY = 0f, endY = topBarHeight),
+            topLeft = Offset.Zero,
+            size = Size(size.width, topBarHeight),
+        )
+    }
+    if (bottomBarHeight > 0f) {
+        val top = size.height - bottomBarHeight
+        drawRect(
+            brush = Brush.verticalGradient(listOf(Color.Transparent, edge), startY = top, endY = size.height),
+            topLeft = Offset(0f, top),
+            size = Size(size.width, bottomBarHeight),
+        )
     }
 }
 

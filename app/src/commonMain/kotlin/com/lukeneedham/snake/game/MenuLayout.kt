@@ -60,7 +60,7 @@ object MenuLayout {
         val count = PausePage.entries.size
         val total = count * dotSize + (count - 1) * dotGap
         val left = (arena.width - total) / 2f + index * (dotSize + dotGap)
-        val top = arena.height - dotBottom - dotSize
+        val top = arena.height - arena.bottomInset - dotBottom - dotSize
         return Rect(left, top, left + dotSize, top + dotSize)
     }
 
