@@ -26,12 +26,15 @@ class Hunger {
 
     private var gainWait = 0f
 
-    /** [sprintLevel] is 0 when the snake does not sprint, 1 when it sprints flat out, and then the bar drains [sprintDrainFactor] times as fast. */
-    fun update(dt: Float, sprintLevel: Float, sprintDrainFactor: Float = HungerTuning.sprintDrainFactor) {
+    /**
+     * [sprintLevel] is 0 when the snake does not sprint, 1 when it sprints flat out, and then the bar drains [sprintDrainFactor] times
+     * as fast. The bar always drains [drainFactor] times as fast on top of that.
+     */
+    fun update(dt: Float, sprintLevel: Float, sprintDrainFactor: Float = HungerTuning.sprintDrainFactor, drainFactor: Float = 1f) {
         if (filled < level) {
             fillIn(dt)
         } else {
-            val rate = HungerTuning.drainPerSecond * (1f + (sprintDrainFactor - 1f) * sprintLevel)
+            val rate = HungerTuning.drainPerSecond * (1f + (sprintDrainFactor - 1f) * sprintLevel) * drainFactor
             level = max(0f, level - rate * dt)
             filled = level
         }

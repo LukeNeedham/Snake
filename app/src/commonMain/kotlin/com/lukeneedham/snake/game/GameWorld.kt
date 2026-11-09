@@ -172,7 +172,7 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
 
     private fun updatePlaying(dt: Float) {
         snake.step(dt, (1f + boosts.sprintBoost * sprint.level) * boosts.speedFactor * sluggishFactor())
-        hunger.update(dt, sprint.level, boosts.sprintDrainFactor)
+        hunger.update(dt, sprint.level, boosts.sprintDrainFactor, ravenousFactor())
         val touchedGrass = snake.bounceCount != seenBounces
         dustAtNewBounces()
         spawner.update(dt, mutableCritters, score, Vec2(snake.x, snake.y), boosts.attractsMice, allowsToads = !boosts.keepsToadsAway)
@@ -181,6 +181,9 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
         effectParticles.emit(effects, sprint.level, snake, critters)
         if (hunger.isStarving || (effects.isOn(Effect.HayFever) && touchedGrass) || (effects.isOn(Effect.Cannibal) && snake.hitsItself())) endGame()
     }
+
+    /** Ravenous makes the hunger bar drain faster, and fades in and out like its arrow. */
+    private fun ravenousFactor(): Float = 1f + (EffectTuning.ravenousDrainFactor - 1f) * effects.level(Effect.Ravenous)
 
     /** Sluggish slows the snake down, and fades in and out like its bar. */
     private fun sluggishFactor(): Float = 1f + (EffectTuning.sluggishSpeedFactor - 1f) * effects.level(Effect.Sluggish)

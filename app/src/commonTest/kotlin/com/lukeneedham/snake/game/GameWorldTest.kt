@@ -140,6 +140,18 @@ class GameWorldTest {
     }
 
     @Test
+    fun aRavenousSnakeGetsHungryFaster() {
+        fun hungerAfterThreeSeconds(ravenous: Boolean): Float {
+            val world = GameWorld(Arena(400f, 400f), seed = 11)
+            world.start()
+            if (ravenous) world.applyEffect(ToadKind.Red)
+            repeat(60 * 3) { world.update(1f / 60f) }
+            return world.hunger.level
+        }
+        assertTrue(hungerAfterThreeSeconds(ravenous = true) < hungerAfterThreeSeconds(ravenous = false))
+    }
+
+    @Test
     fun aSluggishSnakeGoesSlower() {
         fun distanceInASecond(sluggish: Boolean): Float {
             val world = GameWorld(Arena(400f, 400f), seed = 11)
