@@ -58,4 +58,26 @@ class PressTargetTest {
             assertEquals(true, rects.all { it.left >= 0f && it.right <= arena.width })
         }
     }
+
+    @Test
+    fun theColumnOfArrowsInTheBottomRightCornerOpensTheStatusList() {
+        world.start()
+        assertEquals(PressTarget.Turn, target(100f, 224f))
+        world.powerUps.apply(BirdKind.Crow)
+        assertEquals(PressTarget.StatusCorner, target(100f, 224f))
+        assertEquals(PressTarget.Turn, target(54f, 224f))
+    }
+
+    @Test
+    fun openingTheStatusListPausesTheGameAndClosingItCarriesOn() {
+        world.start()
+        world.openStatus()
+        assertEquals(GamePhase.Playing, world.phase)
+        world.powerUps.apply(BirdKind.Crow)
+        world.openStatus()
+        assertEquals(GamePhase.Paused, world.phase)
+        assertEquals(PressTarget.Backdrop, target(54f, 117f))
+        world.closeStatus()
+        assertEquals(GamePhase.Playing, world.phase)
+    }
 }

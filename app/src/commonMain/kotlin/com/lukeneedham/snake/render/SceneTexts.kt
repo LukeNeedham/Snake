@@ -17,6 +17,12 @@ internal data class SceneTexts(
     val menuBack: String,
     val menuRestart: String,
     val menuSettings: String,
+    val statusTitle: String,
+    val statusClose: String,
+    /** What each effect does, in the order of the `Effect` entries; only the letters, digits and a few marks of the pixel font. */
+    val effectDescriptions: List<String>,
+    /** What each power up does, in the order of the `PowerUp` entries. */
+    val powerUpDescriptions: List<String>,
     /** The name of each effect, in the order of the `Effect` entries. */
     val effectNames: List<String>,
     /** The name of each power up, in the order of the `PowerUp` entries. */

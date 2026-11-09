@@ -5,13 +5,20 @@ import com.lukeneedham.snake.game.Effect
 import com.lukeneedham.snake.game.PowerUp
 import com.lukeneedham.snake.generated.resources.Res
 import com.lukeneedham.snake.generated.resources.best_value
-import com.lukeneedham.snake.generated.resources.effect_confused
-import com.lukeneedham.snake.generated.resources.effect_disguised
-import com.lukeneedham.snake.generated.resources.effect_hallucinating
-import com.lukeneedham.snake.generated.resources.effect_hay_fever
-import com.lukeneedham.snake.generated.resources.effect_ravenous
-import com.lukeneedham.snake.generated.resources.effect_sluggish
 import com.lukeneedham.snake.generated.resources.effect_cannibal
+import com.lukeneedham.snake.generated.resources.effect_cannibal_description
+import com.lukeneedham.snake.generated.resources.effect_confused
+import com.lukeneedham.snake.generated.resources.effect_confused_description
+import com.lukeneedham.snake.generated.resources.effect_disguised
+import com.lukeneedham.snake.generated.resources.effect_disguised_description
+import com.lukeneedham.snake.generated.resources.effect_hallucinating
+import com.lukeneedham.snake.generated.resources.effect_hallucinating_description
+import com.lukeneedham.snake.generated.resources.effect_hay_fever
+import com.lukeneedham.snake.generated.resources.effect_hay_fever_description
+import com.lukeneedham.snake.generated.resources.effect_ravenous
+import com.lukeneedham.snake.generated.resources.effect_ravenous_description
+import com.lukeneedham.snake.generated.resources.effect_sluggish
+import com.lukeneedham.snake.generated.resources.effect_sluggish_description
 import com.lukeneedham.snake.generated.resources.game_over
 import com.lukeneedham.snake.generated.resources.game_title
 import com.lukeneedham.snake.generated.resources.menu_back
@@ -21,12 +28,20 @@ import com.lukeneedham.snake.generated.resources.menu_settings
 import com.lukeneedham.snake.generated.resources.new_best
 import com.lukeneedham.snake.generated.resources.paused
 import com.lukeneedham.snake.generated.resources.power_up_bigger_mouth
+import com.lukeneedham.snake.generated.resources.power_up_bigger_mouth_description
 import com.lukeneedham.snake.generated.resources.power_up_cheese
+import com.lukeneedham.snake.generated.resources.power_up_cheese_description
 import com.lukeneedham.snake.generated.resources.power_up_fast_sprint
+import com.lukeneedham.snake.generated.resources.power_up_fast_sprint_description
 import com.lukeneedham.snake.generated.resources.power_up_sneaky
+import com.lukeneedham.snake.generated.resources.power_up_sneaky_description
 import com.lukeneedham.snake.generated.resources.power_up_toad_free
+import com.lukeneedham.snake.generated.resources.power_up_toad_free_description
 import com.lukeneedham.snake.generated.resources.power_up_zoom
+import com.lukeneedham.snake.generated.resources.power_up_zoom_description
 import com.lukeneedham.snake.generated.resources.score_value
+import com.lukeneedham.snake.generated.resources.status_close
+import com.lukeneedham.snake.generated.resources.status_title
 import com.lukeneedham.snake.generated.resources.tap_to_retry
 import com.lukeneedham.snake.generated.resources.tap_to_start
 import com.lukeneedham.snake.render.SceneTexts
@@ -47,6 +62,29 @@ internal fun sceneTexts(score: Int, bestScore: Int, isNewBest: Boolean): SceneTe
     menuBack = stringResource(Res.string.menu_back),
     menuRestart = stringResource(Res.string.menu_restart),
     menuSettings = stringResource(Res.string.menu_settings),
+    statusTitle = stringResource(Res.string.status_title),
+    statusClose = stringResource(Res.string.status_close),
+    effectDescriptions = Effect.entries.map { effect ->
+        when (effect) {
+            Effect.Hallucinating -> stringResource(Res.string.effect_hallucinating_description)
+            Effect.Disguised -> stringResource(Res.string.effect_disguised_description)
+            Effect.Confused -> stringResource(Res.string.effect_confused_description)
+            Effect.HayFever -> stringResource(Res.string.effect_hay_fever_description)
+            Effect.Ravenous -> stringResource(Res.string.effect_ravenous_description)
+            Effect.Sluggish -> stringResource(Res.string.effect_sluggish_description)
+            Effect.Cannibal -> stringResource(Res.string.effect_cannibal_description)
+        }
+    },
+    powerUpDescriptions = PowerUp.entries.map { powerUp ->
+        when (powerUp) {
+            PowerUp.Zoom -> stringResource(Res.string.power_up_zoom_description)
+            PowerUp.FastSprint -> stringResource(Res.string.power_up_fast_sprint_description)
+            PowerUp.Sneaky -> stringResource(Res.string.power_up_sneaky_description)
+            PowerUp.BiggerMouth -> stringResource(Res.string.power_up_bigger_mouth_description)
+            PowerUp.ToadFree -> stringResource(Res.string.power_up_toad_free_description)
+            PowerUp.Cheese -> stringResource(Res.string.power_up_cheese_description)
+        }
+    },
     effectNames = Effect.entries.map { effect ->
         when (effect) {
             Effect.Hallucinating -> stringResource(Res.string.effect_hallucinating)

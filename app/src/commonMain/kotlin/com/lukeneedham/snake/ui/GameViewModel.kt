@@ -54,13 +54,17 @@ class GameViewModel(bestScoreStore: BestScoreStore, settingsStore: SettingsStore
     }
 
     /**
-     * A finger went down on [target]. With the menu open only its buttons do anything (the page opens the settings itself). With it
+     * A finger went down on [target]. With the list of what is on open, any press closes it. With the menu open only its buttons do anything (the page opens the settings itself). With it
      * closed, the button in the corner opens it, and any other finger acts at once: in the sprint zone it sprints while it is held
      * during a game, anywhere else it turns the snake, or starts, or restarts the game.
      */
     fun onPress(pointerId: Long, target: PressTarget) {
-        if (world.isMenuOpen) {
+        if (world.isStatusOpen) {
+            world.closeStatus()
+        } else if (world.isMenuOpen) {
             if (target is PressTarget.Item) onMenuItem(target.item)
+        } else if (target == PressTarget.StatusCorner && world.phase == GamePhase.Playing) {
+            world.openStatus()
         } else if (target == PressTarget.MenuButton) {
             world.openMenu()
         } else {

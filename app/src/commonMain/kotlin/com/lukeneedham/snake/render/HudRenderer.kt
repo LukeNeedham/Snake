@@ -14,5 +14,9 @@ internal fun DrawScope.drawHud(world: GameWorld, texts: SceneTexts, topInset: In
         GamePhase.Playing, GamePhase.Paused -> drawPlayingHud(world, texts, topInset)
         GamePhase.GameOver -> drawGameOver(world, texts)
     }
-    if (world.isMenuOpen) drawMenu(world, texts) else drawMenuButton(world, topInset)
+    when {
+        world.isStatusOpen -> drawStatusPopup(world, texts, topInset)
+        world.isMenuOpen -> drawMenu(world, texts)
+        else -> drawMenuButton(world, topInset)
+    }
 }

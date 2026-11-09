@@ -43,6 +43,10 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     var isMenuOpen = false
         private set
 
+    /** Whether the list of the effects and power ups that are on is over the scene. The game is paused while it is. */
+    var isStatusOpen = false
+        private set
+
     /** The corner of the screen that sprints: it comes from the settings. */
     var sprintSide = SprintSide.Left
 
@@ -57,6 +61,9 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     val critters: List<Critter> get() = mutableCritters
     val effects = EffectTracker()
     val powerUps = PowerUpTracker()
+
+    /** The effects and power ups that are on. */
+    val statuses: List<StatusEntry> get() = ActiveStatuses.of(effects, powerUps)
     private val boosts = PowerUpBoosts(powerUps)
     val hunger = Hunger()
     val sprint = SprintControl()
@@ -110,6 +117,22 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
             isMenuOpen = false
             redraw()
         }
+    }
+
+    /** Pauses the game and lists what is on, with the time left. Only a game that is being played, with something on, can. */
+    fun openStatus() {
+        if (phase != GamePhase.Playing || statuses.isEmpty()) return
+        phase = GamePhase.Paused
+        isStatusOpen = true
+        sprint.clear()
+        redraw()
+    }
+
+    fun closeStatus() {
+        if (!isStatusOpen) return
+        isStatusOpen = false
+        phase = GamePhase.Playing
+        redraw()
     }
 
     /** A paused world is not stepped, so the drawing is told by hand to draw again when the menu opens or closes. */
