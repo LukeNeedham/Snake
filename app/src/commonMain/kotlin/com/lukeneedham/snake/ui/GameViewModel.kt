@@ -86,6 +86,12 @@ class GameViewModel(bestScoreStore: BestScoreStore, settingsStore: SettingsStore
         publish()
     }
 
+    /** The back button was pressed while the pause overlay is open: it closes, and the game carries on if it was paused. */
+    fun onBack() {
+        world.closeMenu()
+        publish()
+    }
+
     /** A finger drags the pages of the pause overlay by [pages] pages (a fraction of the screen width). */
     fun onPageDrag(pages: Float) {
         world.overlay.dragBy(pages)
@@ -143,6 +149,7 @@ class GameViewModel(bestScoreStore: BestScoreStore, settingsStore: SettingsStore
         score = world.score,
         bestScore = bestScores.best,
         isNewBest = bestScores.isNewBest,
+        isMenuOpen = world.isMenuOpen,
     )
 
     private companion object {

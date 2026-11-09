@@ -4,11 +4,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.withFrameNanos
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.compose.viewmodel.koinViewModel
 
 /** The page: connects to the ViewModel and the navigation, runs the frame loop, and delegates all UI. No preview. */
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun GamePage(onOpenSettings: () -> Unit) {
     val viewModel = koinViewModel<GameViewModel>()
@@ -28,6 +31,9 @@ fun GamePage(onOpenSettings: () -> Unit) {
             }
         }
     }
+
+    // With the pause overlay open, back closes it and resumes the game instead of leaving the app
+    BackHandler(enabled = state.isMenuOpen) { viewModel.onBack() }
 
     GamePageContent(
         state = state,
