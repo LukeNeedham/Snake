@@ -111,8 +111,8 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     private var isRoomView = false
 
     /** Whether the snake was in the room of the tutorial a moment ago: it only teaches the lessons again when it goes in. */
-    /** Set while the snake is in its house, and cleared once it goes into the room: only a trip through the house starts the lessons again. */
-    private var isAtHome = true
+    /** The room that the head of the snake was last in: on a path it is the room it came from. */
+    private var lastRoom: Room? = Room.House
     private var wasInStage = false
 
     private val mutableCritters = ArrayList<Critter>()
@@ -375,12 +375,12 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
         if (stage == IntroStage.Leaving) {
             layout.isGateClosed = false
             snake = layout.curledSnake()
-            isAtHome = true
+            lastRoom = Room.House
             isRoomView = false
             cameraX = 0f
         } else {
             snake = layout.snakeInRoom()
-            isAtHome = false
+            lastRoom = Room.Tutorial
             isRoomView = true
             cameraX = layout.roomCameraX
         }
@@ -412,7 +412,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     private fun endReplay() {
         phase = GamePhase.Playing
         mutableCritters.clear()
-        isAtHome = false
+        lastRoom = Room.Tutorial
         spawner.reset()
     }
 
@@ -441,15 +441,14 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     }
 
     /**
-     * Whether the snake has just gone into the room of the tutorial from its house. Wandering about in the room, even to its edge and back,
-     * is not that: it has to have been home since it was last in the room.
+     * Whether the head of the snake has just come into the room of the tutorial, from any other room: that is on the screen of the room, and
+     * the last room it was on the screen of was another. Moving about in the room, or out onto the path and back, is not that.
      */
     private fun entersRoom(): Boolean {
-        if (layout.house.signedDistance(snake.x, snake.y) < -DenTuning.homeDepth) isAtHome = true
-        val isInRoom = layout.room.signedDistance(snake.x, snake.y) < -DenTuning.roomDepth
-        if (!isInRoom || !isAtHome) return false
-        isAtHome = false
-        return true
+        val room = layout.roomAt(snake.x, snake.y) ?: return false
+        val enters = room == Room.Tutorial && lastRoom != Room.Tutorial
+        lastRoom = room
+        return enters
     }
 
     /**

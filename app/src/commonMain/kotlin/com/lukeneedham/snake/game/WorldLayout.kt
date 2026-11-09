@@ -27,6 +27,20 @@ class WorldLayout(val arena: Arena) {
     /** Where the camera is, as a world x, when it shows the room. */
     val roomCameraX = worldLeft
 
+    /**
+     * The room whose screen the head at [x], [y] is on: the camera stops at the middle of each room and shows all of it, so a room is exactly
+     * what the screen shows there. On a path between rooms, it is none.
+     */
+    fun roomAt(x: Float, y: Float): Room? = when {
+        isOnScreen(x, y, 0f, 0f) -> Room.Stage
+        isOnScreen(x, y, 0f, maxCameraY) -> Room.House
+        isOnScreen(x, y, roomCameraX, maxCameraY) -> Room.Tutorial
+        else -> null
+    }
+
+    private fun isOnScreen(x: Float, y: Float, cameraX: Float, cameraY: Float): Boolean =
+        x >= cameraX && x < cameraX + arena.width && y >= cameraY && y < cameraY + arena.height
+
     /** The floor of the house: where the snake lives. */
     val house = BlobBounds(houseX, houseY, DenTuning.houseRadius, listOf(Wobble(0.06f, 2, 0.7f), Wobble(0.05f, 3, 2.1f)))
 
