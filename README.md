@@ -47,24 +47,31 @@ The mice run from a snake they see coming, but they cannot see what is behind th
 ## Screenshots
 
 <img src="docs/screenshots/01-GamePageReady.png" width="240" alt="Game Page Ready">
-<img src="docs/screenshots/02-GamePageRumble.png" width="240" alt="Game Page Rumble">
-<img src="docs/screenshots/03-GamePageThinking.png" width="240" alt="Game Page Thinking">
-<img src="docs/screenshots/04-GamePageLesson.png" width="240" alt="Game Page Lesson">
-<img src="docs/screenshots/05-GamePageSteering.png" width="240" alt="Game Page Steering">
-<img src="docs/screenshots/06-GameTutorialHunger.png" width="240" alt="Game Tutorial Hunger">
-<img src="docs/screenshots/07-GameTutorialZoom.png" width="240" alt="Game Tutorial Zoom">
-<img src="docs/screenshots/08-GameTutorialMouse.png" width="240" alt="Game Tutorial Mouse">
-<img src="docs/screenshots/09-GameTutorialToad.png" width="240" alt="Game Tutorial Toad">
-<img src="docs/screenshots/10-GameTutorialBird.png" width="240" alt="Game Tutorial Bird">
-<img src="docs/screenshots/11-GamePageLeaving.png" width="240" alt="Game Page Leaving">
-<img src="docs/screenshots/12-GamePageReturning.png" width="240" alt="Game Page Returning">
-<img src="docs/screenshots/13-GamePage.png" width="240" alt="Game Page">
-<img src="docs/screenshots/14-GamePageBirds.png" width="240" alt="Game Page Birds">
-<img src="docs/screenshots/15-GamePageHallucinating.png" width="240" alt="Game Page Hallucinating">
-<img src="docs/screenshots/16-GamePagePaused.png" width="240" alt="Game Page Paused">
-<img src="docs/screenshots/17-GamePageHunger.png" width="240" alt="Game Page Hunger">
-<img src="docs/screenshots/18-GamePageStatus.png" width="240" alt="Game Page Status">
-<img src="docs/screenshots/19-GamePageGameOver.png" width="240" alt="Game Page Game Over">
+<img src="docs/screenshots/02-GameTutorialWaking.png" width="240" alt="Game Tutorial Waking">
+<img src="docs/screenshots/03-GameTutorialTasting.png" width="240" alt="Game Tutorial Tasting">
+<img src="docs/screenshots/04-GamePageRumble.png" width="240" alt="Game Page Rumble">
+<img src="docs/screenshots/05-GamePageThinking.png" width="240" alt="Game Page Thinking">
+<img src="docs/screenshots/06-GameTutorialPopped.png" width="240" alt="Game Tutorial Popped">
+<img src="docs/screenshots/07-GamePageLesson.png" width="240" alt="Game Page Lesson">
+<img src="docs/screenshots/08-GamePageSteering.png" width="240" alt="Game Page Steering">
+<img src="docs/screenshots/09-GameTutorialHunger.png" width="240" alt="Game Tutorial Hunger">
+<img src="docs/screenshots/10-GameTutorialZoom.png" width="240" alt="Game Tutorial Zoom">
+<img src="docs/screenshots/11-GameTutorialZoomed.png" width="240" alt="Game Tutorial Zoomed">
+<img src="docs/screenshots/12-GameTutorialMouse.png" width="240" alt="Game Tutorial Mouse">
+<img src="docs/screenshots/13-GameTutorialToad.png" width="240" alt="Game Tutorial Toad">
+<img src="docs/screenshots/14-GameTutorialDizzy.png" width="240" alt="Game Tutorial Dizzy">
+<img src="docs/screenshots/15-GameTutorialBird.png" width="240" alt="Game Tutorial Bird">
+<img src="docs/screenshots/16-GameTutorialPowers.png" width="240" alt="Game Tutorial Powers">
+<img src="docs/screenshots/17-GameTutorialReturn.png" width="240" alt="Game Tutorial Return">
+<img src="docs/screenshots/18-GamePageLeaving.png" width="240" alt="Game Page Leaving">
+<img src="docs/screenshots/19-GamePageReturning.png" width="240" alt="Game Page Returning">
+<img src="docs/screenshots/20-GamePage.png" width="240" alt="Game Page">
+<img src="docs/screenshots/21-GamePageBirds.png" width="240" alt="Game Page Birds">
+<img src="docs/screenshots/22-GamePageHallucinating.png" width="240" alt="Game Page Hallucinating">
+<img src="docs/screenshots/23-GamePagePaused.png" width="240" alt="Game Page Paused">
+<img src="docs/screenshots/24-GamePageHunger.png" width="240" alt="Game Page Hunger">
+<img src="docs/screenshots/25-GamePageStatus.png" width="240" alt="Game Page Status">
+<img src="docs/screenshots/26-GamePageGameOver.png" width="240" alt="Game Page Game Over">
 
 ## Getting started as a user
 
