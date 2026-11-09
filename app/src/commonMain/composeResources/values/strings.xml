@@ -17,7 +17,7 @@
     <string name="tap_to_retry">Tap to retry</string>
     <string name="paused">Paused</string>
     <string name="effect_hallucinating">Trippy!</string>
-    <string name="effect_disguised">Mystery!</string>
+    <string name="effect_imposters">Imposters!</string>
     <string name="effect_confused">Dizzy!</string>
     <string name="effect_hayfever">Hayfever!</string>
     <string name="effect_greedy">Greedy!</string>
@@ -33,7 +33,7 @@
     <string name="status_title">Active</string>
     <string name="status_close">Tap to close</string>
     <string name="effect_hallucinating_description">The whole screen goes wavy.</string>
-    <string name="effect_disguised_description">Animals look like other animals.</string>
+    <string name="effect_imposters_description">Animals look like other animals and shuffle along together.</string>
     <string name="effect_confused_description">The snake ignores your taps.</string>
     <string name="effect_hayfever_description">Touch the grass and you die!</string>
     <string name="effect_greedy_description">Food feeds you only half as much.</string>

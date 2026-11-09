@@ -5,8 +5,8 @@ enum class Effect(val durationSeconds: Float) {
     /** The whole screen turns wavy. */
     Hallucinating(9f),
 
-    /** Every animal but the snake looks like one of a few other animals, and keeps that look for as long as it lasts. */
-    Disguised(9f),
+    /** Every animal but the snake looks like one of a few other animals, and keeps that look for as long as it lasts. They all shuffle along in the same jerky way. */
+    Imposters(9f),
 
     /** The snake ignores taps. */
     Confused(2.5f),

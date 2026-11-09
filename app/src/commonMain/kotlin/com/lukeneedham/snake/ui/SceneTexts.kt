@@ -9,18 +9,18 @@ import com.lukeneedham.snake.generated.resources.effect_cannibal
 import com.lukeneedham.snake.generated.resources.effect_cannibal_description
 import com.lukeneedham.snake.generated.resources.effect_confused
 import com.lukeneedham.snake.generated.resources.effect_confused_description
-import com.lukeneedham.snake.generated.resources.effect_disguised
-import com.lukeneedham.snake.generated.resources.effect_disguised_description
+import com.lukeneedham.snake.generated.resources.effect_greedy
+import com.lukeneedham.snake.generated.resources.effect_greedy_description
 import com.lukeneedham.snake.generated.resources.effect_hallucinating
 import com.lukeneedham.snake.generated.resources.effect_hallucinating_description
 import com.lukeneedham.snake.generated.resources.effect_hayfever
-import com.lukeneedham.snake.generated.resources.effect_greedy
-import com.lukeneedham.snake.generated.resources.effect_greedy_description
 import com.lukeneedham.snake.generated.resources.effect_hayfever_description
-import com.lukeneedham.snake.generated.resources.effect_ravenous
-import com.lukeneedham.snake.generated.resources.effect_ravenous_description
+import com.lukeneedham.snake.generated.resources.effect_imposters
+import com.lukeneedham.snake.generated.resources.effect_imposters_description
 import com.lukeneedham.snake.generated.resources.effect_lazy
 import com.lukeneedham.snake.generated.resources.effect_lazy_description
+import com.lukeneedham.snake.generated.resources.effect_ravenous
+import com.lukeneedham.snake.generated.resources.effect_ravenous_description
 import com.lukeneedham.snake.generated.resources.game_over
 import com.lukeneedham.snake.generated.resources.game_title
 import com.lukeneedham.snake.generated.resources.menu_back
@@ -69,7 +69,7 @@ internal fun sceneTexts(score: Int, bestScore: Int, isNewBest: Boolean): SceneTe
     effectDescriptions = Effect.entries.map { effect ->
         when (effect) {
             Effect.Hallucinating -> stringResource(Res.string.effect_hallucinating_description)
-            Effect.Disguised -> stringResource(Res.string.effect_disguised_description)
+            Effect.Imposters -> stringResource(Res.string.effect_imposters_description)
             Effect.Confused -> stringResource(Res.string.effect_confused_description)
             Effect.Hayfever -> stringResource(Res.string.effect_hayfever_description)
             Effect.Greedy -> stringResource(Res.string.effect_greedy_description)
@@ -91,7 +91,7 @@ internal fun sceneTexts(score: Int, bestScore: Int, isNewBest: Boolean): SceneTe
     effectNames = Effect.entries.map { effect ->
         when (effect) {
             Effect.Hallucinating -> stringResource(Res.string.effect_hallucinating)
-            Effect.Disguised -> stringResource(Res.string.effect_disguised)
+            Effect.Imposters -> stringResource(Res.string.effect_imposters)
             Effect.Confused -> stringResource(Res.string.effect_confused)
             Effect.Hayfever -> stringResource(Res.string.effect_hayfever)
             Effect.Greedy -> stringResource(Res.string.effect_greedy)
