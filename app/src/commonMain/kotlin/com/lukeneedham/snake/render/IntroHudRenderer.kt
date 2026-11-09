@@ -28,7 +28,7 @@ internal fun DrawScope.drawIntroHud(world: GameWorld, texts: SceneTexts, topInse
 }
 
 /** How far above the middle of the den the lesson starts, and how tall one of its lines is. */
-private const val lessonAboveDen = 74
+private const val lessonAboveDen = 84
 private const val lineHeight = 13
 
 /** How far under the status bar the hint is. */

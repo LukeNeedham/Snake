@@ -42,6 +42,19 @@ class SnakeTest {
     }
 
     @Test
+    fun everyBounceTurnsTheSnakeTheOtherWay() {
+        val snake = Snake(Arena(60f, 60f))
+        var bounces = 0
+        repeat(60 * 60) {
+            snake.step(1f / 60f, 1f)
+            bounces = snake.bounceCount
+            // Nothing else turns it, so the direction follows the number of bounces
+            assertEquals(if (bounces % 2 == 0) 1f else -1f, snake.turnDirection)
+        }
+        assertTrue(bounces > 1)
+    }
+
+    @Test
     fun aSnakeLongerThanItsCircleHitsItself() {
         val snake = Snake(Arena(108f, 234f))
         snake.grow(20)

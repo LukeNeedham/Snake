@@ -2,17 +2,20 @@ package com.lukeneedham.snake.game
 
 /** The numbers that shape the den, the path out of it and the camera that follows the snake along it. All in art pixels. */
 object DenTuning {
-    /** Half of how wide the path is: the snake turns in circles of its own, so the path is wide enough to zigzag along. */
-    const val pathHalfWidth = 11f
+    /** Half of how wide the path is: wide enough that the player has to steer the snake along it in a straight line, not just bounce along the walls. */
+    const val pathHalfWidth = 15f
 
-    /** How big the round floor of the den is: the snake curled up in a circle of its own turning radius fits with room to spare. */
-    const val denRadius = 17f
+    /** How big the round floor of the den is: big enough to play with turning and bouncing in. */
+    const val denRadius = 34f
 
     /** How far above the bottom edge of the world the middle of the den is. */
-    const val denFromBottom = 66f
+    const val denFromBottom = 54f
 
-    /** How far the path reaches into the oval, so that it joins it without a seam. */
-    const val pathOverlap = 4f
+    /**
+     * How far the path reaches into the oval. It has to reach well past the wall of the oval (more than the snake's distance from a wall), or
+     * the snake near the join would be too close to the wall of the path and the wall of the oval at once, and could never get through.
+     */
+    const val pathOverlap = 14f
 
     /** Where on the screen, from the top, the camera keeps the snake while it follows it up the path: a fraction of the screen height. */
     const val followLine = 0.62f

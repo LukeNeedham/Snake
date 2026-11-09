@@ -28,9 +28,9 @@ class DenLayout(val arena: Arena) {
 
     /** The bubbles of the snake's thought, from the smallest one up: the last one is the big one with the mouse in it. */
     val bubbles = listOf(
-        ThoughtBubble(denX + 9f, denY - 24f, 1.8f),
-        ThoughtBubble(denX + 13f, denY - 33f, 2.8f),
-        ThoughtBubble(denX + 4f, denY - 54f, 16f),
+        ThoughtBubble(denX + 10f, denY - 20f, 1.8f),
+        ThoughtBubble(denX + 14f, denY - 30f, 2.8f),
+        ThoughtBubble(denX + 6f, denY - 56f, 16f),
     )
 
     init {

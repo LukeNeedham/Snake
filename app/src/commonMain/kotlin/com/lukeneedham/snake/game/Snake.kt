@@ -7,7 +7,7 @@ import kotlin.math.sin
 
 /**
  * The snake always turns, and the only control is the direction of the turn. This is the head: where it is, which way it
- * goes and how it bounces off the wall. The [body] follows the path it travelled.
+ * goes and how it bounces off the wall (a bounce also turns it the other way). The [body] follows the path it travelled.
  */
 class Snake(
     arena: Arena,
@@ -87,6 +87,8 @@ class Snake(
             y = bounce.y
             heading = bounce.heading
             if (bounce.reflected) {
+                // Hitting a wall counts as a tap: the snake turns the other way
+                toggleTurn()
                 bounceCount++
                 lastBounceX = x
                 lastBounceY = y
