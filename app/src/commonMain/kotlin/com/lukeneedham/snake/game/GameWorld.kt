@@ -111,7 +111,8 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     private var isRoomView = false
 
     /** Whether the snake was in the room of the tutorial a moment ago: it only teaches the lessons again when it goes in. */
-    private var wasInRoom = false
+    /** Set while the snake is in its house, and cleared once it goes into the room: only a trip through the house starts the lessons again. */
+    private var isAtHome = true
     private var wasInStage = false
 
     private val mutableCritters = ArrayList<Critter>()
@@ -374,11 +375,12 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
         if (stage == IntroStage.Leaving) {
             layout.isGateClosed = false
             snake = layout.curledSnake()
+            isAtHome = true
             isRoomView = false
             cameraX = 0f
         } else {
             snake = layout.snakeInRoom()
-            wasInRoom = true
+            isAtHome = false
             isRoomView = true
             cameraX = layout.roomCameraX
         }
@@ -410,7 +412,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     private fun endReplay() {
         phase = GamePhase.Playing
         mutableCritters.clear()
-        wasInRoom = true
+        isAtHome = false
         spawner.reset()
     }
 
@@ -438,12 +440,16 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
         sprint.clear()
     }
 
-    /** Whether the snake has just gone into the room of the tutorial, and not just stays in it. */
+    /**
+     * Whether the snake has just gone into the room of the tutorial from its house. Wandering about in the room, even to its edge and back,
+     * is not that: it has to have been home since it was last in the room.
+     */
     private fun entersRoom(): Boolean {
+        if (layout.house.signedDistance(snake.x, snake.y) < -DenTuning.homeDepth) isAtHome = true
         val isInRoom = layout.room.signedDistance(snake.x, snake.y) < -DenTuning.roomDepth
-        val enters = isInRoom && !wasInRoom
-        wasInRoom = isInRoom
-        return enters
+        if (!isInRoom || !isAtHome) return false
+        isAtHome = false
+        return true
     }
 
     /**
