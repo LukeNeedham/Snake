@@ -32,6 +32,9 @@ fun GamePage(onOpenSettings: () -> Unit) {
         }
     }
 
+    // The game fades to black under the system bars, so their icons are light
+    LightSystemBarIcons()
+
     // With the pause overlay open, back closes it and resumes the game instead of leaving the app
     BackHandler(enabled = state.isMenuOpen) { viewModel.onBack() }
 
