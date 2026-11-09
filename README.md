@@ -39,8 +39,9 @@ it out by the wide path to the left, to the room of the tutorial: an oval of san
 corner (to zoom) and sees that zooming makes the snake hungry, and a mouse that runs in from the grass is eaten so as not to starve. A toad
 that hops in can be eaten too, but it poisons (the dizzy one), and a bird that flies in is caught for the power it gives. Each is learned by doing it, and then an arrow shows the way back to the house, where
 the stones are gone and an arrow shows the way up the path to the oval, which is one screen long: the house and the oval cannot be seen
-from each other. Later games start with the snake waking in its house and the path up open. The snake can go home any time, and going
-into the room of the tutorial again teaches the lessons again. A restart goes straight to the oval.
+from each other. Later games start with the snake waking in its house and the path up open. Once the whole snake is in the oval, the way it came in by grows shut with grass behind it, so the oval is a perfect oval and nothing
+leaves it; the way opens again when the stage is won (there are no win conditions yet, so the snake stays). Going into the room of the tutorial again, whenever the snake can get home, teaches the
+lessons again. A restart goes straight to the oval.
 
 The mice run from a snake they see coming, but they cannot see what is behind them.
 
@@ -65,13 +66,14 @@ The mice run from a snake they see coming, but they cannot see what is behind th
 <img src="docs/screenshots/17-GameTutorialReturn.png" width="240" alt="Game Tutorial Return">
 <img src="docs/screenshots/18-GamePageLeaving.png" width="240" alt="Game Page Leaving">
 <img src="docs/screenshots/19-GamePageReturning.png" width="240" alt="Game Page Returning">
-<img src="docs/screenshots/20-GamePage.png" width="240" alt="Game Page">
-<img src="docs/screenshots/21-GamePageBirds.png" width="240" alt="Game Page Birds">
-<img src="docs/screenshots/22-GamePageHallucinating.png" width="240" alt="Game Page Hallucinating">
-<img src="docs/screenshots/23-GamePagePaused.png" width="240" alt="Game Page Paused">
-<img src="docs/screenshots/24-GamePageHunger.png" width="240" alt="Game Page Hunger">
-<img src="docs/screenshots/25-GamePageStatus.png" width="240" alt="Game Page Status">
-<img src="docs/screenshots/26-GamePageGameOver.png" width="240" alt="Game Page Game Over">
+<img src="docs/screenshots/20-GamePageSealing.png" width="240" alt="Game Page Sealing">
+<img src="docs/screenshots/21-GamePage.png" width="240" alt="Game Page">
+<img src="docs/screenshots/22-GamePageBirds.png" width="240" alt="Game Page Birds">
+<img src="docs/screenshots/23-GamePageHallucinating.png" width="240" alt="Game Page Hallucinating">
+<img src="docs/screenshots/24-GamePagePaused.png" width="240" alt="Game Page Paused">
+<img src="docs/screenshots/25-GamePageHunger.png" width="240" alt="Game Page Hunger">
+<img src="docs/screenshots/26-GamePageStatus.png" width="240" alt="Game Page Status">
+<img src="docs/screenshots/27-GamePageGameOver.png" width="240" alt="Game Page Game Over">
 
 ## Getting started as a user
 
