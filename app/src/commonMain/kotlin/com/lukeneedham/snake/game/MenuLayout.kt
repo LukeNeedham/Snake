@@ -29,6 +29,8 @@ object MenuLayout {
     private const val dotBottom = 8f
     private const val dotSlack = 4f
 
+    private const val gameOverButtonBottom = 45f
+
     const val itemWidth = 70f
     const val itemHeight = 15f
     private const val itemGap = 5f
@@ -68,6 +70,13 @@ object MenuLayout {
     fun pageAt(arena: Arena, x: Float, y: Float): PausePage? = PausePage.entries.firstOrNull { page ->
         val rect = pageDot(arena, page.ordinal)
         x >= rect.left - dotSlack && x <= rect.right + dotSlack && y >= rect.top - dotSlack && y <= rect.bottom + dotSlack
+    }
+
+    /** The settings button of the game over screen, in the middle above the line that says to tap to retry, and above the navigation bar. */
+    fun gameOverSettingsButton(arena: Arena): Rect {
+        val top = arena.height - arena.bottomInset - gameOverButtonBottom - itemHeight
+        val left = (arena.width - itemWidth) / 2f
+        return Rect(left, top, left + itemWidth, top + itemHeight)
     }
 
     /** The button of the [index]th of [count] items: they are stacked in the middle of the screen. */

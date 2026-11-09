@@ -78,6 +78,9 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     private val effectParticles = EffectParticleEmitter(particleSystem, random)
     private var seenBounces = 0
 
+    /** Whether the result and the settings button of the game over screen show yet. */
+    val isResultShown: Boolean get() = phase == GamePhase.GameOver && gameOverTime > GameOverTuning.resultDelay
+
     val canRestart: Boolean get() = phase == GamePhase.GameOver && gameOverTime > restartDelay
 
     fun start() {

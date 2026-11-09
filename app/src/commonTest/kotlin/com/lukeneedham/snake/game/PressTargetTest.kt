@@ -113,4 +113,15 @@ class PressTargetTest {
         val dot = MenuLayout.pageDot(world.arena, PausePage.Status.ordinal)
         assertEquals(PressTarget.PageDot(PausePage.Status), target(dot.center.x, dot.center.y))
     }
+
+    @Test
+    fun theGameOverScreenHasNoMenuButtonButASettingsButton() {
+        world.start()
+        world.endGame(DeathCause.Starvation)
+        repeat(30) { world.update(1f / 60f) }
+        val menuArea = MenuLayout.menuArea(topInset)
+        assertEquals(PressTarget.Turn, target(menuArea.center.x, menuArea.center.y))
+        val settings = MenuLayout.gameOverSettingsButton(world.arena)
+        assertEquals(PressTarget.Item(MenuItem.Settings), target(settings.center.x, settings.center.y))
+    }
 }

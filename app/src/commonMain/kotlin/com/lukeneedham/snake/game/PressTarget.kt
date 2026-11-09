@@ -1,5 +1,7 @@
 package com.lukeneedham.snake.game
 
+import androidx.compose.ui.geometry.Offset
+
 /** What a finger that goes down on the screen presses. */
 sealed interface PressTarget {
     /** The scene: a tap that turns the snake, or starts, or restarts the game. */
@@ -43,7 +45,12 @@ sealed interface PressTarget {
                 }
                 return Backdrop
             }
-            if (MenuLayout.isOnMenuButton(topInset, x, y)) return MenuButton
+            if (world.phase == GamePhase.GameOver) {
+                // The game over screen has no menu button, but a settings button of its own
+                if (world.isResultShown && MenuLayout.gameOverSettingsButton(world.arena).contains(Offset(x, y))) return Item(MenuItem.Settings)
+            } else if (MenuLayout.isOnMenuButton(topInset, x, y)) {
+                return MenuButton
+            }
             if (StomachLayout.contains(world.arena, topInset, x, y)) return Stomach
             if (StatusLayout.contains(world.arena, world.sprintSide, world.statuses.size, x, y)) return StatusCorner
             if (SprintZone.contains(world.arena, world.sprintSide, x, y)) return Sprint
