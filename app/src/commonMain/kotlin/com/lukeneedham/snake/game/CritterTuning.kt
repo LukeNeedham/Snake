@@ -13,6 +13,13 @@ object CritterTuning {
     const val fleeSpeed = 34f
     const val fleeSeconds = 0.9f
 
-    /** A toad hops away from a snake with the repellent power up when it is closer than this. */
-    const val repelDistance = 30f
+    /** A mouse smells the cheese of the snake from this far away, in any direction, and runs towards it. */
+    const val cheeseSmellDistance = 90f
+    const val cheeseSpeed = 30f
+
+    /** A mouse that came to the cheese stops this close to the snake and stands around it. */
+    const val cheeseCrowdDistance = 6f
+
+    /** Mice that came to the cheese stay put for this long after it is gone, instead of running away at once. */
+    const val cheeseDazeSeconds = 1.5f
 }

@@ -8,27 +8,27 @@ import kotlin.math.roundToInt
 private const val margin = 4
 
 private val shape = listOf(
-    "...###.......",
-    "...###.......",
-    "...######....",
-    "..#########..",
-    ".###########.",
-    "#############",
-    "#############",
-    "#############",
-    "#############",
-    "#############",
-    ".###########.",
-    ".###########.",
-    "..#########..",
-    "...#######...",
-    "....#####....",
+    "..###..........",
+    "..###..........",
+    ".####..........",
+    "######.........",
+    "########.......",
+    "##########.....",
+    "###########.##.",
+    "###############",
+    "##############.",
+    "##############.",
+    "##############.",
+    ".############..",
+    "..##########...",
+    "...########....",
+    ".....####......",
 )
 private val shapeWidth = shape.first().length
 private val shapeHeight = shape.size
 
 /**
- * The hunger as a stomach in the top right corner that fills up from the bottom: it runs empty, turns red and blinks when the
+ * The hunger as a stomach (a bean with the gullet at the top) in the top right corner that fills up from the bottom: it runs empty, turns red and blinks when the
  * snake is about to starve, and glows while it sprints. What was just eaten shows as a lighter part on top of the filled part,
  * which then fills in.
  */

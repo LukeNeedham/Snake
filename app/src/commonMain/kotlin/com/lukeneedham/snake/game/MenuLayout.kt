@@ -5,7 +5,10 @@ import androidx.compose.ui.geometry.Rect
 /** Where the menu button and the buttons of the menu are, in world units: the drawing and the touches both use it. */
 object MenuLayout {
     private const val buttonMargin = 3f
-    private const val buttonSize = 14f
+    private const val buttonSize = 10f
+
+    /** The score is above the button, in the same corner. */
+    private const val scoreHeight = 5f
 
     /** A finger is bigger than the button, so a touch this far from it still counts. */
     private const val touchSlack = 3f
@@ -14,8 +17,11 @@ object MenuLayout {
     const val itemHeight = 15f
     private const val itemGap = 5f
 
-    /** The small button in the top left corner, under the status bar of height [topInset]. */
-    fun menuButton(topInset: Int): Rect = Rect(buttonMargin, topInset + buttonMargin, buttonMargin + buttonSize, topInset + buttonMargin + buttonSize)
+    /** The small button in the top left corner under the score, which is under the status bar of height [topInset]. */
+    fun menuButton(topInset: Int): Rect = Rect(
+        buttonMargin, topInset + buttonMargin + scoreHeight + buttonMargin,
+        buttonMargin + buttonSize, topInset + buttonMargin + scoreHeight + buttonMargin + buttonSize,
+    )
 
     fun isOnMenuButton(topInset: Int, x: Float, y: Float): Boolean {
         val rect = menuButton(topInset)

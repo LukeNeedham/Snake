@@ -4,8 +4,8 @@ package com.lukeneedham.snake.game
 class SnakeAura(
     /** How far away the animals notice the snake, compared to normal: below 1 is sneakier. */
     val noticeScale: Float = 1f,
-    /** Whether toads hop away from the snake. */
-    val repelsToads: Boolean = false,
+    /** Whether mice run towards the snake, because it carries cheese, instead of away from it. */
+    val attractsMice: Boolean = false,
 ) {
     companion object {
         val None = SnakeAura()

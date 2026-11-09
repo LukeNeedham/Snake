@@ -91,15 +91,90 @@ class GameWorldTest {
         assertTrue(world.effects.remaining(Effect.Hallucinating) < Effect.Hallucinating.durationSeconds - 0.9f)
     }
 
+    /** Runs a long snake round its circle for [seconds], keeping it fed so that only the curse can kill it; true if it hit itself. */
+    private fun GameWorld.runLongSnakeFed(seconds: Int, isCursed: Boolean): Boolean {
+        snake.grow(20)
+        var touched = false
+        repeat(60 * seconds) {
+            if (phase == GamePhase.Playing) {
+                hunger.feed(1f)
+                // Toad-free keeps the toads away, so that no other curse changes the outcome
+                if (isCursed) applyEffect(ToadKind.Grey) else powerUps.apply(BirdKind.Crow)
+                update(1f / 60f)
+                if (snake.hitsItself()) touched = true
+            }
+        }
+        return touched
+    }
+
     @Test
-    fun theGameEndsWhenTheSnakeEatsItself() {
+    fun theSnakeSurvivesTouchingItselfWithoutTheCurse() {
         val world = newWorld()
         world.start()
-        world.snake.grow(20)
-        repeat(60 * 30) { if (world.phase == GamePhase.Playing) world.update(1f / 60f) }
+        assertTrue(world.runLongSnakeFed(seconds = 30, isCursed = false))
+        assertEquals(GamePhase.Playing, world.phase)
+    }
+
+    @Test
+    fun theGameEndsWhenACursedSnakeTouchesItself() {
+        val world = newWorld()
+        world.start()
+        world.runLongSnakeFed(seconds = 30, isCursed = true)
         assertEquals(GamePhase.GameOver, world.phase)
         repeat(60) { world.update(1f / 60f) }
         assertTrue(world.canRestart)
+    }
+
+    @Test
+    fun eatingAGreyToadPutsTheLupusCurseOn() {
+        val world = newWorld()
+        world.start()
+        world.placeToadInFrontOfTheMouth(ToadKind.Grey)
+        world.update(1f / 60f)
+        assertTrue(world.effects.isOn(Effect.Lupus))
+    }
+
+    @Test
+    fun aSnakeCarryingCheeseCannotEatAndEatsAgainWhenItIsGone() {
+        val world = newWorld()
+        world.start()
+        world.powerUps.apply(BirdKind.Pigeon)
+        world.placeMouseInFrontOfTheMouth()
+        repeat(30) { world.update(1f / 60f) }
+        assertEquals(0, world.score)
+        assertTrue(world.snake.mouthOpen < 0.05f)
+        repeat(60 * 10) { world.update(1f / 60f) }
+        assertFalse(world.powerUps.isOn(PowerUp.Cheese))
+    }
+
+    @Test
+    fun eatingTheCrowBlowsUpEveryToadAndLeavesTheMice() {
+        val world = newWorld()
+        world.start()
+        repeat(300) { world.update(1f / 60f) }
+        world.addCritter(Critter.Toad(70, ToadKind.Purple, 30f, 60f, lifetime = 100f))
+        world.addCritter(Critter.Toad(71, ToadKind.Pink, 80f, 150f, lifetime = 100f))
+        world.addCritter(Critter.Mouse(72, 50f, 100f, lifetime = 100f))
+        val scoreBefore = world.score
+        world.placeBirdInFrontOfTheMouth(BirdKind.Crow)
+        repeat(30) { world.update(1f / 60f) }
+        assertTrue(world.powerUps.isOn(PowerUp.ToadFree))
+        assertFalse(world.critters.any { it is Critter.Toad })
+        assertTrue(world.critters.any { it.id == 72 })
+        assertTrue(world.score >= scoreBefore + BirdTuning.score)
+        assertTrue(world.particleSystem.particles.size >= 40)
+    }
+
+    @Test
+    fun noToadComesOutOfTheGrassWhileToadFreeIsOn() {
+        val world = newWorld()
+        world.start()
+        world.powerUps.apply(BirdKind.Crow)
+        repeat(60 * 11) {
+            world.hunger.feed(1f)
+            world.update(1f / 60f)
+            assertFalse(world.critters.any { it is Critter.Toad })
+        }
     }
 
     @Test
@@ -291,14 +366,14 @@ class GameWorldTest {
         repeat(300) { world.update(1f / 60f) }
         val scoreBefore = world.score
         val lengthBefore = world.snake.body.length
-        assertFalse(world.powerUps.isOn(PowerUp.ToadRepellent))
+        assertFalse(world.powerUps.isOn(PowerUp.ToadFree))
         world.placeBirdInFrontOfTheMouth(BirdKind.Crow)
         repeat(30) { world.update(1f / 60f) }
         assertFalse(world.critters.any { it.id == 99 })
         assertTrue(world.score >= scoreBefore + ScoreTuning.bird)
         assertTrue(world.snake.body.length > lengthBefore)
-        assertTrue(world.powerUps.isOn(PowerUp.ToadRepellent))
-        assertTrue(world.powerUps.remaining(PowerUp.ToadRepellent) > PowerUp.ToadRepellent.durationSeconds - 1f)
+        assertTrue(world.powerUps.isOn(PowerUp.ToadFree))
+        assertTrue(world.powerUps.remaining(PowerUp.ToadFree) > PowerUp.ToadFree.durationSeconds - 1f)
     }
 
     @Test

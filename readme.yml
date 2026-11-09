@@ -8,15 +8,19 @@ description: |
   Snake is a one-button arcade game in pixel art. The snake never goes straight: it circles around itself, and the only
   thing you can do is tap to change the direction of the turn. Steer it by twisting out of its own spiral, bounce it off the
   edge of the oval, and eat the mice that run out of the tall grass. Each mouse makes the snake one section longer, with
-  a skin pattern that repeats as it grows, and the game ends the moment the snake touches itself.
+  a skin pattern that repeats as it grows. The snake can cross its own body without harm: the only things that kill it are
+  hunger and the lupus curse.
 
   Beware the toads that hop out of the grass: each colour is poisonous in its own way. One makes the whole screen wavy,
-  one turns every animal into a weird monster, and one makes the snake so dizzy that it ignores your taps for a few seconds.
+  one turns every animal into a weird monster, one makes the snake so dizzy that it ignores your taps for a few seconds, and
+  the grey one puts the lupus curse on the snake: for a few seconds, touching itself is deadly.
 
   Birds fly in from off the screen and land in the oval: blue tits, robins and sparrows, blackbirds, crows and pigeons. Each kind is
   worth a little more than a mouse and gives the snake a different power up for a few seconds: it goes faster, sprints for less, is
-  sneakier, eats from further away, keeps the toads away, or brings more mice. Power ups stack with each other and with the toads'
-  poison. But birds are extremely skittish and fly off the moment the snake gets close, so catching one takes a sprint.
+  sneakier, eats from further away, blows up every toad and keeps new ones away, or carries a piece of cheese that brings mice
+  running from all over (but with its mouth full, the snake cannot eat until the cheese is gone). Power ups stack with each other
+  and with the toads' poison. Birds are rare, only one at a time, and extremely skittish: they fly off the moment the snake gets
+  close, so catching one takes a sprint.
 
   The snake is always hungry: a bar at the top of the screen runs down, a mouse fills it, a toad hardly does, and the
   snake starves when it is empty. Hold the corner at the bottom left to sprint (you can move it to the right in the settings), which is faster but burns

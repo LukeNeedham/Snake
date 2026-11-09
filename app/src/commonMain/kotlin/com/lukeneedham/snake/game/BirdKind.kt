@@ -12,6 +12,6 @@ enum class BirdKind(val powerUp: PowerUp, val size: BirdSize, val alarmDistance:
     Robin(PowerUp.FastSprint, BirdSize.Small, 17f),
     Sparrow(PowerUp.Sneaky, BirdSize.Small, 19f),
     Blackbird(PowerUp.BiggerMouth, BirdSize.Large, 16f),
-    Crow(PowerUp.ToadRepellent, BirdSize.Large, 14f),
-    Pigeon(PowerUp.Pheromones, BirdSize.Large, 15f),
+    Crow(PowerUp.ToadFree, BirdSize.Large, 14f),
+    Pigeon(PowerUp.Cheese, BirdSize.Large, 15f),
 }
