@@ -13,11 +13,11 @@ Snake is a one-button arcade game in pixel art. The snake never goes straight: i
 thing you can do is tap to change the direction of the turn. Steer it by twisting out of its own spiral, bounce it off the
 edge of the oval, and eat the mice that run out of the tall grass. Each mouse makes the snake one section longer, with
 a skin pattern that repeats as it grows. The snake can cross its own body without harm: the only things that kill it are
-hunger and hay fever.
+hunger, hay fever and cannibalism.
 
 Beware the toads that hop out of the grass: each colour is poisonous in its own way. One makes the whole screen wavy,
 one turns every animal into a weird monster, one makes the snake so dizzy that it ignores your taps for a few seconds, and
-the grey one gives the snake hay fever: for a few seconds, touching the grass is deadly.
+the grey one gives the snake hay fever: for a few seconds, touching the grass is deadly, the red one makes the snake ravenous so that its hunger bar drains much faster, the olive one slows the snake right down, and the brown one makes it a cannibal: for a few seconds, touching itself is deadly.
 
 Birds fly in from off the screen and land in the oval: blue tits, robins and sparrows, blackbirds, crows and pigeons. Each kind is
 worth a little more than a mouse and gives the snake a different power up for a few seconds: it goes faster, sprints for less, is
