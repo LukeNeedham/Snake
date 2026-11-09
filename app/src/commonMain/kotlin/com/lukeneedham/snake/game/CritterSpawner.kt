@@ -6,7 +6,7 @@ import kotlin.math.min
 import kotlin.math.sin
 import kotlin.random.Random
 
-/** Sends mice and toads out of the grass and birds flying in: more mice and toads as the score goes up, and never more than one bird. */
+/** Sends mice and toads out of the grass and birds flying in: more mice and toads as the score goes up, and never more than one bird, which only comes once the score is high enough. */
 class CritterSpawner(private val arena: Arena, private val random: Random) {
     private var nextId = 1
     private var mouseTimer = 0f
@@ -48,7 +48,7 @@ class CritterSpawner(private val arena: Arena, private val random: Random) {
             critters.add(newToad())
             toadTimer = between(SpawnTuning.toadDelayMin, SpawnTuning.toadDelayMax)
         }
-        if (birds == 0 && birdTimer <= 0f) {
+        if (birds == 0 && score >= SpawnTuning.firstBirdScore && birdTimer <= 0f) {
             critters.add(newBird(snakeHead))
             birdTimer = between(SpawnTuning.birdDelayMin, SpawnTuning.birdDelayMax)
         }

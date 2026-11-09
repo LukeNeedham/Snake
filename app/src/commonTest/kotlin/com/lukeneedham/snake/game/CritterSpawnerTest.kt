@@ -40,9 +40,20 @@ class CritterSpawnerTest {
     @Test
     fun birdsAreRareAndTheFirstOneComesLate() {
         spawner.reset()
-        repeat(((SpawnTuning.firstBirdDelay - 1f) * 10).toInt()) { spawner.update(0.1f, critters, score = 0, snakeHead = Vec2(arena.centerX, arena.centerY)) }
+        val score = SpawnTuning.firstBirdScore
+        repeat(((SpawnTuning.firstBirdDelay - 1f) * 10).toInt()) { spawner.update(0.1f, critters, score = score, snakeHead = Vec2(arena.centerX, arena.centerY)) }
         assertEquals(0, critters.count { it is Critter.Bird })
-        repeat(30) { spawner.update(0.1f, critters, score = 0, snakeHead = Vec2(arena.centerX, arena.centerY)) }
+        repeat(30) { spawner.update(0.1f, critters, score = score, snakeHead = Vec2(arena.centerX, arena.centerY)) }
+        assertEquals(1, critters.count { it is Critter.Bird })
+    }
+
+    @Test
+    fun noBirdComesUntilTheScoreIsHighEnough() {
+        spawner.reset()
+        val head = Vec2(arena.centerX, arena.centerY)
+        repeat(3000) { spawner.update(0.1f, critters, score = SpawnTuning.firstBirdScore - 100, snakeHead = head) }
+        assertEquals(0, critters.count { it is Critter.Bird })
+        spawner.update(0.1f, critters, score = SpawnTuning.firstBirdScore, snakeHead = head)
         assertEquals(1, critters.count { it is Critter.Bird })
     }
 
@@ -52,7 +63,7 @@ class CritterSpawnerTest {
         val head = Vec2(arena.centerX, arena.centerY)
         repeat(6000) {
             // Nothing in this test moves the birds, so the first one stays for the whole ten minutes
-            spawner.update(0.1f, critters, score = 100, snakeHead = head)
+            spawner.update(0.1f, critters, score = 1000, snakeHead = head)
             assertTrue(critters.count { it is Critter.Bird } <= 1)
         }
         assertEquals(1, critters.count { it is Critter.Bird })
@@ -61,7 +72,7 @@ class CritterSpawnerTest {
     @Test
     fun birdsStartOffTheScreen() {
         spawner.reset()
-        repeat(((SpawnTuning.firstBirdDelay + 1f) * 10).toInt()) { spawner.update(0.1f, critters, score = 40) }
+        repeat(((SpawnTuning.firstBirdDelay + 1f) * 10).toInt()) { spawner.update(0.1f, critters, score = SpawnTuning.firstBirdScore) }
         val birds = critters.filterIsInstance<Critter.Bird>()
         assertTrue(birds.isNotEmpty())
         assertTrue(birds.all { it.x < 0f || it.x > arena.width || it.y < 0f || it.y > arena.height })

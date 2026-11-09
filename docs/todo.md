@@ -30,7 +30,7 @@ into its own doc when work on it starts.
 - [x] **Several kinds of birds, one power up each.** Small ones (blue tit, robin, sparrow) and large ones (blackbird, crow, pigeon), in
   `BirdKind`, each with its own sprites and colours (`BirdArt`, `BirdPalette`). The small ones are the most skittish.
 
-- [x] **Fewer, rarer birds.** Done: one bird at a time, the first after 30 seconds and then one every 40 to 70 seconds.
+- [x] **Fewer, rarer birds.** Done: one bird at a time, the first once the score reaches 200 (and 30 seconds have passed), then one every 40 to 70 seconds.
   Original brief: There are too many birds. At most one bird on the screen at a time (drop `SpawnTuning.mostBirds` and
   `pointsPerExtraBird`, so the score never brings a second one), and a lot rarer: much longer waits between birds
   (`firstBirdDelay`, `birdDelayMin` and `birdDelayMax` in `SpawnTuning`). Update the tests in `CritterSpawnerTest` that count two birds.
