@@ -36,13 +36,13 @@ private fun DrawScope.drawRumble(world: GameWorld, intro: IntroDirector) {
         val angle = line * 2f * PI.toFloat() / rumbleLines + 0.4f
         val dx = cos(angle)
         val dy = sin(angle)
-        val length = 3 + (line + phase) % 3
+        val length = 3 + (line + phase) % 2
         for (step in 0 until length) {
             val distance = reach + step
             val x = (stomach.x + dx * distance).roundToInt() + jitter
             val y = (stomach.y + dy * distance).roundToInt()
-            pixel(x + 1, y + 1, PixelFont.outline)
-            pixel(x, y, rumbleColor)
+            pixelRect(x - 1, y - 1, 4, 4, PixelFont.outline)
+            pixelRect(x, y, 2, 2, rumbleColor)
         }
     }
 }
@@ -85,7 +85,7 @@ private fun DrawScope.drawPop(world: GameWorld, intro: IntroDirector) {
 }
 
 private const val rumbleRate = 14f
-private const val rumbleReach = 6.5f
+private const val rumbleReach = 8f
 private const val rumbleLines = 10
 private const val mouseScale = 2
 
