@@ -7,11 +7,14 @@ import com.lukeneedham.snake.game.MenuItem
 import com.lukeneedham.snake.game.MenuLayout
 import kotlin.math.roundToInt
 
-/** The first page of the pause overlay: its title at the top like every page, and the buttons stacked in the middle of the screen. */
+/** The first page of the pause overlay: its title at the top like every page with the score and the best score under it, and the buttons stacked in the middle of the screen. */
 internal fun DrawScope.drawPausePage(world: GameWorld, texts: SceneTexts, topInset: Int) {
     val width = world.arena.width.toInt()
     val title = if (world.phase == GamePhase.Paused) texts.paused else texts.menuTitle
     drawCenteredPixelText(title, width / 2, topInset + PageTitle.top, HudPalette.gold, scale = 2)
+    // The score of this game under the title, and the best score under that, smaller
+    drawCenteredPixelText(texts.score, width / 2, topInset + PageTitle.top + 16, HudPalette.white, scale = 2)
+    drawCenteredPixelText(texts.best, width / 2, topInset + PageTitle.top + 30, HudPalette.white.copy(alpha = 0.7f))
     val items = world.menuItems
     items.forEachIndexed { index, item ->
         val rect = MenuLayout.item(world.arena, items.size, index)
