@@ -161,7 +161,7 @@ class GameWorldTest {
         assertTrue(world.powerUps.isOn(PowerUp.ToadFree))
         assertFalse(world.critters.any { it is Critter.Toad })
         assertTrue(world.critters.any { it.id == 72 })
-        assertTrue(world.score >= scoreBefore + BirdTuning.score)
+        assertTrue(world.score >= scoreBefore + ScoreTuning.bird)
         assertTrue(world.particleSystem.particles.size >= 40)
     }
 
