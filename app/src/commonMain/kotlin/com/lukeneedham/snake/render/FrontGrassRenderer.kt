@@ -24,6 +24,8 @@ internal fun createFrontGrass(den: DenLayout): List<GrassBlade> {
         val x = random.nextInt(width)
         val y = random.nextInt(height)
         val distance = den.ground.signedDistance(x + 0.5f, y + 0.5f)
+        // No tall grass round the den: it would hide the snake and the rocks
+        if (den.den.signedDistance(x + 0.5f, y + 0.5f) < denClearance) return@repeat
         if (distance in -0.5f..WorldTuning.grassDepth) {
             blades.add(GrassBlade(x, y, 6 + random.nextInt(6), random.nextFloat() * 2f * PI.toFloat(), random.nextInt(colors.size)))
         }
@@ -59,3 +61,6 @@ internal fun DrawScope.drawFrontGrass(blades: List<GrassBlade>, world: GameWorld
 
 /** The tallest a blade is, with its sway: a blade further than this from the screen cannot be seen. */
 private const val bladeReach = 20f
+
+/** How far from the edge of the den no front blade grows: a blade is as tall as this. */
+private const val denClearance = 13f

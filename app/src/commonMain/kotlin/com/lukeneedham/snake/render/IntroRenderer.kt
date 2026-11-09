@@ -36,7 +36,7 @@ private fun DrawScope.drawRumble(world: GameWorld, intro: IntroDirector) {
         val angle = line * 2f * PI.toFloat() / rumbleLines + 0.4f
         val dx = cos(angle)
         val dy = sin(angle)
-        val length = 2 + (line + phase) % 3
+        val length = 3 + (line + phase) % 3
         for (step in 0 until length) {
             val distance = reach + step
             val x = (stomach.x + dx * distance).roundToInt() + jitter
@@ -85,8 +85,8 @@ private fun DrawScope.drawPop(world: GameWorld, intro: IntroDirector) {
 }
 
 private const val rumbleRate = 14f
-private const val rumbleReach = 5.5f
-private const val rumbleLines = 8
+private const val rumbleReach = 6.5f
+private const val rumbleLines = 10
 private const val mouseScale = 2
 
 /** The ring of the pop only lasts the first part of it. */
