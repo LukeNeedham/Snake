@@ -84,7 +84,10 @@ private fun DrawScope.drawBackBlades(den: DenLayout, width: Int, height: Int) {
         val x = random.nextInt(width)
         val y = random.nextInt(height + 10)
         if (den.ground.signedDistance(x + 0.5f, y + 0.5f) >= -2f) {
-            blades.add(GrassBlade(x, y, 6 + random.nextInt(7), 0f, random.nextInt(4)))
+            val height = 6 + random.nextInt(7)
+            // A blade that grows from the grass below the den must not reach up into its floor
+            if (den.den.signedDistance(x + 0.5f, y - height + 0.5f) < 1f) return@repeat
+            blades.add(GrassBlade(x, y, height, 0f, random.nextInt(4)))
         }
     }
     blades.sortBy { it.y }
