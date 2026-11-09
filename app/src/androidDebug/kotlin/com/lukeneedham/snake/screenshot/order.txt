@@ -17,6 +17,7 @@ GameTutorialPowers
 GameTutorialReturn
 GamePageLeaving
 GamePageReturning
+GamePageSealing
 GamePage
 GamePageBirds
 GamePageHallucinating

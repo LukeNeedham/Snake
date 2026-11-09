@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import com.lukeneedham.snake.game.Bounds
+import com.lukeneedham.snake.game.DenTuning
 import com.lukeneedham.snake.game.WorldLayout
 import com.lukeneedham.snake.game.WorldTuning
 import kotlin.math.floor
@@ -53,6 +54,73 @@ internal fun createBackground(layout: WorldLayout, density: Density, layoutDirec
     return bitmap
 }
 
+/**
+ * The grass that grows across the way in to the stage, once the stage is sealed: a patch of the map where the path meets the oval, drawn as it
+ * looks with the path cut off, so that the oval is a perfect oval (its sand, its rim, the grass round it, with the blades of the back grass).
+ * The blades of the front grass, which are drawn over the animals, come with it.
+ */
+internal fun createSealPatch(layout: WorldLayout, density: Density, layoutDirection: LayoutDirection): SealPatch {
+    val arena = layout.arena
+    val halfWidth = (DenTuning.pathHalfWidth + sealMargin).toInt()
+    val left = arena.centerX.toInt() - halfWidth
+    val width = halfWidth * 2
+    val top = (arena.height - sealAbove).toInt()
+    val height = (arena.height + sealBelow).toInt() - top
+    val terrain = layout.sealedTerrain
+    val area = (width * height).toFloat() / (arena.width * arena.height)
+
+    val random = Random(6161)
+    val back = ArrayList<GrassBlade>()
+    repeat((backBladeTrials * area).toInt()) {
+        val x = left + random.nextInt(width)
+        val y = top + random.nextInt(height)
+        val bladeHeight = 6 + random.nextInt(7)
+        val shade = random.nextInt(4)
+        if (terrain.signedDistance(x + 0.5f, y + 0.5f) < -2f) return@repeat
+        back.add(GrassBlade(x, y, bladeHeight, 0f, shade))
+    }
+    back.sortBy { it.y }
+
+    val bitmap = ImageBitmap(width, height)
+    CanvasDrawScope().draw(density, layoutDirection, Canvas(bitmap), Size(width.toFloat(), height.toFloat())) {
+        translate(left = -left.toFloat(), top = -top.toFloat()) {
+            for (y in top until top + height) {
+                var runStart = left
+                var runColor: Color? = null
+                for (x in left..left + width) {
+                    val color = if (x < left + width) groundColor(layout, terrain, x, y) else null
+                    if (color != runColor) {
+                        if (runColor != null) pixelRect(runStart, y, x - runStart, 1, runColor)
+                        runStart = x
+                        runColor = color
+                    }
+                }
+            }
+            paintBackBlades(back, terrain)
+        }
+    }
+
+    val colors = GrassPalette.bladesFront
+    val front = ArrayList<GrassBlade>()
+    val frontRandom = Random(6162)
+    repeat((frontBladeTrials * area).toInt()) {
+        val x = left + frontRandom.nextInt(width)
+        val y = top + frontRandom.nextInt(height)
+        val bladeHeight = 6 + frontRandom.nextInt(6)
+        val phase = frontRandom.nextFloat() * 2f * kotlin.math.PI.toFloat()
+        val shade = frontRandom.nextInt(colors.size)
+        if (terrain.signedDistance(x + 0.5f, y + 0.5f) !in -0.5f..WorldTuning.grassDepth) return@repeat
+        front.add(GrassBlade(x, y, bladeHeight, phase, shade))
+    }
+    front.sortBy { it.y }
+    return SealPatch(bitmap, left, top, front)
+}
+
+/** The patch reaches this far beside the path, up into the oval, and down past the bottom of the screen of the stage. */
+private const val sealMargin = 8
+private const val sealAbove = 30
+private const val sealBelow = 6
+
 private fun noise(x: Int, y: Int): Float {
     var h = x * 374761393 + y * 668265263
     h = (h xor (h ushr 13)) * 1274126177
@@ -79,7 +147,7 @@ private fun DrawScope.drawGround(layout: WorldLayout, width: Int, height: Int) {
         var runStart = left
         var runColor: Color? = null
         for (x in left..left + width) {
-            val color = if (x < left + width) groundColor(layout, x, y) else null
+            val color = if (x < left + width) groundColor(layout, layout.terrain, x, y) else null
             if (color != runColor) {
                 if (runColor != null) pixelRect(runStart, y, x - runStart, 1, runColor)
                 runStart = x
@@ -89,8 +157,8 @@ private fun DrawScope.drawGround(layout: WorldLayout, width: Int, height: Int) {
     }
 }
 
-private fun groundColor(layout: WorldLayout, x: Int, y: Int): Color {
-    val distance = layout.terrain.signedDistance(x + 0.5f, y + 0.5f)
+private fun groundColor(layout: WorldLayout, terrain: Bounds, x: Int, y: Int): Color {
+    val distance = terrain.signedDistance(x + 0.5f, y + 0.5f)
     val n = noise(x, y)
     if (distance >= 0f) {
         return if (n < 0.1f) GrassPalette.speckDark else if (n > 0.92f) GrassPalette.speckLight else GrassPalette.base
@@ -138,9 +206,14 @@ private fun DrawScope.drawBackBlades(layout: WorldLayout, width: Int, height: In
         blades.add(GrassBlade(x, y, bladeHeight, 0f, shade))
     }
     blades.sortBy { it.y }
+    paintBackBlades(blades, layout.terrain)
+}
+
+/** Draws the blades of the back grass, which are darker the further they are in the grass. */
+private fun DrawScope.paintBackBlades(blades: List<GrassBlade>, terrain: Bounds) {
     val colors = GrassPalette.bladesBack
     for (blade in blades) {
-        val depth = layout.terrain.signedDistance(blade.x + 0.5f, blade.y + 0.5f)
+        val depth = terrain.signedDistance(blade.x + 0.5f, blade.y + 0.5f)
         val shade = (blade.shade + if (depth > WorldTuning.grassDepth * 0.6f) -1 else 0).coerceIn(0, colors.lastIndex)
         pixelRect(blade.x, blade.y - blade.height, 1, blade.height, colors[shade])
         if (blade.shade == 3) pixelRect(blade.x + 1, blade.y - blade.height + 2, 1, blade.height - 2, colors[shade])

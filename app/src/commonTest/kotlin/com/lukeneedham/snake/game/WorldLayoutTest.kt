@@ -70,4 +70,24 @@ class WorldLayoutTest {
         val radii = (0 until 24).map { layout.house.radiusAt(it * 0.2618f) }
         assertTrue(radii.max() - radii.min() > 4f)
     }
+
+    @Test
+    fun theStageIsAPerfectOvalOnceTheWayInIsSealed() {
+        layout.isGateClosed = false
+        layout.isStageSealed = false
+        // Open: the path goes on from the oval
+        assertTrue(layout.ground.signedDistance(arena.centerX, arena.height + 20f) < 0f)
+        layout.isStageSealed = true
+        assertTrue(layout.ground.signedDistance(arena.centerX, arena.height + 20f) > 0f)
+        assertTrue(layout.ground.signedDistance(arena.centerX, arena.height - 14f) < 0f)
+        // Near the join, the wall is the wall of the oval
+        for (x in listOf(arena.centerX - 10f, arena.centerX, arena.centerX + 10f)) {
+            for (y in listOf(arena.height - 14f, arena.height - 6f, arena.height + 2f)) {
+                assertEquals(arena.signedDistance(x, y), layout.ground.signedDistance(x, y), 1e-3f)
+            }
+        }
+        // The rest of the map is still joined: the house, the path to the left and the room
+        assertTrue(layout.ground.signedDistance(layout.houseX, layout.houseY) < 0f)
+        assertTrue(layout.ground.signedDistance(layout.room.centerX, layout.room.centerY) < 0f)
+    }
 }

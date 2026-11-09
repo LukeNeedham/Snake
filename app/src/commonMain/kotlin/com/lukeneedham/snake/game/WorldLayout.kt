@@ -45,10 +45,16 @@ class WorldLayout(val arena: Arena) {
     /** Whether the stones block the path up: they do until the tutorial is done. */
     var isGateClosed = false
 
+    /** Whether the way in to the stage, the path up, is grown shut with grass: the stage is then a perfect oval, and nothing gets in or out of it. */
+    var isStageSealed = false
+
     /** All the bare ground of the map: the stage, the paths, the house and the room. */
     val terrain: Bounds
 
-    /** What the snake can move on: all the [terrain], but not through the stones of the gate while they are there. */
+    /** The map with the path up cut off: everything but the way to the stage, which is a perfect oval. */
+    val sealedTerrain: Bounds
+
+    /** What the snake can move on: all the [terrain], but not through the stones of the gate while they are there, and not the path up once the stage is sealed. */
     val ground: Bounds
 
     /** Below this the snake has left the stage for the path, and the camera starts to follow it. */
@@ -69,7 +75,8 @@ class WorldLayout(val arena: Arena) {
         val edgeY = houseY - house.radiusAt(-halfPi)
         gate = BoxBounds(houseX, edgeY - DenTuning.gateOutside, DenTuning.pathHalfWidth + 3f, DenTuning.gateHalfThickness)
         terrain = UnionBounds(listOf(arena, pathUp, house, pathLeft, room))
-        ground = GateBounds(terrain, gate) { isGateClosed }
+        sealedTerrain = UnionBounds(listOf(arena, house, pathLeft, room))
+        ground = SwitchBounds(GateBounds(terrain, gate) { isGateClosed }, sealedTerrain) { isStageSealed }
     }
 
     /** Whether something [height] tall that stands on [x], [baseY] reaches into the floor of the house, or comes within [margin] of it. */

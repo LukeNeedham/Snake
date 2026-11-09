@@ -90,6 +90,9 @@ class CritterSpawner(private val arena: Arena, private val random: Random) {
 
     private fun between(least: Float, most: Float): Float = least + random.nextFloat() * (most - least)
 
+    /** Whether the critters stay away from the way in at the bottom of the oval, while it is open: once it is sealed the oval is a perfect oval. */
+    var avoidsPath = true
+
     /** A spot in the grass around the oval, but never on the path that is cut through the grass at the bottom. */
     private fun spotInTheGrass(): Vec2 {
         val reach = WorldTuning.grassDepth * 0.75f
@@ -100,7 +103,7 @@ class CritterSpawner(private val arena: Arena, private val random: Random) {
                 arena.centerX + (arena.radiusX + reach) * cos(angle),
                 arena.centerY + (arena.radiusY + reach) * sin(angle),
             )
-        } while (spot.y > arena.centerY && abs(spot.x - arena.centerX) < DenTuning.pathHalfWidth + pathMargin)
+        } while (avoidsPath && spot.y > arena.centerY && abs(spot.x - arena.centerX) < DenTuning.pathHalfWidth + pathMargin)
         return spot
     }
 

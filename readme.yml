@@ -35,7 +35,8 @@ description: |
   corner (to zoom) and sees that zooming makes the snake hungry, and a mouse that runs in from the grass is eaten so as not to starve. A toad
   that hops in can be eaten too, but it poisons (the dizzy one), and a bird that flies in is caught for the power it gives. Each is learned by doing it, and then an arrow shows the way back to the house, where
   the stones are gone and an arrow shows the way up the path to the oval, which is one screen long: the house and the oval cannot be seen
-  from each other. Later games start with the snake waking in its house and the path up open. The snake can go home any time, and going
-  into the room of the tutorial again teaches the lessons again. A restart goes straight to the oval.
+  from each other. Later games start with the snake waking in its house and the path up open. Once the whole snake is in the oval, the way it came in by grows shut with grass behind it, so the oval is a perfect oval and nothing
+  leaves it; the way opens again when the stage is won (there are no win conditions yet, so the snake stays). Going into the room of the tutorial again, whenever the snake can get home, teaches the
+  lessons again. A restart goes straight to the oval.
 
   The mice run from a snake they see coming, but they cannot see what is behind them.

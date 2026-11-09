@@ -352,7 +352,12 @@ class GameWorldIntroTest {
         world.play(IntroTuning.wakeSeconds + 0.2f)
         world.playUntil(90f) { world.phase == GamePhase.Playing }
         assertEquals(GamePhase.Playing, world.phase)
-        // It goes back down the path, to the house, and out to the left, into the room
+        // The way in is sealed behind it until the stage is won: once it is, the way is open, and the snake goes back down the path, to the house,
+        // and out to the left, into the room
+        world.play(5f)
+        assertTrue(world.layout.isStageSealed)
+        world.completeStage()
+        assertFalse(world.layout.isStageSealed)
         var seconds = 0f
         while (world.phase == GamePhase.Playing && seconds < 90f) {
             val goal = if (world.snake.x > 20f) world.layout.houseX to world.layout.houseY else world.layout.room.centerX to world.layout.room.centerY
@@ -373,11 +378,45 @@ class GameWorldIntroTest {
     }
 
     @Test
-    fun theSnakeCanGoDownThePathToTheHouseAfterTheStage() {
+    fun aGameThatStartsInTheStageStartsInAPerfectOvalWithTheWayInSealed() {
         val world = GameWorld(Arena(108f, 234f), seed = 5)
+        assertTrue(world.layout.isStageSealed)
+        assertEquals(1f, world.sealProgress)
         world.start()
+        // However it steers for the way out, it stays in the oval, and so do the mice
+        repeat(60 * 40) {
+            world.steerToward(world.layout.houseX, world.layout.houseY)
+            world.update(1f / 60f)
+            if (world.phase == GamePhase.Playing) {
+                assertTrue(world.arena.signedDistance(world.snake.x, world.snake.y) < 0f, "the snake left the oval at ${world.snake.y}")
+            }
+        }
+        assertEquals(0f, world.cameraY)
+    }
+
+    @Test
+    fun theWayInGrowsShutBehindTheSnakeOnceItIsAllInTheStageAndOpensWhenTheStageIsWon() {
+        val world = returningWorld()
+        world.start()
+        world.play(IntroTuning.wakeSeconds + 0.2f)
+        world.playUntil(90f) { world.phase == GamePhase.Playing }
+        assertEquals(GamePhase.Playing, world.phase)
+        // It is in, but its tail may still be on the path: the grass grows once the tail is in too
+        world.play(5f)
+        assertTrue(world.layout.isStageSealed)
+        assertEquals(1f, world.sealProgress)
+        // Now the stage is a perfect oval: it cannot leave
+        repeat(60 * 20) {
+            world.steerToward(world.layout.houseX, world.layout.houseY)
+            world.update(1f / 60f)
+            assertTrue(world.arena.signedDistance(world.snake.x, world.snake.y) < 0f)
+        }
+        // And when the stage is won the grass goes away, and the snake can leave
+        world.completeStage()
+        assertTrue(world.isStageComplete)
+        world.play(DenTuning.sealSeconds + 0.5f)
+        assertEquals(0f, world.sealProgress)
         var seconds = 0f
-        // It steers for the middle of the house, down the path under the stage
         while (world.snake.y < world.arena.height + 60f && seconds < 90f && world.phase == GamePhase.Playing) {
             world.steerToward(world.layout.houseX, world.layout.houseY)
             world.update(1f / 60f)

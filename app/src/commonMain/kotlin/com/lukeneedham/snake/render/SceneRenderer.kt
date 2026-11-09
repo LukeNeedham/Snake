@@ -16,11 +16,13 @@ internal fun DrawScope.drawScene(
     world: GameWorld,
     background: ImageBitmap,
     frontGrass: List<GrassBlade>,
+    seal: SealPatch,
     texts: SceneTexts,
     topInset: Int,
 ) {
     translate(left = -world.cameraX.roundToInt().toFloat(), top = -world.cameraY.roundToInt().toFloat()) {
         drawImage(background, dstOffset = IntOffset(world.layout.worldLeft.roundToInt(), 0), filterQuality = FilterQuality.None)
+        drawSealPatch(world, seal)
         drawGateStones(world)
         drawButterflies(world)
         drawCritterShadows(world)
@@ -28,6 +30,7 @@ internal fun DrawScope.drawScene(
         drawSnake(world)
         drawParticles(world)
         drawFrontGrass(frontGrass, world)
+        drawSealBlades(world, seal)
         drawFlyingBirds(world)
         drawIntroOverlay(world)
     }

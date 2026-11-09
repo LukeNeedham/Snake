@@ -313,6 +313,23 @@ private fun GamePageReturningScreenshot() {
     AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
 }
 
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageSealing.png. */
+@Preview(widthDp = 360, heightDp = 800)
+@Composable
+private fun GamePageSealingScreenshot() {
+    // The way in to the stage is sealed with grass, and has just been opened again: the grass is half way out of the path
+    val world = remember {
+        GameWorld(Arena(108f, 240f), seed = 7).also {
+            it.start()
+            repeat(120) { _ -> it.update(1f / 60f) }
+            it.completeStage()
+            repeat(50) { _ -> it.update(1f / 60f) }
+        }
+    }
+    val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
+    AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
+}
+
 /** Rendered by CI to docs/screenshots/<position in order.txt>-GamePage.png. */
 @Preview(widthDp = 360, heightDp = 800)
 @Composable

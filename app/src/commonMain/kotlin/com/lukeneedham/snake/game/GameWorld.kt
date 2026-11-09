@@ -73,7 +73,11 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     val menuItems: List<MenuItem>
         get() = if (phase == GamePhase.Paused) listOf(MenuItem.Resume, MenuItem.Restart, MenuItem.Settings) else listOf(MenuItem.Resume, MenuItem.Settings)
 
-    val layout = WorldLayout(arena).also { it.isGateClosed = opening == Opening.Tutorial }
+    val layout = WorldLayout(arena).also {
+        it.isGateClosed = opening == Opening.Tutorial
+        // A game that starts in the stage starts in a perfect oval
+        it.isStageSealed = opening == Opening.Oval && DenTuning.sealsStage
+    }
 
     /** The story and the lessons at the start, or null in a world that has none. They come again when the snake goes into the room of the tutorial. */
     var intro: IntroDirector? = if (hasIntro) IntroDirector(isTutorial = opening == Opening.Tutorial) else null
@@ -90,6 +94,17 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     var cameraX = 0f
         private set
     var cameraY = if (hasIntro) layout.maxCameraY else 0f
+        private set
+
+    /**
+     * Set once the stage has been won: the way in, which grows shut behind the snake, is open again. There is no way to win a stage yet; each
+     * stage will have win conditions of its own, and call [completeStage] when they are met.
+     */
+    var isStageComplete = false
+        private set
+
+    /** How far the grass has grown across the way in to the stage, from 0 (open) to 1 (shut). */
+    var sealProgress = if (opening == Opening.Oval && DenTuning.sealsStage) 1f else 0f
         private set
 
     /** Whether the camera shows the room of the tutorial, to the left of the house, and not the house. */
@@ -113,7 +128,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
 
     private val random = Random(seed)
     val particleSystem = ParticleSystem(random)
-    private val spawner = CritterSpawner(arena, random)
+    private val spawner = CritterSpawner(arena, random).also { it.avoidsPath = !layout.isStageSealed }
     private val feeding = Feeding(layout.ground)
     private val toadBlast = ToadBlast(particleSystem)
     private val effectParticles = EffectParticleEmitter(particleSystem, random)
@@ -264,6 +279,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
         }
         particleSystem.update(dt)
         rejectedTapTime = max(0f, rejectedTapTime - dt)
+        growSeal(dt)
         tick++
     }
 
@@ -423,6 +439,31 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     }
 
     /**
+     * Once the whole snake, tail and all, is in the stage, the way it came in by grows shut with grass, so that the stage is a perfect oval
+     * and nothing gets in or out: the snake, the mice, the toads and the birds all stay. It stays shut until the stage is won.
+     */
+    private fun sealWhenInside() {
+        if (!DenTuning.sealsStage || layout.isStageSealed || isStageComplete) return
+        val tail = snake.body.points.lastOrNull() ?: return
+        if (arena.signedDistance(snake.x, snake.y) > -DenTuning.exitDepth || arena.signedDistance(tail.x, tail.y) > -sealTailDepth) return
+        layout.isStageSealed = true
+        spawner.avoidsPath = false
+    }
+
+    /** The stage has been won: the way in opens again. */
+    fun completeStage() {
+        isStageComplete = true
+        layout.isStageSealed = false
+        spawner.avoidsPath = true
+    }
+
+    /** The grass grows across the way in, or goes away from it, in [DenTuning.sealSeconds]. */
+    private fun growSeal(dt: Float) {
+        val step = dt / DenTuning.sealSeconds
+        sealProgress = if (layout.isStageSealed) min(1f, sealProgress + step) else max(0f, sealProgress - step)
+    }
+
+    /**
      * The camera shows the stage, unless the snake leaves it down the path: then it follows the snake, to the house. In the house, and in the
      * room of the tutorial to the left of it, the camera is still, and goes from one to the other when the snake passes between them.
      */
@@ -444,6 +485,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
 
     private fun updatePlaying(dt: Float) {
         followSnake(dt)
+        sealWhenInside()
         if (entersRoom()) {
             startReplay()
             return
@@ -552,6 +594,9 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
         const val startingShake = 3f
         const val shakeDecay = 5f
         const val rejectedTapSeconds = 0.4f
+
+        /** The tail of the snake has to be this far inside the oval for the way in to be sealed. */
+        const val sealTailDepth = 3f
 
         /** The animals of the lessons: their id, how long they stay, and how they come in: not from the side of the path to the house, and the bird from above and to the side of the middle. */
         const val lessonAnimalId = 900

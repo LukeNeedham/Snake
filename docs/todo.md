@@ -99,6 +99,9 @@ into its own doc when work on it starts.
   it cannot eat anything, but it can cut the grass around the oval.
 - [ ] **Levels and the map.** Cutting the grass lets the snake reach the edge of the screen; it then moves on to a different
   level. A map shows how the levels fit together, side by side.
+  - Done so far: once the whole snake is in the oval, the way it came in by grows shut with grass (`WorldLayout.isStageSealed`, `SwitchBounds`, `SealPatch`), so
+    the stage is a perfect oval and nothing gets in or out. It opens again when the stage is won: each stage will have win conditions of its own, and call
+    `GameWorld.completeStage()` when they are met. Nothing calls it yet, so for now the snake cannot leave the oval (`DenTuning.sealsStage` turns it off).
 
 ## Later: a roguelike
 

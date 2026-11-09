@@ -33,6 +33,12 @@ object DenTuning {
     const val gateOutside = 4f
     const val gateHalfThickness = 6f
 
+    /** Whether the way in to the stage grows shut behind the snake, and stays shut until the stage is won: for now no stage can be won, so the snake stays. */
+    const val sealsStage = true
+
+    /** How long the grass takes to grow across the way in, and to go away again. */
+    const val sealSeconds = 1.6f
+
     /** How deep in the room of the tutorial, and in the house, the snake has to be to be there. */
     const val roomDepth = 10f
     const val homeDepth = 12f
