@@ -7,7 +7,7 @@ import com.lukeneedham.snake.game.SprintZone
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
-/** The round button in a bottom corner that shows where to hold to sprint: it lights up while the snake sprints. */
+/** The small round sign in a bottom corner that shows where to hold to sprint (anywhere in that corner sprints): it lights up while the snake sprints. */
 internal fun DrawScope.drawSprintButton(world: GameWorld) {
     val centerX = SprintZone.buttonX(world.arena, world.sprintSide)
     val centerY = SprintZone.buttonY(world.arena)
@@ -18,7 +18,7 @@ internal fun DrawScope.drawSprintButton(world: GameWorld) {
     val x = centerX.roundToInt()
     val y = centerY.roundToInt()
     // Two chevrons that point up
-    for (base in intArrayOf(y - 5, y + 1)) {
-        for (dx in -4..4) pixel(x + dx, base + abs(dx), color)
+    for (base in intArrayOf(y - 4, y)) {
+        for (dx in -3..3) pixel(x + dx, base + abs(dx), color)
     }
 }

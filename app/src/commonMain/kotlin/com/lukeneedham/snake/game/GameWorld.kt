@@ -206,30 +206,31 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     private fun eat(critter: Critter) {
         when (critter) {
             is Critter.Mouse -> {
-                score++
+                score += ScoreTuning.mouse
                 hunger.feed(HungerTuning.mouseFills)
                 snake.grow(1)
                 snake.addBulge()
-                particleSystem.floatText("+1", snake.x, snake.y - 6f, Color(0xFFFFF3B0))
+                particleSystem.floatText("+${ScoreTuning.mouse}", snake.x, snake.y - 6f, Color(0xFFFFF3B0))
                 particleSystem.sparkles(
                     critter.x, critter.y - 3f, 9,
                     listOf(Color(0xFFFFFFFF), Color(0xFFF28FA9), Color(0xFFFFF3B0)),
                 )
             }
             is Critter.Bird -> {
-                score += BirdTuning.score
+                score += ScoreTuning.bird
                 hunger.feed(HungerTuning.birdFills)
                 powerUps.apply(critter.kind)
                 if (critter.kind.powerUp == PowerUp.ToadFree) toadBlast.blowUp(mutableCritters)
                 snake.grow(1)
                 snake.addBulge()
-                particleSystem.floatText("+${BirdTuning.score}", snake.x, snake.y - 6f, Color(0xFFFFF3B0))
+                particleSystem.floatText("+${ScoreTuning.bird}", snake.x, snake.y - 6f, Color(0xFFFFF3B0))
                 particleSystem.sparkles(
                     critter.x, critter.y - 3f, 14,
                     listOf(Color(0xFFFFFFFF), Color(0xFFF4D35E), Color(0xFFA6EDE2)),
                 )
             }
             is Critter.Toad -> {
+                score += ScoreTuning.toad
                 effects.apply(critter.kind)
                 hunger.feed(HungerTuning.toadFills)
                 particleSystem.sparkles(

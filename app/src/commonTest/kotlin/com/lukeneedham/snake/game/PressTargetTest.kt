@@ -29,9 +29,15 @@ class PressTargetTest {
     }
 
     @Test
-    fun theCornerAtTheTopLeftIsTheMenuButton() {
-        val button = MenuLayout.menuButton(topInset)
-        assertEquals(PressTarget.MenuButton, target(button.center.x, button.center.y))
+    fun anywhereInTheTopLeftAreaIsTheMenuButton() {
+        val area = MenuLayout.menuArea(topInset)
+        assertEquals(PressTarget.MenuButton, target(area.center.x, area.center.y))
+        assertEquals(PressTarget.MenuButton, target(1f, 1f))
+        assertEquals(PressTarget.MenuButton, target(area.right - 1f, area.bottom - 1f))
+        val indicator = MenuLayout.menuIndicator(topInset)
+        assertEquals(PressTarget.MenuButton, target(indicator.center.x, indicator.center.y))
+        assertEquals(PressTarget.Turn, target(area.right + 5f, 1f))
+        assertEquals(PressTarget.Turn, target(1f, area.bottom + 5f))
     }
 
     @Test
@@ -44,8 +50,8 @@ class PressTargetTest {
             assertEquals(PressTarget.Item(item), target(rect.center.x, rect.center.y))
         }
         assertEquals(PressTarget.Backdrop, target(10f, 220f))
-        val button = MenuLayout.menuButton(topInset)
-        assertEquals(PressTarget.Backdrop, target(button.center.x, button.center.y))
+        val area = MenuLayout.menuArea(topInset)
+        assertEquals(PressTarget.Backdrop, target(area.center.x, area.center.y))
     }
 
     @Test

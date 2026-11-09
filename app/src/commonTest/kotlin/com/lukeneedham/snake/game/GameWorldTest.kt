@@ -56,7 +56,7 @@ class GameWorldTest {
         val lengthBefore = world.snake.body.length
         world.placeMouseInFrontOfTheMouth()
         repeat(30) { world.update(1f / 60f) }
-        assertEquals(1, world.score)
+        assertEquals(ScoreTuning.mouse, world.score)
         assertFalse(world.critters.any { it.id == 99 })
         assertTrue(world.snake.body.length > lengthBefore)
     }
@@ -161,7 +161,7 @@ class GameWorldTest {
         assertTrue(world.powerUps.isOn(PowerUp.ToadFree))
         assertFalse(world.critters.any { it is Critter.Toad })
         assertTrue(world.critters.any { it.id == 72 })
-        assertTrue(world.score >= scoreBefore + BirdTuning.score)
+        assertTrue(world.score >= scoreBefore + ScoreTuning.bird)
         assertTrue(world.particleSystem.particles.size >= 40)
     }
 
@@ -370,7 +370,7 @@ class GameWorldTest {
         world.placeBirdInFrontOfTheMouth(BirdKind.Crow)
         repeat(30) { world.update(1f / 60f) }
         assertFalse(world.critters.any { it.id == 99 })
-        assertTrue(world.score >= scoreBefore + BirdTuning.score)
+        assertTrue(world.score >= scoreBefore + ScoreTuning.bird)
         assertTrue(world.snake.body.length > lengthBefore)
         assertTrue(world.powerUps.isOn(PowerUp.ToadFree))
         assertTrue(world.powerUps.remaining(PowerUp.ToadFree) > PowerUp.ToadFree.durationSeconds - 1f)

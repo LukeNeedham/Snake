@@ -6,18 +6,21 @@ import com.lukeneedham.snake.game.GameWorld
 import com.lukeneedham.snake.game.MenuLayout
 import kotlin.math.roundToInt
 
-/** The button in the top left corner that opens the menu: two bars (pause) while playing, three lines (menu) on the other screens. */
+/**
+ * The tiny indicator in the top left corner, under the score: two bars (pause) while playing, three lines (menu) on the other
+ * screens. It is not the button: a press anywhere in the top left area opens the menu.
+ */
 internal fun DrawScope.drawMenuButton(world: GameWorld, topInset: Int) {
-    val rect = MenuLayout.menuButton(topInset)
-    drawPixelButton(rect)
+    val rect = MenuLayout.menuIndicator(topInset)
     val left = rect.left.roundToInt()
     val top = rect.top.roundToInt()
-    val centerX = left + rect.width.roundToInt() / 2
-    val centerY = top + rect.height.roundToInt() / 2
     if (world.phase == GamePhase.Playing) {
-        pixelRect(centerX - 3, centerY - 3, 2, 7, HudPalette.white)
-        pixelRect(centerX + 1, centerY - 3, 2, 7, HudPalette.white)
+        for (x in intArrayOf(left, left + 3)) {
+            pixelRect(x - 1, top - 1, 3, 7, PixelFont.outline)
+        }
+        for (x in intArrayOf(left, left + 3)) pixelRect(x, top, 1, 5, HudPalette.white)
     } else {
-        for (row in -3..3 step 3) pixelRect(centerX - 3, centerY + row - 1, 7, 2, HudPalette.white)
+        for (row in 0..2) pixelRect(left - 1, top + row * 2 - 1, 7, 3, PixelFont.outline)
+        for (row in 0..2) pixelRect(left, top + row * 2, 5, 1, HudPalette.white)
     }
 }

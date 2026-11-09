@@ -6,6 +6,9 @@ object SpawnTuning {
     const val firstToadDelay = 7f
     const val firstBirdDelay = 30f
 
+    /** No bird comes before the score is this high. */
+    const val firstBirdScore = 200
+
     /** Seconds before the next mouse can come: a random time between the two. */
     const val mouseDelayMin = 3f
     const val mouseDelayMax = 5.5f
@@ -18,9 +21,9 @@ object SpawnTuning {
     const val birdDelayMax = 70f
 
     /** There is one mouse at the start, and one more for every this many points. */
-    const val pointsPerExtraMouse = 8
+    const val pointsPerExtraMouse = 800
     const val mostMice = 3
 
-    const val pointsPerExtraToad = 6
+    const val pointsPerExtraToad = 600
     const val mostToads = 3
 }
