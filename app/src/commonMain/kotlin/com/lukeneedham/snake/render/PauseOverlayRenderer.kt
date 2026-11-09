@@ -2,7 +2,9 @@ package com.lukeneedham.snake.render
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.drawscope.translate
+import com.lukeneedham.snake.game.GamePhase
 import com.lukeneedham.snake.game.GameWorld
 import com.lukeneedham.snake.game.MenuLayout
 import com.lukeneedham.snake.game.PausePage
@@ -11,7 +13,7 @@ import kotlin.math.roundToInt
 
 /**
  * The pause overlay over the scene: it is dimmed, and its pages sit side by side in a horizontal pager, sliding as a finger drags them.
- * The close button in the top left corner and the page indicator at the bottom stay where they are.
+ * The pager wraps around. The close button in the top left corner and the page indicator at the bottom stay where they are.
  */
 internal fun DrawScope.drawPauseOverlay(world: GameWorld, texts: SceneTexts, topInset: Int) {
     val width = world.arena.width.toInt()
@@ -19,7 +21,7 @@ internal fun DrawScope.drawPauseOverlay(world: GameWorld, texts: SceneTexts, top
     pixelRect(0, 0, width, height, Color(0xCC000000))
     val overlay = world.overlay
     for (page in PausePage.entries) {
-        val pagesAway = page.ordinal - overlay.offset
+        val pagesAway = overlay.pagesAway(page)
         if (abs(pagesAway) >= 1f) continue
         translate(left = (pagesAway * width).roundToInt().toFloat()) {
             when (page) {
@@ -29,8 +31,31 @@ internal fun DrawScope.drawPauseOverlay(world: GameWorld, texts: SceneTexts, top
             }
         }
     }
+    drawPageTitles(world, texts, topInset)
     drawCloseButton(topInset)
     drawPageIndicator(world)
+}
+
+/**
+ * The titles slide with their pages, but not past the left edge of the close button: they go in behind it, which is drawn over
+ * them, and stay hidden there. They come out from behind it on the other side when a page slides back in.
+ */
+private fun DrawScope.drawPageTitles(world: GameWorld, texts: SceneTexts, topInset: Int) {
+    val width = world.arena.width.toInt()
+    clipRect(left = MenuLayout.closeButton(topInset).left) {
+        for (page in PausePage.entries) {
+            val pagesAway = world.overlay.pagesAway(page)
+            if (abs(pagesAway) >= 1f) continue
+            val title = when (page) {
+                PausePage.Pause -> if (world.phase == GamePhase.Paused) texts.paused else texts.menuTitle
+                PausePage.Hunger -> texts.hungerTitle
+                PausePage.Status -> texts.statusTitle
+            }
+            translate(left = (pagesAway * width).roundToInt().toFloat()) {
+                drawCenteredPixelText(title, width / 2, topInset + PageTitle.top, HudPalette.gold, scale = 2)
+            }
+        }
+    }
 }
 
 /** The button in the top left corner that closes the overlay and resumes the game: a cross. */

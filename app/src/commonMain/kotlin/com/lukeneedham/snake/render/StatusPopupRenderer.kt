@@ -18,13 +18,12 @@ private const val lineChars = 21
  */
 internal fun DrawScope.drawStatusPage(world: GameWorld, texts: SceneTexts, topInset: Int) {
     val width = world.arena.width.toInt()
-    drawCenteredPixelText(texts.statusTitle, width / 2, topInset + PageTitle.top, HudPalette.gold, scale = 2)
     val statuses = world.statuses
     if (statuses.isEmpty()) {
         drawCenteredPixelText(texts.statusEmpty, width / 2, world.arena.height.toInt() / 2 - 3, HudPalette.white.copy(alpha = 0.7f))
         return
     }
-    var y = topInset + 28
+    var y = topInset + PageTitle.bottom + 10
     for (entry in statuses) {
         y += drawEntry(entry, texts, width, y) + entryGap
     }

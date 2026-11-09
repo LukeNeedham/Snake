@@ -20,7 +20,7 @@ object MenuLayout {
     private const val closeSize = 12f
 
     /** The title of a page of the overlay is this far under the status bar, and is this tall (the pixel font at the scale of 2). */
-    const val pageTitleTop = 8f
+    const val pageTitleTop = 4f
     const val pageTitleHeight = 10f
 
     /** The dots of the page indicator at the bottom of the overlay. */
