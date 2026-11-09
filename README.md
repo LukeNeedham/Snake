@@ -23,7 +23,8 @@ Birds fly in from off the screen and land in the oval: blue tits, robins and spa
 worth a little more than a mouse and gives the snake a different power up for a few seconds: it goes faster, sprints for less, is
 sneakier, eats from further away, blows up every toad and keeps new ones away, or carries a piece of cheese that brings mice
 running from all over (but with its mouth full, the snake cannot eat until the cheese is gone). Power ups stack with each other
-and with the toads' poison. Birds are rare, only one at a time, and extremely skittish: they fly off the moment the snake gets
+and with the toads' poison. What is on shows as arrows in the bottom right corner, which empty as the time runs out; tap them to pause and see
+each one's name, what it does and the seconds left. Birds are rare, only one at a time, and extremely skittish: they fly off the moment the snake gets
 close, so catching one takes a sprint.
 
 The snake is always hungry: a bar at the top of the screen runs down, a mouse fills it, a toad hardly does, and the
