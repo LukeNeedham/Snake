@@ -14,6 +14,6 @@ enum class Effect(val durationSeconds: Float) {
     /** Hay fever: the snake dies the moment it touches the grass. Without it, it just bounces off the edge of the oval. */
     HayFever(12f),
 
-    /** The snake dies if it touches itself. Without it, the snake can cross its own body safely. No toad gives it for now. */
-    Lupus(12f),
+    /** Cannibal: the snake dies if it touches itself. Without it, the snake can cross its own body safely. The brown toad gives it. */
+    Cannibal(12f),
 }

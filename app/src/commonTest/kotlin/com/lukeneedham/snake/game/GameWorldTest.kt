@@ -91,15 +91,15 @@ class GameWorldTest {
         assertTrue(world.effects.remaining(Effect.Hallucinating) < Effect.Hallucinating.durationSeconds - 0.9f)
     }
 
-    /** Runs a long snake round its circle for [seconds], keeping it fed so that only the curse can kill it; true if it hit itself. */
-    private fun GameWorld.runLongSnakeFed(seconds: Int, isCursed: Boolean): Boolean {
+    /** Runs a long snake round its circle for [seconds], keeping it fed so that only cannibal can kill it; true if it hit itself. */
+    private fun GameWorld.runLongSnakeFed(seconds: Int, isCannibal: Boolean): Boolean {
         snake.grow(20)
         var touched = false
         repeat(60 * seconds) {
             if (phase == GamePhase.Playing) {
                 hunger.feed(1f)
-                // Toad-free keeps the toads away, so that no other curse changes the outcome
-                if (isCursed) effects.turnOn(Effect.Lupus) else powerUps.apply(BirdKind.Crow)
+                // Toad-free keeps the toads away, so that no other effect changes the outcome
+                if (isCannibal) applyEffect(ToadKind.Brown) else powerUps.apply(BirdKind.Crow)
                 update(1f / 60f)
                 if (snake.hitsItself()) touched = true
             }
@@ -108,18 +108,18 @@ class GameWorldTest {
     }
 
     @Test
-    fun theSnakeSurvivesTouchingItselfWithoutTheCurse() {
+    fun theSnakeSurvivesTouchingItselfWithoutCannibal() {
         val world = newWorld()
         world.start()
-        assertTrue(world.runLongSnakeFed(seconds = 30, isCursed = false))
+        assertTrue(world.runLongSnakeFed(seconds = 30, isCannibal = false))
         assertEquals(GamePhase.Playing, world.phase)
     }
 
     @Test
-    fun theGameEndsWhenACursedSnakeTouchesItself() {
+    fun theGameEndsWhenACannibalSnakeTouchesItself() {
         val world = newWorld()
         world.start()
-        world.runLongSnakeFed(seconds = 30, isCursed = true)
+        world.runLongSnakeFed(seconds = 30, isCannibal = true)
         assertEquals(GamePhase.GameOver, world.phase)
         repeat(60) { world.update(1f / 60f) }
         assertTrue(world.canRestart)

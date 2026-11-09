@@ -179,7 +179,7 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
         updateCritters(dt)
         feeding.update(dt, snake, mutableCritters, boosts.mouthFactor, boosts.mouthIsFull).forEach { eat(it) }
         effectParticles.emit(effects, sprint.level, snake, critters)
-        if (hunger.isStarving || (effects.isOn(Effect.HayFever) && touchedGrass) || (effects.isOn(Effect.Lupus) && snake.hitsItself())) endGame()
+        if (hunger.isStarving || (effects.isOn(Effect.HayFever) && touchedGrass) || (effects.isOn(Effect.Cannibal) && snake.hitsItself())) endGame()
     }
 
     private fun dustAtNewBounces() {
