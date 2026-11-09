@@ -8,9 +8,12 @@ object SprintZone {
     /** The zone is the square of this size in the bottom corner of the chosen [SprintSide]. */
     const val size = 34f
 
-    /** How far the middle of the drawn button is from the bottom and the side edge. */
-    const val buttonInset = 17f
-    const val buttonRadius = 11f
+    /**
+     * How far the middle of the drawn button is from the bottom and the side edge. The button is only a small sign of the zone: a
+     * finger anywhere in the whole corner square sprints, not just on the button.
+     */
+    const val buttonInset = 13f
+    const val buttonRadius = 8f
 
     fun contains(arena: Arena, side: SprintSide, x: Float, y: Float): Boolean {
         if (y < arena.height - size) return false
