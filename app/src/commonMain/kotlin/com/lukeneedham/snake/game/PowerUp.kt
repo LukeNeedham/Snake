@@ -14,9 +14,12 @@ enum class PowerUp(val durationSeconds: Float) {
     /** The snake eats from further away. */
     BiggerMouth(10f),
 
-    /** Toads hop away from the snake. */
-    ToadRepellent(12f),
+    /** Every toad on the screen explodes when it is eaten, and no new toad comes out of the grass while it lasts. */
+    ToadFree(12f),
 
-    /** More mice come out of the grass. */
-    Pheromones(10f),
+    /**
+     * The snake carries a piece of cheese in its mouth. Its mouth is full, so it cannot eat anything until the cheese is gone, but
+     * more mice come, and they gather around it instead of running away.
+     */
+    Cheese(10f),
 }

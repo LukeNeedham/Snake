@@ -23,8 +23,6 @@ internal class ToadBody(x: Float, y: Float, lifetime: Float) : CritterBody {
     override val isGone: Boolean get() = visit.isGone
 
     override fun update(dt: Float, arena: Arena, random: Random, snakeHead: Vec2?, aura: SnakeAura) {
-        if (visit.update(dt, arena.signedDistance(course.x, course.y))) {
-            gait.update(dt, arena, random, repeller = if (aura.repelsToads) snakeHead else null)
-        }
+        if (visit.update(dt, arena.signedDistance(course.x, course.y))) gait.update(dt, arena, random)
     }
 }

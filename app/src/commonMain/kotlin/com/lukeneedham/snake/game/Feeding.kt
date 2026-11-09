@@ -9,9 +9,14 @@ class Feeding(private val arena: Arena) {
 
     /**
      * Removes the critters the mouth reaches from [critters] and returns them. Critters hiding in the grass are safe, and so are
-     * birds in the air. [reachFactor] is how many times as far the mouth reaches, with the bigger mouth power up.
+     * birds in the air. [reachFactor] is how many times as far the mouth reaches, with the bigger mouth power up. A snake with
+     * [isMouthFull] (it carries cheese) keeps its mouth shut and eats nothing.
      */
-    fun update(dt: Float, snake: Snake, critters: MutableList<Critter>, reachFactor: Float = 1f): List<Critter> {
+    fun update(dt: Float, snake: Snake, critters: MutableList<Critter>, reachFactor: Float = 1f, isMouthFull: Boolean = false): List<Critter> {
+        if (isMouthFull) {
+            snake.mouthOpen += (0f - snake.mouthOpen) * min(1f, dt * openSpeed)
+            return emptyList()
+        }
         val mouthX = snake.x + cos(snake.heading) * SnakeTuning.mouthReach
         val mouthY = snake.y + sin(snake.heading) * SnakeTuning.mouthReach
         val eatRadius = SnakeTuning.eatRadius * reachFactor

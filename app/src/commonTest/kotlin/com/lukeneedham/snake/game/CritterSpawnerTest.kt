@@ -38,18 +38,30 @@ class CritterSpawnerTest {
     }
 
     @Test
-    fun thereIsOnlyOneBirdAtTheStartAndTwoWhenTheScoreIsHigh() {
+    fun birdsAreRareAndTheFirstOneComesLate() {
         spawner.reset()
-        repeat(400) { spawner.update(0.1f, critters, score = 0, snakeHead = Vec2(arena.centerX, arena.centerY)) }
+        repeat(((SpawnTuning.firstBirdDelay - 1f) * 10).toInt()) { spawner.update(0.1f, critters, score = 0, snakeHead = Vec2(arena.centerX, arena.centerY)) }
+        assertEquals(0, critters.count { it is Critter.Bird })
+        repeat(30) { spawner.update(0.1f, critters, score = 0, snakeHead = Vec2(arena.centerX, arena.centerY)) }
         assertEquals(1, critters.count { it is Critter.Bird })
-        repeat(400) { spawner.update(0.1f, critters, score = 40, snakeHead = Vec2(arena.centerX, arena.centerY)) }
-        assertEquals(2, critters.count { it is Critter.Bird })
+    }
+
+    @Test
+    fun thereIsNeverMoreThanOneBirdEvenWithAHighScore() {
+        spawner.reset()
+        val head = Vec2(arena.centerX, arena.centerY)
+        repeat(6000) {
+            // Nothing in this test moves the birds, so the first one stays for the whole ten minutes
+            spawner.update(0.1f, critters, score = 100, snakeHead = head)
+            assertTrue(critters.count { it is Critter.Bird } <= 1)
+        }
+        assertEquals(1, critters.count { it is Critter.Bird })
     }
 
     @Test
     fun birdsStartOffTheScreen() {
         spawner.reset()
-        repeat(400) { spawner.update(0.1f, critters, score = 40) }
+        repeat(((SpawnTuning.firstBirdDelay + 1f) * 10).toInt()) { spawner.update(0.1f, critters, score = 40) }
         val birds = critters.filterIsInstance<Critter.Bird>()
         assertTrue(birds.isNotEmpty())
         assertTrue(birds.all { it.x < 0f || it.x > arena.width || it.y < 0f || it.y > arena.height })
@@ -57,10 +69,22 @@ class CritterSpawnerTest {
     }
 
     @Test
-    fun pheromonesBringMoreMice() {
+    fun noToadComesWhileToadsAreNotAllowedAndTheirTimerWaits() {
+        spawner.reset()
+        repeat(300) { spawner.update(0.1f, critters, score = 0, allowsToads = false) }
+        assertEquals(0, critters.count { it is Critter.Toad })
+        // The toad timer did not run while it was off, so the first toad still needs its whole delay
+        spawner.update(SpawnTuning.firstToadDelay - 1f, critters, score = 0)
+        assertEquals(0, critters.count { it is Critter.Toad })
+        spawner.update(1.5f, critters, score = 0)
+        assertEquals(1, critters.count { it is Critter.Toad })
+    }
+
+    @Test
+    fun cheeseBringsMoreMice() {
         spawner.reset()
         repeat(300) { spawner.update(0.1f, critters, score = 0, attractsMice = true) }
-        assertEquals(1 + PowerUpTuning.pheromoneExtraMice, critters.count { it is Critter.Mouse })
+        assertEquals(1 + PowerUpTuning.cheeseExtraMice, critters.count { it is Critter.Mouse })
     }
 
     @Test

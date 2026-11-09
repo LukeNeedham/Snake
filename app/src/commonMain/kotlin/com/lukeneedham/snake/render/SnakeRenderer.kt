@@ -12,16 +12,26 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
-/** Draws the whole snake: the outline of the body, its skin from the tail to the head, then the head and what hovers over it. */
+/**
+ * Draws the whole snake from the tail to the head, then the head and what hovers over it. The body is drawn a stretch at a time, each
+ * with its outline first, so that where the snake crosses itself the stretch nearer the head lies over the other one with a dark
+ * edge between them. A few discs of the stretch before are drawn again over the new outline, so that no ring shows along the body.
+ */
 internal fun DrawScope.drawSnake(world: GameWorld) {
     val points = world.snake.body.points
     val deadAmount = if (world.phase == GamePhase.GameOver) (world.gameOverTime * 2f).coerceIn(0f, 1f) else 0f
 
-    for (i in points.indices step 2) {
-        val point = points[i]
-        pixelDisc(point.x, point.y, bodyRadius(point, world) + 1f, SnakePalette.outline)
+    val fromTail = points.asReversed()
+    var start = 0
+    while (start < fromTail.size) {
+        val end = minOf(start + stretchSize, fromTail.size)
+        for (i in start until end step 2) {
+            val point = fromTail[i]
+            pixelDisc(point.x, point.y, bodyRadius(point, world) + 1f, SnakePalette.outline)
+        }
+        for (i in maxOf(0, start - stretchOverlap) until end) drawSkinDisc(fromTail[i], world, deadAmount)
+        start = end
     }
-    for (i in points.indices.reversed()) drawSkinDisc(points[i], world, deadAmount)
 
     drawSnakeHead(world, deadAmount)
     if (world.effects.level(Effect.Confused) > 0.05f) drawConfusedSpiral(world)
@@ -54,3 +64,7 @@ private const val taperLength = 12f
 
 /** How far along the body a bulge reaches. */
 private const val bulgeReach = 5f
+
+/** How many discs are drawn at a time, and how many of the stretch before are drawn again over the outline of the next. */
+private const val stretchSize = 12
+private const val stretchOverlap = 3

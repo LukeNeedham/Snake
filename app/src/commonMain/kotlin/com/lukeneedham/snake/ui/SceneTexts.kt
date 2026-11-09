@@ -8,6 +8,7 @@ import com.lukeneedham.snake.generated.resources.best_value
 import com.lukeneedham.snake.generated.resources.effect_confused
 import com.lukeneedham.snake.generated.resources.effect_disguised
 import com.lukeneedham.snake.generated.resources.effect_hallucinating
+import com.lukeneedham.snake.generated.resources.effect_lupus
 import com.lukeneedham.snake.generated.resources.game_over
 import com.lukeneedham.snake.generated.resources.game_title
 import com.lukeneedham.snake.generated.resources.menu_back
@@ -17,10 +18,10 @@ import com.lukeneedham.snake.generated.resources.menu_settings
 import com.lukeneedham.snake.generated.resources.new_best
 import com.lukeneedham.snake.generated.resources.paused
 import com.lukeneedham.snake.generated.resources.power_up_bigger_mouth
+import com.lukeneedham.snake.generated.resources.power_up_cheese
 import com.lukeneedham.snake.generated.resources.power_up_fast_sprint
-import com.lukeneedham.snake.generated.resources.power_up_pheromones
 import com.lukeneedham.snake.generated.resources.power_up_sneaky
-import com.lukeneedham.snake.generated.resources.power_up_toad_repellent
+import com.lukeneedham.snake.generated.resources.power_up_toad_free
 import com.lukeneedham.snake.generated.resources.power_up_zoom
 import com.lukeneedham.snake.generated.resources.score_value
 import com.lukeneedham.snake.generated.resources.tap_to_retry
@@ -48,6 +49,7 @@ internal fun sceneTexts(score: Int, bestScore: Int, isNewBest: Boolean): SceneTe
             Effect.Hallucinating -> stringResource(Res.string.effect_hallucinating)
             Effect.Disguised -> stringResource(Res.string.effect_disguised)
             Effect.Confused -> stringResource(Res.string.effect_confused)
+            Effect.Lupus -> stringResource(Res.string.effect_lupus)
         }
     },
     powerUpNames = PowerUp.entries.map { powerUp ->
@@ -56,8 +58,8 @@ internal fun sceneTexts(score: Int, bestScore: Int, isNewBest: Boolean): SceneTe
             PowerUp.FastSprint -> stringResource(Res.string.power_up_fast_sprint)
             PowerUp.Sneaky -> stringResource(Res.string.power_up_sneaky)
             PowerUp.BiggerMouth -> stringResource(Res.string.power_up_bigger_mouth)
-            PowerUp.ToadRepellent -> stringResource(Res.string.power_up_toad_repellent)
-            PowerUp.Pheromones -> stringResource(Res.string.power_up_pheromones)
+            PowerUp.ToadFree -> stringResource(Res.string.power_up_toad_free)
+            PowerUp.Cheese -> stringResource(Res.string.power_up_cheese)
         }
     },
 )

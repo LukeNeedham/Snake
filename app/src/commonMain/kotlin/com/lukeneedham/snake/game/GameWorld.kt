@@ -9,7 +9,7 @@ import kotlin.random.Random
 
 /**
  * One game: the phase it is in, the snake and the animals. The parts with a job of their own are classes of their own
- * ([EffectTracker], [PowerUpTracker], [CritterSpawner], [Feeding], [ParticleSystem], [Hunger], [SprintControl]); this one only steps them in order. It is mutable and is
+ * ([EffectTracker], [PowerUpTracker], [CritterSpawner], [Feeding], [ToadBlast], [ParticleSystem], [Hunger], [SprintControl]); this one only steps them in order. It is mutable and is
  * stepped with [update] once per frame; [tick] changes with every step so that a drawing that reads it is drawn again.
  */
 class GameWorld(val arena: Arena, seed: Int = 1) {
@@ -65,6 +65,7 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     val particleSystem = ParticleSystem(random)
     private val spawner = CritterSpawner(arena, random)
     private val feeding = Feeding(arena)
+    private val toadBlast = ToadBlast(particleSystem)
     private val effectParticles = EffectParticleEmitter(particleSystem, random)
     private var seenBounces = 0
 
@@ -173,11 +174,11 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
         snake.step(dt, (1f + boosts.sprintBoost * sprint.level) * boosts.speedFactor)
         hunger.update(dt, sprint.level, boosts.sprintDrainFactor)
         dustAtNewBounces()
-        spawner.update(dt, mutableCritters, score, Vec2(snake.x, snake.y), boosts.attractsMice)
+        spawner.update(dt, mutableCritters, score, Vec2(snake.x, snake.y), boosts.attractsMice, allowsToads = !boosts.keepsToadsAway)
         updateCritters(dt)
-        feeding.update(dt, snake, mutableCritters, boosts.mouthFactor).forEach { eat(it) }
+        feeding.update(dt, snake, mutableCritters, boosts.mouthFactor, boosts.mouthIsFull).forEach { eat(it) }
         effectParticles.emit(effects, sprint.level, snake, critters)
-        if (hunger.isStarving || snake.hitsItself()) endGame()
+        if (hunger.isStarving || (effects.isOn(Effect.Lupus) && snake.hitsItself())) endGame()
     }
 
     private fun dustAtNewBounces() {
@@ -219,6 +220,7 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
                 score += BirdTuning.score
                 hunger.feed(HungerTuning.birdFills)
                 powerUps.apply(critter.kind)
+                if (critter.kind.powerUp == PowerUp.ToadFree) toadBlast.blowUp(mutableCritters)
                 snake.grow(1)
                 snake.addBulge()
                 particleSystem.floatText("+${BirdTuning.score}", snake.x, snake.y - 6f, Color(0xFFFFF3B0))
