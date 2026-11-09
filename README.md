@@ -13,7 +13,7 @@ Snake is a one-button arcade game in pixel art. The snake never goes straight: i
 thing you can do is tap to change the direction of the turn. Steer it by twisting out of its own spiral, bounce it off the
 edge of the oval, and eat the mice that run out of the tall grass. Each mouse makes the snake one section longer, with
 a skin pattern that repeats as it grows. The snake can cross its own body without harm: the only things that kill it are
-hunger, hayfever and cannibalism.
+hunger, hayfever and cannibalism, and the game over screen says in red which one it was: starvation, allergies or cannibalism.
 
 Beware the toads that hop out of the grass: each colour is poisonous in its own way. One makes the whole screen wavy,
 one turns every animal into a weird monster, one makes the snake so dizzy that it ignores your taps for a few seconds, and
