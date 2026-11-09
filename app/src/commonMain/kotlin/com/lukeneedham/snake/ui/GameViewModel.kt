@@ -26,7 +26,7 @@ class GameViewModel(bestScoreStore: BestScoreStore, private val settingsStore: S
 
     /** Whether the player has been through the whole tutorial: from then on the path is short. Until the settings are read it is not known. */
     private var isTutorialDone = false
-    private var world = GameWorld(Arena(WorldTuning.width.toFloat(), defaultHeight), Opening.Tutorial)
+    private var world = GameWorld(Arena(WorldTuning.width.toFloat(), defaultHeight), opening = Opening.Tutorial)
     private val bestScores = BestScoreTracker(bestScoreStore, viewModelScope) { publish() }
 
     private val _uiState = MutableStateFlow(buildState())
