@@ -14,16 +14,16 @@ private const val hiddenDepth = 4f
 private const val shuffleStep = 3f
 
 /** Where an animal is drawn: its feet at [x], [y], with [bounce] pixels of lift. */
-private class Spot(val x: Int, val y: Int, val bounce: Int)
+private class Spot(val x: Int, val y: Float, val bounce: Int)
 
 /**
  * The feet of an animal, and the bounce of its movement. While the snake is disguise-blind every animal shuffles in the same
  * creepy way instead: it snaps to a coarse grid so that it jerks along in steps, and all of them dip together on the beat.
  */
 private fun spotOf(critter: Critter, world: GameWorld): Spot {
-    if (!isDisguised(world)) return Spot(critter.x.roundToInt(), critter.y.roundToInt(), bounce(critter, world))
+    if (!isDisguised(world)) return Spot(critter.x.roundToInt(), critter.y, bounce(critter, world))
     val dip = if ((world.time * 5f).toInt() % 2 == 0) 0 else -1
-    return Spot(snapToStep(critter.x), snapToStep(critter.y), dip)
+    return Spot(snapToStep(critter.x), snapToStep(critter.y).toFloat(), dip)
 }
 
 private fun snapToStep(value: Float): Int = ((value / shuffleStep).roundToInt() * shuffleStep).roundToInt()
@@ -39,7 +39,7 @@ internal fun DrawScope.drawCritterShadows(world: GameWorld) {
         if (world.isHidden(critter)) continue
         val spot = spotOf(critter, world)
         val x = spot.x
-        val y = spot.y
+        val y = spot.y.roundToInt()
         val lift = (critter.height / 3f).roundToInt().coerceAtMost(2)
         pixelRect(x - 3 + lift, y, 7 - lift * 2, 1, shadowColor)
         pixelRect(x - 2 + lift, y + 1, 5 - lift * 2, 1, shadowColor)
@@ -59,7 +59,7 @@ internal fun DrawScope.drawCritters(world: GameWorld) {
         val art = look.art
         val spot = spotOf(critter, world)
         val left = spot.x - art.width / 2
-        val top = spot.y - critter.height.roundToInt() - art.height + 1 - spot.bounce
+        val top = (spot.y - critter.height).roundToInt() - art.height + 1 - spot.bounce
         if (art == SpriteArt.Mouse) drawMouseTail(critter, world, spot.x, top + art.height - 2)
         drawSprite(art, look.kind, left, top, flip = critter.facing < 0)
     }
