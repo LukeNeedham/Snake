@@ -13,8 +13,9 @@ import kotlin.random.Random
  * One game: the phase it is in, the snake and the animals. The parts with a job of their own are classes of their own
  * ([EffectTracker], [PowerUpTracker], [CritterSpawner], [Feeding], [ToadBlast], [ParticleSystem], [Hunger], [SprintControl]); this one only steps them in order. It is mutable and is
  * stepped with [update] once per frame; [tick] changes with every step so that a drawing that reads it is drawn again. A world with an
- * intro starts with the snake curled up in its den, under the oval: the first tap plays the story, which hands over to [GamePhase.Playing]
- * once the player has steered the snake out of the den and along the path into the oval.
+ * intro starts with the snake asleep in its den, under the oval: the first tap wakes it and plays the story, which hands over to
+ * [GamePhase.Playing] once the player has steered the snake out of the den and along the path into the oval. After that the snake can
+ * go anywhere on the oval, the path and the den.
  */
 class GameWorld(val arena: Arena, seed: Int = 1, hasIntro: Boolean = false) {
 
@@ -65,11 +66,11 @@ class GameWorld(val arena: Arena, seed: Int = 1, hasIntro: Boolean = false) {
     /** The story at the start, or null in a world that has none. */
     val intro: IntroDirector? = if (hasIntro) IntroDirector() else null
 
-    var snake: Snake = if (hasIntro) den.curledSnake() else Snake(arena)
+    var snake: Snake = if (hasIntro) den.curledSnake() else Snake(arena, den.ground)
         private set
 
-    /** The world y at the top of the screen: the screen shows the oval, unless the camera is following the snake up the path. */
-    var cameraY = if (hasIntro) den.introTop else 0f
+    /** The world y at the top of the screen: the screen shows the oval, unless the snake is on the path and the camera follows it. */
+    var cameraY = if (hasIntro) den.denCameraY else 0f
         private set
 
     private val mutableCritters = ArrayList<Critter>()
@@ -96,6 +97,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, hasIntro: Boolean = false) {
         if (phase != GamePhase.Ready) return
         if (intro != null) {
             phase = GamePhase.Intro
+            intro.wake()
         } else {
             phase = GamePhase.Playing
             spawner.reset()
@@ -157,15 +159,22 @@ class GameWorld(val arena: Arena, seed: Int = 1, hasIntro: Boolean = false) {
         snake.toggleTurn()
     }
 
-    /** During the story a tap skips ahead to the lesson; once the lesson is on it turns the snake, and that is what it was there to teach. */
+    /** During the story a tap does nothing; once the lesson is on it turns the snake, and that is what it was there to teach. */
     private fun tapInIntro() {
         val director = intro ?: return
-        if (director.stage.isStory) {
-            director.skip()
-        } else {
-            snake.toggleTurn()
-            director.turned()
-        }
+        if (director.stage.isStory) return
+        snake.toggleTurn()
+        director.turned()
+    }
+
+    /**
+     * A finger went down during the story. In the sprint zone it sprints, once the lesson of the sprint has begun, and a finger
+     * anywhere else (and in the zone before that) is a tap.
+     */
+    fun introPress(pointerId: Long, isInSprintZone: Boolean) {
+        if (phase != GamePhase.Intro) return
+        val director = intro ?: return
+        if (isInSprintZone && director.reachedHalfway) sprint.press(pointerId) else tap()
     }
 
     /** A finger went down in the [SprintZone]: the snake sprints for as long as it is held. It never turns the snake. */
@@ -194,11 +203,11 @@ class GameWorld(val arena: Arena, seed: Int = 1, hasIntro: Boolean = false) {
     fun update(dt: Float) {
         if (phase == GamePhase.Paused) return
         time += dt
-        sprint.update(dt, canSprint = phase == GamePhase.Playing)
+        sprint.update(dt, canSprint = phase == GamePhase.Playing || phase == GamePhase.Intro)
         effects.update(dt, isCountingDown = phase == GamePhase.Playing, isShowing = phase != GamePhase.GameOver)
         powerUps.update(dt, isCountingDown = phase == GamePhase.Playing)
         when (phase) {
-            GamePhase.Ready -> snake.step(dt, intro?.snakeSpeed ?: readySpeed)
+            GamePhase.Ready -> stepSnake(dt, intro?.snakeSpeed ?: readySpeed)
             GamePhase.Intro -> updateIntro(dt)
             GamePhase.Playing -> updatePlaying(dt)
             GamePhase.GameOver -> {
@@ -217,11 +226,21 @@ class GameWorld(val arena: Arena, seed: Int = 1, hasIntro: Boolean = false) {
         val stageBefore = director.stage
         director.update(dt)
         if (stageBefore != IntroStage.Popped && director.stage == IntroStage.Popped) popBubble()
-        shake = IntroTuning.rumbleShake * director.rumble
-        snake.step(dt, director.snakeSpeed)
-        val target = (snake.y - arena.height * DenTuning.followLine).coerceIn(0f, den.introTop)
-        moveCamera(dt, target)
+        stepSnake(dt, director.snakeSpeed * (1f + boosts.sprintBoost * sprint.level))
+        if (snake.y < den.halfwayY) director.halfway()
+        director.trackSprint(sprint.isHeld, dt)
+        // Until the player has learned to sprint the path goes on and on: the snake is put back a stretch, with the camera, and nobody can tell
+        if (!director.hasZoomed && snake.y < den.loopWrapY) {
+            snake.shift(den.loopPeriod)
+            cameraY += den.loopPeriod
+        }
+        followSnake(dt)
         if (arena.signedDistance(snake.x, snake.y) < -DenTuning.exitDepth) finishIntro()
+    }
+
+    /** Steps the snake, unless it lies still. */
+    private fun stepSnake(dt: Float, speed: Float) {
+        if (speed > 0f) snake.step(dt, speed)
     }
 
     private fun popBubble() {
@@ -229,22 +248,21 @@ class GameWorld(val arena: Arena, seed: Int = 1, hasIntro: Boolean = false) {
         particleSystem.sparkles(bubble.x, bubble.y, 18, listOf(Color(0xFFFFFFFF), Color(0xFFBFE3FF), Color(0xFFF28FA9)))
     }
 
-    /** The snake is in the oval: from here on it is the game, and the walls are the oval's. */
+    /** The snake is in the oval: from here on it is the game. */
     private fun finishIntro() {
         phase = GamePhase.Playing
-        shake = 0f
-        snake.useBounds(arena)
         spawner.reset()
     }
 
-    /** Eases the camera towards [target], and stops when it is there. */
-    private fun moveCamera(dt: Float, target: Float) {
+    /** The screen stays on the oval, and follows the snake once it leaves the oval for the path, to the den and back. */
+    private fun followSnake(dt: Float) {
+        val target = if (snake.y > den.mouthY) (snake.y - arena.height * DenTuning.followLine).coerceIn(0f, den.denCameraY) else 0f
         cameraY += (target - cameraY) * min(1f, dt * DenTuning.cameraEase)
         if (abs(target - cameraY) < cameraSettleDistance) cameraY = target
     }
 
     private fun updatePlaying(dt: Float) {
-        if (cameraY > 0f) moveCamera(dt, 0f)
+        followSnake(dt)
         snake.step(dt, (1f + boosts.sprintBoost * sprint.level) * boosts.speedFactor)
         hunger.update(dt, sprint.level, boosts.sprintDrainFactor)
         dustAtNewBounces()

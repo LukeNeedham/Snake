@@ -19,14 +19,14 @@ private val rockShade = Color(0xFF6F6B73)
 /** About how far apart the middles of two rocks of the ring are. */
 private const val rockSpacing = 5.2f
 
-/** The ring of rocks round the den, with an opening where the path leaves it. They are drawn from the back to the front, so that the front ones overlap the others. */
+/** The ring of rocks round the edge of the den, with an opening where the path leaves it. They are drawn from the back to the front, so that the front ones overlap the others. */
 internal fun DrawScope.drawDenRocks(den: DenLayout) {
     val random = Random(31)
     val rocks = ArrayList<Triple<Float, Float, Float>>()
-    val rockCount = (2f * PI.toFloat() * DenTuning.denRadius / rockSpacing).toInt()
+    val rockCount = (2f * PI.toFloat() * DenTuning.denRadius * 1.1f / rockSpacing).toInt()
     for (i in 0 until rockCount) {
         val angle = i * 2f * PI.toFloat() / rockCount + (random.nextFloat() - 0.5f) * 0.12f
-        val reach = DenTuning.denRadius + 1.5f + random.nextFloat()
+        val reach = den.den.radiusAt(angle) + 1.5f + random.nextFloat()
         val x = den.denX + cos(angle) * reach
         val y = den.denY + sin(angle) * reach
         val size = 2.3f + random.nextFloat() * 1.2f

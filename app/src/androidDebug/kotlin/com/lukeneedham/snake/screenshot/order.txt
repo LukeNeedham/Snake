@@ -2,6 +2,7 @@ GamePageReady
 GamePageRumble
 GamePageThinking
 GamePageLesson
+GamePageZoom
 GamePage
 GamePageBirds
 GamePageHallucinating

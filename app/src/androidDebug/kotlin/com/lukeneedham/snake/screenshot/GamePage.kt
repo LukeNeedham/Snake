@@ -13,6 +13,8 @@ import com.lukeneedham.snake.game.Vec2
 import com.lukeneedham.snake.ui.GamePageContent
 import com.lukeneedham.snake.ui.GameUiState
 import com.lukeneedham.snake.ui.theme.AppTheme
+import kotlin.math.atan2
+import kotlin.math.sin
 import kotlin.random.Random
 
 /** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageReady.png. */
@@ -30,11 +32,11 @@ private fun GamePageReadyScreenshot() {
 @Preview(widthDp = 360, heightDp = 800)
 @Composable
 private fun GamePageRumbleScreenshot() {
-    // The stomach of the snake rumbles in its den
+    // The stomach of the snake rumbles in its den: zigzag lines along its body
     val world = remember {
         GameWorld(Arena(108f, 240f), seed = 7, hasIntro = true).also {
             it.start()
-            repeat(120) { _ -> it.update(1f / 60f) }
+            repeat(300) { _ -> it.update(1f / 60f) }
         }
     }
     val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
@@ -49,7 +51,7 @@ private fun GamePageThinkingScreenshot() {
     val world = remember {
         GameWorld(Arena(108f, 240f), seed = 7, hasIntro = true).also {
             it.start()
-            repeat(312) { _ -> it.update(1f / 60f) }
+            repeat(504) { _ -> it.update(1f / 60f) }
         }
     }
     val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
@@ -60,11 +62,36 @@ private fun GamePageThinkingScreenshot() {
 @Preview(widthDp = 360, heightDp = 800)
 @Composable
 private fun GamePageLessonScreenshot() {
-    // The bubble has popped, and a text tells the player how to turn the snake
+    // The bubble has popped, the snake turns, and a text tells the player to tap
     val world = remember {
         GameWorld(Arena(108f, 240f), seed = 7, hasIntro = true).also {
             it.start()
-            repeat(504) { _ -> it.update(1f / 60f) }
+            repeat(660) { _ -> it.update(1f / 60f) }
+        }
+    }
+    val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
+    AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
+}
+
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageZoom.png. */
+@Preview(widthDp = 360, heightDp = 800)
+@Composable
+private fun GamePageZoomScreenshot() {
+    // Half way along the path the sprint button appears, with an arrow and the words that say to hold it
+    val world = remember {
+        GameWorld(Arena(108f, 240f), seed = 7, hasIntro = true).also {
+            // A player who steers up the path: it taps whenever the snake turns away from straight up
+            it.start()
+            repeat(660) { _ -> it.update(1f / 60f) }
+            it.tap()
+            var frames = 0
+            while (!it.intro!!.reachedHalfway && frames++ < 6000) {
+                val wanted = atan2(-30f, 0f + it.arena.centerX - it.snake.x)
+                val direction = if (sin(wanted - it.snake.heading) >= 0f) 1f else -1f
+                if (direction != it.snake.turnDirection) it.tap()
+                it.update(1f / 60f)
+            }
+            repeat(30) { _ -> it.update(1f / 60f) }
         }
     }
     val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)

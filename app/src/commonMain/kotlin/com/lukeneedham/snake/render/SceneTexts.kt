@@ -8,9 +8,10 @@ internal data class SceneTexts(
     val title: String,
     val tapToStart: String,
 
-    /** The lesson in the story at the start: its lines are split by a line break. */
-    val tapToChangeDirection: String,
-    val followThePath: String,
+    /** The words of the story at the start: the snake sleeps until it is woken, then the lessons of the turn and of the sprint. */
+    val tapToWake: String,
+    val tapToTurn: String,
+    val holdToZoom: String,
     val gameOver: String,
     val score: String,
     val best: String,

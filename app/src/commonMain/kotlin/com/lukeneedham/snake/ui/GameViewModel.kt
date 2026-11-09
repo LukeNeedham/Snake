@@ -67,7 +67,7 @@ class GameViewModel(bestScoreStore: BestScoreStore, settingsStore: SettingsStore
         } else {
             when (world.phase) {
                 GamePhase.Ready -> world.start()
-                GamePhase.Intro -> world.tap()
+                GamePhase.Intro -> world.introPress(pointerId, isInSprintZone = target == PressTarget.Sprint)
                 GamePhase.Playing -> if (target == PressTarget.Sprint) world.sprintPress(pointerId) else world.tap()
                 GamePhase.Paused -> Unit
                 GamePhase.GameOver -> restartIfAllowed()

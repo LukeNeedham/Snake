@@ -4,46 +4,78 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import com.lukeneedham.snake.game.GameWorld
 import com.lukeneedham.snake.game.IntroDirector
-import com.lukeneedham.snake.game.IntroStage
+import com.lukeneedham.snake.game.SnakeTuning
 import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.cos
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
 private val bubbleFill = Color(0xFFF7F4FF)
 private val bubbleEdge = Color(0xFF3A3340)
 private val rumbleColor = Color(0xFFFFF3B0)
+private val sleepColor = Color(0xFFDDEBFF)
 
-/** What the story at the start draws over the world: the lines that shake round the stomach, the thought bubbles, and the pop. */
+/** What the story at the start draws over the world: the Zs of the sleeping snake, the zigzag lines of its rumbling stomach, the thought bubbles, and the pop. */
 internal fun DrawScope.drawIntroOverlay(world: GameWorld) {
     val intro = world.intro ?: return
+    if (intro.isAsleep) drawSleepingZs(world)
     if (intro.rumble > 0f) drawRumble(world, intro)
     drawBubbles(world, intro)
     if (intro.popProgress > 0f) drawPop(world, intro)
 }
 
-/** Short lines that flicker and shake round the middle of the body, where the stomach is, like the lines of a cartoon that shakes. */
+/** Zs come out of the mouth of the sleeping snake one after another, float up and to the side, and grow and fade. */
+private fun DrawScope.drawSleepingZs(world: GameWorld) {
+    val snake = world.snake
+    val mouthX = snake.x + cos(snake.heading) * SnakeTuning.mouthReach
+    val mouthY = snake.y + sin(snake.heading) * SnakeTuning.mouthReach
+    for (i in 0 until sleepZs) {
+        val progress = (world.time * sleepZRate + i.toFloat() / sleepZs) % 1f
+        val alpha = min(1f, (1f - progress) * 2f)
+        val x = mouthX + 3f + progress * 12f + sin(progress * 2f * PI.toFloat() * 1.5f) * 2f
+        val y = mouthY - 3f - progress * 22f
+        val scale = if (progress < 0.5f) 1 else 2
+        drawPixelText("Z", x.roundToInt(), y.roundToInt(), sleepColor.copy(alpha = alpha), scale, PixelFont.outline.copy(alpha = alpha))
+    }
+}
+
+/** Zigzag lines that shake along both sides of the middle of the body, where the stomach is. */
 private fun DrawScope.drawRumble(world: GameWorld, intro: IntroDirector) {
     val points = world.snake.body.points
-    if (points.isEmpty()) return
-    val stomach = points[points.size / 2]
-    val phase = (world.time * rumbleRate).toInt()
-    val jitter = if (phase % 2 == 0) 1 else -1
-    val reach = rumbleReach + intro.rumble * 2f
-    for (line in 0 until rumbleLines) {
-        // Lines on and off in turn, each a little different every flicker
-        if ((line + phase) % 3 == 0) continue
-        val angle = line * 2f * PI.toFloat() / rumbleLines + 0.4f
-        val dx = cos(angle)
-        val dy = sin(angle)
-        val length = 3 + (line + phase) % 2
-        for (step in 0 until length) {
-            val distance = reach + step
-            val x = (stomach.x + dx * distance).roundToInt() + jitter
-            val y = (stomach.y + dy * distance).roundToInt()
-            pixelRect(x - 1, y - 1, 4, 4, PixelFont.outline)
-            pixelRect(x, y, 2, 2, rumbleColor)
+    if (points.size < rumbleSpan * 2 + 2) return
+    val middle = points.size / 2
+    val flicker = (world.time * rumbleRate).toInt()
+    for (side in intArrayOf(-1, 1)) {
+        var previousX = 0
+        var previousY = 0
+        for (i in max(0, middle - rumbleSpan)..min(points.lastIndex, middle + rumbleSpan)) {
+            val point = points[i]
+            // Every other point is further from the body, and which ones changes with every flicker: so the line zigzags and shakes
+            val stand = SnakeTuning.bodyRadius + 1.5f + ((i + flicker) % 2) * 2.5f * intro.rumble
+            val x = (point.x - point.dirY * side * stand).roundToInt()
+            val y = (point.y + point.dirX * side * stand).roundToInt()
+            if (i > max(0, middle - rumbleSpan)) {
+                pixelLine(previousX + 1, previousY + 1, x + 1, y + 1, PixelFont.outline)
+                pixelLine(previousX, previousY, x, y, rumbleColor)
+            }
+            previousX = x
+            previousY = y
         }
+    }
+}
+
+/** A line of single pixels from one point to another. */
+private fun DrawScope.pixelLine(fromX: Int, fromY: Int, toX: Int, toY: Int, color: Color) {
+    val steps = max(abs(toX - fromX), abs(toY - fromY))
+    if (steps == 0) {
+        pixel(fromX, fromY, color)
+        return
+    }
+    for (step in 0..steps) {
+        pixel(fromX + (toX - fromX) * step / steps, fromY + (toY - fromY) * step / steps, color)
     }
 }
 
@@ -84,9 +116,10 @@ private fun DrawScope.drawPop(world: GameWorld, intro: IntroDirector) {
     }
 }
 
+private const val sleepZs = 3
+private const val sleepZRate = 0.4f
 private const val rumbleRate = 14f
-private const val rumbleReach = 8f
-private const val rumbleLines = 10
+private const val rumbleSpan = 5
 private const val mouseScale = 2
 
 /** The ring of the pop only lasts the first part of it. */

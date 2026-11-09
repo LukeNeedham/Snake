@@ -5,11 +5,11 @@ object DenTuning {
     /** Half of how wide the path is: wide enough that the player has to steer the snake along it in a straight line, not just bounce along the walls. */
     const val pathHalfWidth = 15f
 
-    /** How big the round floor of the den is: big enough to play with turning and bouncing in. */
-    const val denRadius = 34f
+    /** The average radius of the den floor: big enough for the snake to loop round in. The edge is a little misshapen, up to a bit more than a tenth either way. */
+    const val denRadius = 40f
 
     /** How far above the bottom edge of the world the middle of the den is. */
-    const val denFromBottom = 54f
+    const val denFromBottom = 56f
 
     /**
      * How far the path reaches into the oval. It has to reach well past the wall of the oval (more than the snake's distance from a wall), or
@@ -17,7 +17,7 @@ object DenTuning {
      */
     const val pathOverlap = 14f
 
-    /** Where on the screen, from the top, the camera keeps the snake while it follows it up the path: a fraction of the screen height. */
+    /** Where on the screen, from the top, the camera keeps the snake while it follows it along the path: a fraction of the screen height. */
     const val followLine = 0.62f
 
     /** How quickly the camera catches up with the snake. */
@@ -28,4 +28,7 @@ object DenTuning {
 
     /** How many seconds the snake circles before the intro starts, so that its body already follows the circle. */
     const val warmUpSeconds = 1.6f
+
+    /** How long one stretch of the path that repeats is, as a part of the height of the screen. */
+    const val loopPeriodFactor = 0.35f
 }

@@ -47,15 +47,16 @@ class Snake(
     var lastBounceY = 0f
         private set
 
-    private var wallBounce = WallBounce(bounds)
+    private val wallBounce = WallBounce(bounds)
 
     init {
         totalDistance = body.initialDistance
     }
 
-    /** From now on the snake bounces off the wall of [bounds]: the snake leaves the den and its path for the oval. */
-    fun useBounds(bounds: Bounds) {
-        wallBounce = WallBounce(bounds)
+    /** Moves the snake [dy] down, all of it: the path that repeats puts it back a stretch, and nobody can tell. */
+    fun shift(dy: Float) {
+        y += dy
+        body.shift(dy)
     }
 
     fun toggleTurn() {

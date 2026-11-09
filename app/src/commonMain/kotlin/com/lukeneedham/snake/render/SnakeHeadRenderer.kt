@@ -7,6 +7,7 @@ import com.lukeneedham.snake.game.GameWorld
 import com.lukeneedham.snake.game.PowerUp
 import com.lukeneedham.snake.game.SnakeTuning
 import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
@@ -40,7 +41,7 @@ internal fun DrawScope.drawSnakeHead(world: GameWorld, deadAmount: Float) {
         drawOpenMouth(snake.x + dx * bigMouthReach, snake.y + dy * bigMouthReach, maxOf(snake.mouthOpen, bigMouthRest), bigMouthScale)
     } else if (snake.mouthOpen > 0.25f) {
         drawOpenMouth(snake.x + dx * SnakeTuning.mouthReach, snake.y + dy * SnakeTuning.mouthReach, snake.mouthOpen, 1f)
-    } else if (deadAmount < 0.5f) {
+    } else if (deadAmount < 0.5f && world.intro?.isAsleep != true) {
         drawTongue(world, snake.x + dx * tongueRoot, snake.y + dy * tongueRoot, dx, dy)
     }
     drawEyes(world, deadAmount, dx, dy)
@@ -53,9 +54,15 @@ private fun DrawScope.drawOpenMouth(x: Float, y: Float, openness: Float, scale: 
 
 /** The forked tongue flicks out every few seconds, from the very tip of the nose: it never shows over the head. */
 private fun DrawScope.drawTongue(world: GameWorld, tipX: Float, tipY: Float, dx: Float, dy: Float) {
-    val phase = (world.time % tongueCycle) / tongueCycle
-    if (phase > tongueOutPart) return
-    val length = (4f * sin(phase / tongueOutPart * PI.toFloat())).roundToInt()
+    val sticksOut = world.intro?.tongueProgress ?: 0f
+    val length = if (sticksOut > 0f) {
+        // Sticking its tongue out on purpose: it flicks out twice, further than usual
+        (5f * abs(sin(sticksOut * 2f * PI.toFloat()))).roundToInt()
+    } else {
+        val phase = (world.time % tongueCycle) / tongueCycle
+        if (phase > tongueOutPart) return
+        (4f * sin(phase / tongueOutPart * PI.toFloat())).roundToInt()
+    }
     for (i in 0..length) {
         pixel((tipX + dx * i).roundToInt(), (tipY + dy * i).roundToInt(), SnakePalette.tongue)
     }
@@ -69,7 +76,7 @@ private fun DrawScope.drawTongue(world: GameWorld, tipX: Float, tipY: Float, dx:
 
 private fun DrawScope.drawEyes(world: GameWorld, deadAmount: Float, dx: Float, dy: Float) {
     val snake = world.snake
-    val isBlinking = (world.time + 1.3f) % blinkCycle < blinkSeconds
+    val isBlinking = (world.time + 1.3f) % blinkCycle < blinkSeconds || world.intro?.eyesClosed == true
     for (side in listOf(-1f, 1f)) {
         val ex = (snake.x + dx * 1.4f - dy * side * 2.3f).roundToInt()
         val ey = (snake.y + dy * 1.4f + dx * side * 2.3f).roundToInt()

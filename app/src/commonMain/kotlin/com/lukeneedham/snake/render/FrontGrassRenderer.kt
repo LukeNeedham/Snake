@@ -15,24 +15,50 @@ import kotlin.random.Random
  * animal in the grass is hidden. They cover both screens of the world.
  */
 internal fun createFrontGrass(den: DenLayout): List<GrassBlade> {
-    val random = Random(99)
-    val width = den.arena.width.toInt()
+    val arena = den.arena
+    val width = arena.width.toInt()
     val height = den.worldHeight.toInt()
-    val colors = GrassPalette.bladesFront
     val blades = ArrayList<GrassBlade>()
-    repeat(4800) {
+    val random = Random(99)
+    repeat(frontBladeTrials * 3) {
         val x = random.nextInt(width)
         val y = random.nextInt(height)
-        val distance = den.ground.signedDistance(x + 0.5f, y + 0.5f)
-        // No tall grass round the den: it would hide the snake and the rocks
-        if (den.den.signedDistance(x + 0.5f, y + 0.5f) < denClearance) return@repeat
-        if (distance in -0.5f..WorldTuning.grassDepth) {
-            blades.add(GrassBlade(x, y, 6 + random.nextInt(6), random.nextFloat() * 2f * PI.toFloat(), random.nextInt(colors.size)))
+        // The stretch of the path that repeats gets its blades below, one period of them over and over
+        if (y >= den.loopTopRow && y < den.loopBottomRow) return@repeat
+        addFrontBlade(den, blades, random, x, y)
+    }
+    val tileRandom = Random(98)
+    repeat(frontBladeTrials * den.loopPeriodRows / arena.height.toInt()) {
+        val x = tileRandom.nextInt(width)
+        val firstY = den.loopTopRow + tileRandom.nextInt(den.loopPeriodRows)
+        val tile = ArrayList<GrassBlade>()
+        addFrontBlade(den, tile, tileRandom, x, firstY)
+        for (blade in tile) {
+            var y = blade.y
+            while (y < den.loopBottomRow) {
+                blades.add(GrassBlade(blade.x, y, blade.height, blade.phase, blade.shade))
+                y += den.loopPeriodRows
+            }
         }
     }
     blades.sortBy { it.y }
     return blades
 }
+
+/** Adds a blade at [x], [y] to [blades], if it is along the edge of the ground and not near the den, whose floor stays clear of grass. */
+private fun addFrontBlade(den: DenLayout, blades: MutableList<GrassBlade>, random: Random, x: Int, y: Int) {
+    val colors = GrassPalette.bladesFront
+    val bladeHeight = 6 + random.nextInt(6)
+    val phase = random.nextFloat() * 2f * PI.toFloat()
+    val shade = random.nextInt(colors.size)
+    val distance = den.ground.signedDistance(x + 0.5f, y + 0.5f)
+    if (distance !in -0.5f..WorldTuning.grassDepth) return
+    if (den.den.signedDistance(x + 0.5f, y + 0.5f) < denClearance) return
+    blades.add(GrassBlade(x, y, bladeHeight, phase, shade))
+}
+
+/** How many blades are tried over a screen. */
+private const val frontBladeTrials = 2400
 
 /** The blades sway all the time, and shake where an animal hides in the grass. */
 internal fun DrawScope.drawFrontGrass(blades: List<GrassBlade>, world: GameWorld) {
