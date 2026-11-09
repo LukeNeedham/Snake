@@ -10,7 +10,7 @@ import kotlin.random.Random
  * A snake that carries cheese is the opposite: a roaming mouse smells it from far away, in any direction, runs towards it and
  * stands around the snake. When the cheese is gone the mice are dazed for a moment, so that the snake can eat them.
  */
-internal class MouseGait(private val course: CritterCourse, private val visit: CritterVisit) {
+internal class MouseGait(private val course: CritterCourse, private val visit: CritterVisit, private val rules: MouseRules = MouseRules.standard) {
 
     var isRunning = false
         private set
@@ -28,7 +28,7 @@ internal class MouseGait(private val course: CritterCourse, private val visit: C
      */
     fun update(dt: Float, arena: Arena, random: Random, snakeHead: Vec2?, noticeScale: Float, smellsCheese: Boolean) {
         timer -= dt
-        if (smellsCheese && snakeHead != null && visit.mode == CritterMode.Roaming && course.isNear(snakeHead.x, snakeHead.y, CritterTuning.cheeseSmellDistance)) {
+        if (smellsCheese && snakeHead != null && visit.mode == CritterMode.Roaming && course.isNear(snakeHead.x, snakeHead.y, rules.cheeseSmellDistance)) {
             gatherAround(dt, snakeHead)
             return
         }
@@ -43,15 +43,15 @@ internal class MouseGait(private val course: CritterCourse, private val visit: C
 
     /** Runs to the snake, and stands around it once it is close. */
     private fun gatherAround(dt: Float, snakeHead: Vec2) {
-        dazeTimer = CritterTuning.cheeseDazeSeconds
+        dazeTimer = rules.cheeseDazeSeconds
         isFleeing = false
         timer = gatherPause
-        if (course.isNear(snakeHead.x, snakeHead.y, CritterTuning.cheeseCrowdDistance)) {
+        if (course.isNear(snakeHead.x, snakeHead.y, rules.cheeseCrowdDistance)) {
             isRunning = false
         } else {
             isRunning = true
             course.aimAt(snakeHead.x, snakeHead.y)
-            course.moveAlong(CritterTuning.cheeseSpeed, dt)
+            course.moveAlong(rules.cheeseSpeed, dt)
         }
     }
 
@@ -63,17 +63,17 @@ internal class MouseGait(private val course: CritterCourse, private val visit: C
     }
 
     private fun noticesTheSnake(snakeHead: Vec2, noticeScale: Float): Boolean =
-        visit.mode == CritterMode.Roaming && course.sees(snakeHead.x, snakeHead.y, CritterTuning.noticeDistance * noticeScale)
+        visit.mode == CritterMode.Roaming && course.sees(snakeHead.x, snakeHead.y, rules.noticeDistance * noticeScale)
 
     private fun startFleeing(snakeHead: Vec2) {
         isFleeing = true
         isRunning = true
         course.runAwayFrom(snakeHead.x, snakeHead.y)
-        timer = CritterTuning.fleeSeconds
+        timer = rules.fleeSeconds
     }
 
     private fun run(dt: Float, arena: Arena, random: Random) {
-        course.moveAlong(if (isFleeing) CritterTuning.fleeSpeed else CritterTuning.mouseSpeed, dt)
+        course.moveAlong((if (isFleeing) rules.fleeSpeed else CritterTuning.mouseSpeed) * rules.speedFactor, dt)
         if (visit.mode == CritterMode.Roaming && arena.signedDistance(course.x, course.y) > -turnBackDepth && course.isHeadingOut(arena)) {
             course.aimInside(arena, random)
         }

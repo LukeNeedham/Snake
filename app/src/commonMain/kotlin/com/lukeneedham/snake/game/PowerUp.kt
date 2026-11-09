@@ -1,6 +1,6 @@
 package com.lukeneedham.snake.game
 
-/** What eating a bird gives the snake for a while: each kind of bird gives its own. They stack with each other and with the effects of the toads. */
+/** What eating a bird gives the snake for a while: each kind of bird gives its own. They stack with each other and with the power downs of the toads. */
 enum class PowerUp(val durationSeconds: Float) {
     /** The snake goes faster. */
     Zoom(8f),

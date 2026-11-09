@@ -22,6 +22,12 @@ object HungerTuning {
     /** How much of the bar the new part fills in per second. */
     const val gainFillPerSecond = 0.6f
 
+    /** In the lesson of the hunger the bar drains this fast, to show that it does. */
+    const val demoDrainPerSecond = 0.25f
+
+    /** In the lesson of the sprint the bar drains this fast while the snake sprints flat out, to show that zooming makes it hungry. */
+    const val sprintDemoDrainPerSecond = 0.15f
+
     /** Below this the bar is low, and warns. */
     const val lowLevel = 0.25f
 }

@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
-import com.lukeneedham.snake.game.Effect
+import com.lukeneedham.snake.game.PowerDown
 import com.lukeneedham.snake.game.GameWorld
 import androidx.compose.ui.graphics.Color
 import kotlin.math.ceil
@@ -23,7 +23,7 @@ internal fun DrawScope.presentScene(scene: ImageBitmap, world: GameWorld) {
     val screenHeight = size.height.roundToInt()
     val shakeX = (sin(world.time * 80f) * world.shake * scale).roundToInt()
     val shakeY = (sin(world.time * 63f + 1f) * world.shake * scale).roundToInt()
-    val wave = world.effects.level(Effect.Hallucinating)
+    val wave = world.powerDowns.level(PowerDown.Hallucinating)
 
     drawRect(GrassPalette.base)
     if (wave < 0.02f) {

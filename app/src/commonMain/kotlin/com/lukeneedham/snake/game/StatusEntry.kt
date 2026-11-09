@@ -2,9 +2,9 @@ package com.lukeneedham.snake.game
 
 import kotlin.math.ceil
 
-/** One effect of a toad (a power down) or power up of a bird that is on, with the time it has left. */
-class StatusEntry(val effect: Effect?, val powerUp: PowerUp?, val remaining: Float, val duration: Float) {
-    /** Power ups are shown with an arrow pointing up, effects of the toads with one pointing down. */
+/** One power down of a toad (a power down) or power up of a bird that is on, with the time it has left. */
+class StatusEntry(val powerDown: PowerDown?, val powerUp: PowerUp?, val remaining: Float, val duration: Float) {
+    /** Power ups are shown with an arrow pointing up, power downs of the toads with one pointing down. */
     val isPowerUp: Boolean get() = powerUp != null
 
     /** 1 when it has just started, 0 when it runs out. */
@@ -14,17 +14,17 @@ class StatusEntry(val effect: Effect?, val powerUp: PowerUp?, val remaining: Flo
     val seconds: Int get() = ceil(remaining).toInt()
 }
 
-/** Which effects and power ups are on: the effects come first, then the power ups. */
+/** Which power downs and power ups are on: the power downs come first, then the power ups. */
 object ActiveStatuses {
-    fun of(effects: EffectTracker, powerUps: PowerUpTracker): List<StatusEntry> {
+    fun of(powerDowns: PowerDownTracker, powerUps: PowerUpTracker): List<StatusEntry> {
         val entries = ArrayList<StatusEntry>()
-        for (effect in Effect.entries) {
-            val remaining = effects.remaining(effect)
-            if (remaining > 0f) entries.add(StatusEntry(effect, null, remaining, effect.durationSeconds))
+        for (powerDown in PowerDown.entries) {
+            val remaining = powerDowns.remaining(powerDown)
+            if (remaining > 0f) entries.add(StatusEntry(powerDown, null, remaining, powerDowns.duration(powerDown)))
         }
         for (powerUp in PowerUp.entries) {
             val remaining = powerUps.remaining(powerUp)
-            if (remaining > 0f) entries.add(StatusEntry(null, powerUp, remaining, powerUp.durationSeconds))
+            if (remaining > 0f) entries.add(StatusEntry(null, powerUp, remaining, powerUps.duration(powerUp)))
         }
         return entries
     }

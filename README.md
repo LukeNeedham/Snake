@@ -11,7 +11,7 @@ Snake with a twist: one button, a snake that only ever turns, and poisonous toad
 
 Snake is a one-button arcade game in pixel art. The snake never goes straight: it circles around itself, and the only
 thing you can do is tap to change the direction of the turn. Steer it by twisting out of its own spiral, bounce it off the
-edge of the oval, and eat the mice that run out of the tall grass. Each mouse makes the snake one section longer, with
+edge of the oval (a bounce turns it the other way too), and eat the mice that run out of the tall grass. Each mouse makes the snake one section longer, with
 a skin pattern that repeats as it grows. The snake can cross its own body without harm: the only things that kill it are
 hunger, hayfever and cannibalism, and the game over screen says in red which one it was: starvation, allergies or cannibalism.
 
@@ -32,18 +32,48 @@ The snake is always hungry: a bar at the top of the screen runs down, a mouse fi
 snake starves when it is empty. Hold the corner at the bottom left to sprint (you can move it to the right in the settings), which is faster but burns
 the bar quicker, while your other thumb taps anywhere else to turn. The button at the top left pauses the game and opens a
 menu with Resume, Restart and Settings.
+The first time, the game opens with a story and a tutorial. The snake sleeps curled up on the raw stone floor of its house, a ring of
+rocks in the grass, until the player taps to wake it. It wakes up, blinks, flicks its tongue, and its stomach rumbles; it dreams of a mouse,
+and then it starts to circle. A tap turns it the other way. The path up to the oval is closed by a line of stones in the wall of the house, so the player steers
+it out by the wide path to the left, to the room of the tutorial: an oval of sand just like the stage. There the hunger bar shows for the first time (the belly decreases over time), the player learns to hold the sprint
+corner (to zoom) and sees that zooming makes the snake hungry, and a mouse that runs in from the grass is eaten so as not to starve. A toad
+that hops in can be eaten too, but it poisons (the dizzy one), and a bird that flies in is caught for the power it gives. Each is learned by doing it, and then an arrow shows the way back to the house, where
+the stones are gone and an arrow shows the way up the path to the oval, which is one screen long: the house and the oval cannot be seen
+from each other. Later games start with the snake waking in its house and the path up open. Once the whole snake is in the oval, the way it came in by grows shut with grass behind it, so the oval is a perfect oval and nothing
+leaves it; the way opens again when the stage is won (there are no win conditions yet, so the snake stays). Going into the room of the tutorial again, whenever the snake can get home, teaches the
+lessons again. A restart goes straight to the oval.
+
 The mice run from a snake they see coming, but they cannot see what is behind them.
 
 ## Screenshots
 
 <img src="docs/screenshots/01-GamePageReady.png" width="240" alt="Game Page Ready">
-<img src="docs/screenshots/02-GamePage.png" width="240" alt="Game Page">
-<img src="docs/screenshots/03-GamePageBirds.png" width="240" alt="Game Page Birds">
-<img src="docs/screenshots/04-GamePageHallucinating.png" width="240" alt="Game Page Hallucinating">
-<img src="docs/screenshots/05-GamePagePaused.png" width="240" alt="Game Page Paused">
-<img src="docs/screenshots/06-GamePageHunger.png" width="240" alt="Game Page Hunger">
-<img src="docs/screenshots/07-GamePageStatus.png" width="240" alt="Game Page Status">
-<img src="docs/screenshots/08-GamePageGameOver.png" width="240" alt="Game Page Game Over">
+<img src="docs/screenshots/02-GameTutorialWaking.png" width="240" alt="Game Tutorial Waking">
+<img src="docs/screenshots/03-GameTutorialTasting.png" width="240" alt="Game Tutorial Tasting">
+<img src="docs/screenshots/04-GamePageRumble.png" width="240" alt="Game Page Rumble">
+<img src="docs/screenshots/05-GamePageThinking.png" width="240" alt="Game Page Thinking">
+<img src="docs/screenshots/06-GameTutorialPopped.png" width="240" alt="Game Tutorial Popped">
+<img src="docs/screenshots/07-GamePageLesson.png" width="240" alt="Game Page Lesson">
+<img src="docs/screenshots/08-GamePageSteering.png" width="240" alt="Game Page Steering">
+<img src="docs/screenshots/09-GameTutorialHunger.png" width="240" alt="Game Tutorial Hunger">
+<img src="docs/screenshots/10-GameTutorialZoom.png" width="240" alt="Game Tutorial Zoom">
+<img src="docs/screenshots/11-GameTutorialZoomed.png" width="240" alt="Game Tutorial Zoomed">
+<img src="docs/screenshots/12-GameTutorialMouse.png" width="240" alt="Game Tutorial Mouse">
+<img src="docs/screenshots/13-GameTutorialToad.png" width="240" alt="Game Tutorial Toad">
+<img src="docs/screenshots/14-GameTutorialDizzy.png" width="240" alt="Game Tutorial Dizzy">
+<img src="docs/screenshots/15-GameTutorialBird.png" width="240" alt="Game Tutorial Bird">
+<img src="docs/screenshots/16-GameTutorialPowers.png" width="240" alt="Game Tutorial Powers">
+<img src="docs/screenshots/17-GameTutorialReturn.png" width="240" alt="Game Tutorial Return">
+<img src="docs/screenshots/18-GamePageLeaving.png" width="240" alt="Game Page Leaving">
+<img src="docs/screenshots/19-GamePageReturning.png" width="240" alt="Game Page Returning">
+<img src="docs/screenshots/20-GamePageSealing.png" width="240" alt="Game Page Sealing">
+<img src="docs/screenshots/21-GamePage.png" width="240" alt="Game Page">
+<img src="docs/screenshots/22-GamePageBirds.png" width="240" alt="Game Page Birds">
+<img src="docs/screenshots/23-GamePageHallucinating.png" width="240" alt="Game Page Hallucinating">
+<img src="docs/screenshots/24-GamePagePaused.png" width="240" alt="Game Page Paused">
+<img src="docs/screenshots/25-GamePageHunger.png" width="240" alt="Game Page Hunger">
+<img src="docs/screenshots/26-GamePageStatus.png" width="240" alt="Game Page Status">
+<img src="docs/screenshots/27-GamePageGameOver.png" width="240" alt="Game Page Game Over">
 
 ## Getting started as a user
 

@@ -7,7 +7,7 @@ tagline: "Snake with a twist: one button, a snake that only ever turns, and pois
 description: |
   Snake is a one-button arcade game in pixel art. The snake never goes straight: it circles around itself, and the only
   thing you can do is tap to change the direction of the turn. Steer it by twisting out of its own spiral, bounce it off the
-  edge of the oval, and eat the mice that run out of the tall grass. Each mouse makes the snake one section longer, with
+  edge of the oval (a bounce turns it the other way too), and eat the mice that run out of the tall grass. Each mouse makes the snake one section longer, with
   a skin pattern that repeats as it grows. The snake can cross its own body without harm: the only things that kill it are
   hunger, hayfever and cannibalism, and the game over screen says in red which one it was: starvation, allergies or cannibalism.
 
@@ -28,4 +28,15 @@ description: |
   snake starves when it is empty. Hold the corner at the bottom left to sprint (you can move it to the right in the settings), which is faster but burns
   the bar quicker, while your other thumb taps anywhere else to turn. The button at the top left pauses the game and opens a
   menu with Resume, Restart and Settings.
+  The first time, the game opens with a story and a tutorial. The snake sleeps curled up on the raw stone floor of its house, a ring of
+  rocks in the grass, until the player taps to wake it. It wakes up, blinks, flicks its tongue, and its stomach rumbles; it dreams of a mouse,
+  and then it starts to circle. A tap turns it the other way. The path up to the oval is closed by a line of stones in the wall of the house, so the player steers
+  it out by the wide path to the left, to the room of the tutorial: an oval of sand just like the stage. There the hunger bar shows for the first time (the belly decreases over time), the player learns to hold the sprint
+  corner (to zoom) and sees that zooming makes the snake hungry, and a mouse that runs in from the grass is eaten so as not to starve. A toad
+  that hops in can be eaten too, but it poisons (the dizzy one), and a bird that flies in is caught for the power it gives. Each is learned by doing it, and then an arrow shows the way back to the house, where
+  the stones are gone and an arrow shows the way up the path to the oval, which is one screen long: the house and the oval cannot be seen
+  from each other. Later games start with the snake waking in its house and the path up open. Once the whole snake is in the oval, the way it came in by grows shut with grass behind it, so the oval is a perfect oval and nothing
+  leaves it; the way opens again when the stage is won (there are no win conditions yet, so the snake stays). Going into the room of the tutorial again, whenever the snake can get home, teaches the
+  lessons again. A restart goes straight to the oval.
+
   The mice run from a snake they see coming, but they cannot see what is behind them.

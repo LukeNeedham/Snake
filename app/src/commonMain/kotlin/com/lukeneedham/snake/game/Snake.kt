@@ -7,17 +7,24 @@ import kotlin.math.sin
 
 /**
  * The snake always turns, and the only control is the direction of the turn. This is the head: where it is, which way it
- * goes and how it bounces off the wall. The [body] follows the path it travelled.
+ * goes and how it bounces off the wall (a bounce also turns it the other way). The [body] follows the path it travelled.
  */
-class Snake(arena: Arena) {
+class Snake(
+    arena: Arena,
+    bounds: Bounds = arena,
+    startX: Float = arena.centerX,
+    startY: Float = arena.centerY,
+    startHeading: Float = -halfPi,
+    val rules: SnakeRules = SnakeRules.standard,
+) {
 
-    var x = arena.centerX
+    var x = startX
         private set
-    var y = arena.centerY
+    var y = startY
         private set
 
     /** In radians: it grows when the snake turns clockwise on the screen. */
-    var heading = -halfPi
+    var heading = startHeading
         private set
 
     /** 1 turns clockwise, -1 anticlockwise. */
@@ -27,7 +34,7 @@ class Snake(arena: Arena) {
     var totalDistance: Float
         private set
 
-    val body = SnakeBody(x, y, heading)
+    val body = SnakeBody(x, y, heading, rules)
 
     /** 0 when the mouth is closed, 1 when it is wide open. */
     var mouthOpen = 0f
@@ -41,7 +48,7 @@ class Snake(arena: Arena) {
     var lastBounceY = 0f
         private set
 
-    private val wallBounce = WallBounce(arena)
+    private val wallBounce = WallBounce(bounds)
 
     init {
         totalDistance = body.initialDistance
@@ -63,11 +70,11 @@ class Snake(arena: Arena) {
         body.update(dt, totalDistance, heading)
     }
 
-    /** Whether the head touches a part of the body that is not the neck. It only kills the snake under the cannibal effect. */
+    /** Whether the head touches a part of the body that is not the neck. It only kills the snake under the cannibal power down. */
     fun hitsItself(): Boolean = body.touches(x, y)
 
     private fun advance(distance: Float) {
-        heading += turnDirection * distance / SnakeTuning.turnRadius
+        heading += turnDirection * distance / rules.turnRadius
         x += cos(heading) * distance
         y += sin(heading) * distance
         totalDistance += distance
@@ -76,6 +83,8 @@ class Snake(arena: Arena) {
             y = bounce.y
             heading = bounce.heading
             if (bounce.reflected) {
+                // Hitting a wall counts as a tap: the snake turns the other way
+                toggleTurn()
                 bounceCount++
                 lastBounceX = x
                 lastBounceY = y

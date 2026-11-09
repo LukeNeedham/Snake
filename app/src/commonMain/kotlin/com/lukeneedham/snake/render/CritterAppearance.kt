@@ -1,7 +1,7 @@
 package com.lukeneedham.snake.render
 
 import com.lukeneedham.snake.game.Critter
-import com.lukeneedham.snake.game.Effect
+import com.lukeneedham.snake.game.PowerDown
 import com.lukeneedham.snake.game.GameWorld
 import com.lukeneedham.snake.game.ToadKind
 
@@ -9,7 +9,7 @@ import com.lukeneedham.snake.game.ToadKind
 internal class CritterAppearance(val art: SpriteArt, val kind: ToadKind?)
 
 /** Whether the animals look like other animals, because of the teal toad. */
-internal fun isDisguised(world: GameWorld): Boolean = world.effects.level(Effect.Imposters) >= 0.5f
+internal fun isDisguised(world: GameWorld): Boolean = world.powerDowns.level(PowerDown.Imposters) >= 0.5f
 
 /**
  * While the snake is disguise-blind, each animal picks one other animal and stays like it. A bird that is not disguised has no

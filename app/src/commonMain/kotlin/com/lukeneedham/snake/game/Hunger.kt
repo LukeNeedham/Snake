@@ -8,7 +8,7 @@ import kotlin.math.min
  * What was just eaten does not fill the bar at once: it shows as a [gain] on top of the [filled] part for a moment, and then the
  * bar fills up into it, so that it is clear how much the food was worth. The bar does not drain until it has filled up.
  */
-class Hunger {
+class Hunger(private val lowLevel: Float = HungerTuning.lowLevel) {
     /** 1 when full, 0 when starved: the real value, which already counts what was just eaten. */
     var level = 1f
         private set
@@ -22,7 +22,7 @@ class Hunger {
 
     val isStarving: Boolean get() = level <= 0f
 
-    val isLow: Boolean get() = level <= HungerTuning.lowLevel
+    val isLow: Boolean get() = level <= lowLevel
 
     private var gainWait = 0f
 
@@ -30,12 +30,50 @@ class Hunger {
      * [sprintLevel] is 0 when the snake does not sprint, 1 when it sprints flat out, and then the bar drains [sprintDrainFactor] times
      * as fast. The bar always drains [drainFactor] times as fast on top of that.
      */
-    fun update(dt: Float, sprintLevel: Float, sprintDrainFactor: Float = HungerTuning.sprintDrainFactor, drainFactor: Float = 1f) {
+    fun update(
+        dt: Float,
+        sprintLevel: Float,
+        sprintDrainFactor: Float = HungerTuning.sprintDrainFactor,
+        drainFactor: Float = 1f,
+        drainPerSecond: Float = HungerTuning.drainPerSecond,
+    ) {
         if (filled < level) {
             fillIn(dt)
         } else {
-            val rate = HungerTuning.drainPerSecond * (1f + (sprintDrainFactor - 1f) * sprintLevel) * drainFactor
+            val rate = drainPerSecond * (1f + (sprintDrainFactor - 1f) * sprintLevel) * drainFactor
             level = max(0f, level - rate * dt)
+            filled = level
+        }
+    }
+
+    /** Fills the bar up again at once: the tutorial starts again as it was. */
+    fun refill() {
+        level = 1f
+        filled = 1f
+        gainWait = 0f
+    }
+
+    /** Lets what was just eaten fill in, but does not drain the bar: nothing starves in the lessons. */
+    fun settle(dt: Float) {
+        if (filled < level) fillIn(dt)
+    }
+
+    /** Drains the bar while the snake sprints, down to [floor]: the lesson of the sprint. It does not drain while it does not sprint. */
+    fun drainSprintDemo(dt: Float, sprintLevel: Float, floor: Float) {
+        if (filled < level) {
+            fillIn(dt)
+        } else if (level > floor) {
+            level = max(floor, level - HungerTuning.sprintDemoDrainPerSecond * sprintLevel * dt)
+            filled = level
+        }
+    }
+
+    /** Drains the bar fast, down to [floor], to show how it goes down: the lesson of the hunger. */
+    fun drainDemo(dt: Float, floor: Float) {
+        if (filled < level) {
+            fillIn(dt)
+        } else if (level > floor) {
+            level = max(floor, level - HungerTuning.demoDrainPerSecond * dt)
             filled = level
         }
     }

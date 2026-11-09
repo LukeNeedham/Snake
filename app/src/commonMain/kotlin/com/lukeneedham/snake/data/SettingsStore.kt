@@ -9,4 +9,9 @@ interface SettingsStore {
     val sprintSide: Flow<SprintSide>
 
     suspend fun setSprintSide(side: SprintSide)
+
+    /** Whether the player has been through the whole tutorial along the path: from then on the path is short, and the tutorial can be done again at the door. */
+    val isTutorialDone: Flow<Boolean>
+
+    suspend fun setTutorialDone(isDone: Boolean)
 }

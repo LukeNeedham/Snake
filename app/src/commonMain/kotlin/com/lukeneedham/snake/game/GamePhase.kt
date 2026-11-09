@@ -1,3 +1,4 @@
 package com.lukeneedham.snake.game
 
-enum class GamePhase { Ready, Playing, Paused, GameOver }
+/** [Intro] is the story at the start, which ends in the oval with [Playing]. */
+enum class GamePhase { Ready, Intro, Playing, Paused, GameOver }

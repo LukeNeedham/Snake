@@ -28,6 +28,7 @@ import com.lukeneedham.snake.game.PressTarget
 import com.lukeneedham.snake.render.SceneTexts
 import com.lukeneedham.snake.render.createBackground
 import com.lukeneedham.snake.render.createFrontGrass
+import com.lukeneedham.snake.render.createSealPatch
 import com.lukeneedham.snake.render.drawScene
 import com.lukeneedham.snake.render.presentScene
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -56,8 +57,9 @@ internal fun GameScene(
     val sceneBitmap = remember(arena) { ImageBitmap(sceneWidth, sceneHeight) }
     val sceneCanvas = remember(sceneBitmap) { GraphicsCanvas(sceneBitmap) }
     val sceneDrawScope = remember { CanvasDrawScope() }
-    val background = remember(arena, density, layoutDirection) { createBackground(arena, density, layoutDirection) }
-    val frontGrass = remember(arena) { createFrontGrass(arena) }
+    val background = remember(world.layout, density, layoutDirection) { createBackground(world.layout, density, layoutDirection) }
+    val frontGrass = remember(world.layout) { createFrontGrass(world.layout) }
+    val seal = remember(world.layout, density, layoutDirection) { createSealPatch(world.layout, density, layoutDirection) }
     val topInsetPx = WindowInsets.safeDrawing.getTop(density)
     val bottomInsetPx = WindowInsets.safeDrawing.getBottom(density)
     val currentOnPress by rememberUpdatedState(onPress)
@@ -114,7 +116,7 @@ internal fun GameScene(
         val topInset = (topInsetPx / scale).toInt()
         arena.bottomInset = bottomInsetPx / scale
         sceneDrawScope.draw(density, layoutDirection, sceneCanvas, Size(sceneWidth.toFloat(), sceneHeight.toFloat())) {
-            drawScene(world, background, frontGrass, texts, topInset)
+            drawScene(world, background, frontGrass, seal, texts, topInset)
         }
         presentScene(sceneBitmap, world)
         drawSystemBarFades(topInsetPx.toFloat(), bottomInsetPx.toFloat())

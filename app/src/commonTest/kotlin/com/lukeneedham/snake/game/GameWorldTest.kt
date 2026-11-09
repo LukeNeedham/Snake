@@ -62,33 +62,33 @@ class GameWorldTest {
     }
 
     @Test
-    fun eatingAToadStartsItsEffectAndScoresNothing() {
+    fun eatingAToadStartsItsPowerDownAndScoresNothing() {
         val world = newWorld()
         world.start()
         world.placeToadInFrontOfTheMouth(ToadKind.Pink)
         world.update(1f / 60f)
         assertEquals(0, world.score)
-        assertTrue(world.effects.remaining(Effect.Confused) > 0f)
+        assertTrue(world.powerDowns.remaining(PowerDown.Confused) > 0f)
     }
 
     @Test
     fun aConfusedSnakeIgnoresTaps() {
         val world = newWorld()
         world.start()
-        world.applyEffect(ToadKind.Pink)
+        world.applyPowerDown(ToadKind.Pink)
         val before = world.snake.turnDirection
         world.tap()
         assertEquals(before, world.snake.turnDirection)
     }
 
     @Test
-    fun anEffectFadesInAndRunsDown() {
+    fun aPowerDownFadesInAndRunsDown() {
         val world = newWorld()
         world.start()
-        world.applyEffect(ToadKind.Purple)
+        world.applyPowerDown(ToadKind.Purple)
         repeat(60) { world.update(1f / 60f) }
-        assertTrue(world.effects.level(Effect.Hallucinating) > 0.9f)
-        assertTrue(world.effects.remaining(Effect.Hallucinating) < Effect.Hallucinating.durationSeconds - 0.9f)
+        assertTrue(world.powerDowns.level(PowerDown.Hallucinating) > 0.9f)
+        assertTrue(world.powerDowns.remaining(PowerDown.Hallucinating) < PowerDown.Hallucinating.durationSeconds - 0.9f)
     }
 
     /** Runs a long snake round its circle for [seconds], keeping it fed so that only cannibal can kill it; true if it hit itself. */
@@ -98,8 +98,8 @@ class GameWorldTest {
         repeat(60 * seconds) {
             if (phase == GamePhase.Playing) {
                 hunger.feed(1f)
-                // Toad-free keeps the toads away, so that no other effect changes the outcome
-                if (isCannibal) applyEffect(ToadKind.Brown) else powerUps.apply(BirdKind.Crow)
+                // Toad-free keeps the toads away, so that no other power down changes the outcome
+                if (isCannibal) applyPowerDown(ToadKind.Brown) else powerUps.apply(BirdKind.Crow)
                 update(1f / 60f)
                 if (snake.hitsItself()) touched = true
             }
@@ -133,7 +133,7 @@ class GameWorldTest {
         repeat(60 * 30) {
             if (world.phase == GamePhase.Playing) {
                 world.hunger.feed(1f)
-                world.applyEffect(ToadKind.Grey)
+                world.applyPowerDown(ToadKind.Grey)
                 world.update(1f / 60f)
             }
         }
@@ -158,7 +158,7 @@ class GameWorldTest {
             val world = newWorld()
             world.hunger.update(10f, sprintLevel = 0f)
             world.start()
-            if (greedy) world.applyEffect(ToadKind.Red)
+            if (greedy) world.applyPowerDown(ToadKind.Red)
             world.placeMouseInFrontOfTheMouth()
             repeat(30) { world.update(1f / 60f) }
             assertEquals(1, world.score)
@@ -172,7 +172,7 @@ class GameWorldTest {
         fun distanceInASecond(lazy: Boolean): Float {
             val world = GameWorld(Arena(400f, 400f), seed = 11)
             world.start()
-            if (lazy) world.applyEffect(ToadKind.Olive)
+            if (lazy) world.applyPowerDown(ToadKind.Olive)
             repeat(60) { world.update(1f / 60f) }
             val start = world.snake.totalDistance
             repeat(60) { world.update(1f / 60f) }
@@ -187,7 +187,7 @@ class GameWorldTest {
         world.start()
         world.placeToadInFrontOfTheMouth(ToadKind.Grey)
         world.update(1f / 60f)
-        assertTrue(world.effects.isOn(Effect.Hayfever))
+        assertTrue(world.powerDowns.isOn(PowerDown.Hayfever))
     }
 
     @Test

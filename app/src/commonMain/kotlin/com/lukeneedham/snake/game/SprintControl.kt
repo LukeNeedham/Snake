@@ -4,6 +4,9 @@ package com.lukeneedham.snake.game
 class SprintControl {
     private val fingers = HashSet<Long>()
 
+    /** Whether a finger is held in the zone right now. */
+    val isHeld: Boolean get() = fingers.isNotEmpty()
+
     /** 0 to 1: how strongly the snake sprints right now. */
     var level = 0f
         private set

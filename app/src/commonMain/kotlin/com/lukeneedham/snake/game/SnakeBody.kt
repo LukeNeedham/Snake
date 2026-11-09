@@ -12,11 +12,11 @@ import kotlin.math.sqrt
  * The body of the snake is the path its head travelled, so it is kept as a trail of points that is sampled again every step
  * into the discs it is drawn with.
  */
-class SnakeBody(headX: Float, headY: Float, heading: Float) {
+class SnakeBody(headX: Float, headY: Float, heading: Float, private val rules: SnakeRules = SnakeRules.standard) {
 
     private class TrailPoint(val x: Float, val y: Float, val distance: Float)
 
-    var length = SnakeTuning.startSections * SnakeTuning.sectionLength
+    var length = rules.startSections * rules.sectionLength
         private set
 
     /** How far the head has travelled when the snake is new: the body behind it is already there. */
@@ -48,7 +48,7 @@ class SnakeBody(headX: Float, headY: Float, heading: Float) {
     }
 
     fun grow(sections: Int) {
-        targetLength += sections * SnakeTuning.sectionLength
+        targetLength += sections * rules.sectionLength
     }
 
     fun addBulge(totalDistance: Float) {
@@ -57,7 +57,7 @@ class SnakeBody(headX: Float, headY: Float, heading: Float) {
 
     /** Lets the body grow towards its length, forgets what is behind the tail, and samples the discs again. */
     fun update(dt: Float, totalDistance: Float, heading: Float) {
-        if (length < targetLength) length = min(targetLength, length + SnakeTuning.growRate * dt)
+        if (length < targetLength) length = min(targetLength, length + rules.growRate * dt)
         while (trail.size > 2 && trail[1].distance < totalDistance - length - 2f) trail.removeFirst()
         mutableBulges.removeAll { totalDistance - it > length + 8f }
         rebuild(totalDistance, heading)

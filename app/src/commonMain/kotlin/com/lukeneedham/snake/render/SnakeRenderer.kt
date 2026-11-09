@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.lerp
 import com.lukeneedham.snake.game.BodyPoint
-import com.lukeneedham.snake.game.Effect
+import com.lukeneedham.snake.game.PowerDown
 import com.lukeneedham.snake.game.GamePhase
 import com.lukeneedham.snake.game.GameWorld
 import com.lukeneedham.snake.game.SnakeTuning
@@ -34,7 +34,7 @@ internal fun DrawScope.drawSnake(world: GameWorld) {
     }
 
     drawSnakeHead(world, deadAmount)
-    if (world.effects.level(Effect.Confused) > 0.05f) drawConfusedSpiral(world)
+    if (world.powerDowns.level(PowerDown.Confused) > 0.05f) drawConfusedSpiral(world)
 }
 
 private fun DrawScope.drawSkinDisc(point: BodyPoint, world: GameWorld, deadAmount: Float) {
