@@ -48,16 +48,18 @@ The mice run from a snake they see coming, but they cannot see what is behind th
 <img src="docs/screenshots/02-GamePageRumble.png" width="240" alt="Game Page Rumble">
 <img src="docs/screenshots/03-GamePageThinking.png" width="240" alt="Game Page Thinking">
 <img src="docs/screenshots/04-GamePageLesson.png" width="240" alt="Game Page Lesson">
-<img src="docs/screenshots/05-GamePageZoom.png" width="240" alt="Game Page Zoom">
-<img src="docs/screenshots/06-GamePageHunger.png" width="240" alt="Game Page Hunger">
-<img src="docs/screenshots/07-GamePageToad.png" width="240" alt="Game Page Toad">
-<img src="docs/screenshots/08-GamePageBird.png" width="240" alt="Game Page Bird">
-<img src="docs/screenshots/09-GamePageDoor.png" width="240" alt="Game Page Door">
-<img src="docs/screenshots/10-GamePage.png" width="240" alt="Game Page">
-<img src="docs/screenshots/11-GamePageBirds.png" width="240" alt="Game Page Birds">
-<img src="docs/screenshots/12-GamePageHallucinating.png" width="240" alt="Game Page Hallucinating">
-<img src="docs/screenshots/13-GamePagePaused.png" width="240" alt="Game Page Paused">
-<img src="docs/screenshots/14-GamePageGameOver.png" width="240" alt="Game Page Game Over">
+<img src="docs/screenshots/05-GamePageSteering.png" width="240" alt="Game Page Steering">
+<img src="docs/screenshots/06-GamePageZoom.png" width="240" alt="Game Page Zoom">
+<img src="docs/screenshots/07-GamePageHunger.png" width="240" alt="Game Page Hunger">
+<img src="docs/screenshots/08-GamePageToad.png" width="240" alt="Game Page Toad">
+<img src="docs/screenshots/09-GamePageBird.png" width="240" alt="Game Page Bird">
+<img src="docs/screenshots/10-GamePageLeaving.png" width="240" alt="Game Page Leaving">
+<img src="docs/screenshots/11-GamePageReturning.png" width="240" alt="Game Page Returning">
+<img src="docs/screenshots/12-GamePage.png" width="240" alt="Game Page">
+<img src="docs/screenshots/13-GamePageBirds.png" width="240" alt="Game Page Birds">
+<img src="docs/screenshots/14-GamePageHallucinating.png" width="240" alt="Game Page Hallucinating">
+<img src="docs/screenshots/15-GamePagePaused.png" width="240" alt="Game Page Paused">
+<img src="docs/screenshots/16-GamePageGameOver.png" width="240" alt="Game Page Game Over">
 
 ## Getting started as a user
 
