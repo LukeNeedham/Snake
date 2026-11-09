@@ -114,9 +114,10 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
 
     fun start() {
         if (phase != GamePhase.Ready) return
-        if (intro != null) {
+        val director = intro
+        if (director != null) {
             phase = GamePhase.Intro
-            intro.wake()
+            director.wake()
         } else {
             phase = GamePhase.Playing
             spawner.reset()

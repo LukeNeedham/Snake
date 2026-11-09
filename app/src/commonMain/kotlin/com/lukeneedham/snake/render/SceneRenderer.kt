@@ -1,10 +1,10 @@
 package com.lukeneedham.snake.render
 
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.unit.IntOffset
 import com.lukeneedham.snake.game.GameWorld
 import kotlin.math.roundToInt
 
@@ -20,7 +20,7 @@ internal fun DrawScope.drawScene(
     topInset: Int,
 ) {
     translate(left = -world.cameraX.roundToInt().toFloat(), top = -world.cameraY.roundToInt().toFloat()) {
-        drawImage(background, topLeft = Offset(world.layout.worldLeft, 0f), filterQuality = FilterQuality.None)
+        drawImage(background, dstOffset = IntOffset(world.layout.worldLeft.roundToInt(), 0), filterQuality = FilterQuality.None)
         drawGateStones(world)
         drawButterflies(world)
         drawCritterShadows(world)
