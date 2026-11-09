@@ -112,6 +112,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
 
     /** Whether the snake was in the room of the tutorial a moment ago: it only teaches the lessons again when it goes in. */
     private var wasInRoom = false
+    private var wasInStage = false
 
     private val mutableCritters = ArrayList<Critter>()
 
@@ -291,7 +292,14 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
         stepSnake(dt, director.snakeSpeed * (1f + boosts.sprintBoost * sprint.level) * boosts.speedFactor)
         director.trackSprint(sprint.isHeld, dt)
         // Going into the room again, from the house, starts the lessons over as they were at the start, wherever they had got to
-        if (entersRoom() && director.stage >= IntroStage.Hunger) restartLessons(director)
+        if (entersRoom()) {
+            // After the first time there are no lessons on the way, but going into the room starts them, any time
+            if (!director.isTutorial) {
+                startReplay()
+                return
+            }
+            if (director.stage >= IntroStage.Hunger) restartLessons(director)
+        }
         if (layout.room.signedDistance(snake.x, snake.y) < -DenTuning.roomDepth) director.enteredRoom()
         if (director.stage.isLesson) updateLesson(dt, director)
         // Back in the house the stones that blocked the path up are gone, and it can be taken
@@ -450,6 +458,17 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
         spawner.avoidsPath = false
     }
 
+    /** Whenever the snake leaves the stage, down the path, everything about its state starts again: a full belly, no poison, no power up. */
+    private fun resetWhenLeavingStage() {
+        val depth = arena.signedDistance(snake.x, snake.y)
+        if (depth < -DenTuning.exitDepth) {
+            wasInStage = true
+        } else if (depth > 0f && wasInStage) {
+            wasInStage = false
+            resetLessonState()
+        }
+    }
+
     /** The stage has been won: the way in opens again. */
     fun completeStage() {
         isStageComplete = true
@@ -486,6 +505,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     private fun updatePlaying(dt: Float) {
         followSnake(dt)
         sealWhenInside()
+        resetWhenLeavingStage()
         if (entersRoom()) {
             startReplay()
             return

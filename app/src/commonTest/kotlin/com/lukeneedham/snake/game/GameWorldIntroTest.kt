@@ -346,6 +346,41 @@ class GameWorldIntroTest {
     }
 
     @Test
+    fun goingIntoTheRoomFromTheHouseAtTheStartOfTheAppStartsTheTutorial() {
+        val world = returningWorld()
+        world.start()
+        world.play(IntroTuning.wakeSeconds + 0.2f)
+        // Steer it into the room, to the left of the house
+        var seconds = 0f
+        while (world.intro?.isReplay != true && seconds < 30f) {
+            world.steerToward(world.layout.room.centerX, world.layout.room.centerY)
+            world.update(1f / 60f)
+            seconds += 1f / 60f
+        }
+        assertTrue(world.intro!!.isReplay)
+        assertEquals(1f, world.hunger.level)
+    }
+
+    @Test
+    fun leavingTheStageResetsTheStateOfTheSnake() {
+        val world = returningWorld()
+        world.start()
+        world.play(IntroTuning.wakeSeconds + 0.2f)
+        world.playUntil(90f) { world.phase == GamePhase.Playing }
+        world.play(5f)
+        world.powerUps.apply(BirdKind.BlueTit)
+        world.completeStage()
+        var seconds = 0f
+        while (world.arena.signedDistance(world.snake.x, world.snake.y) <= 1f && seconds < 30f) {
+            world.steerToward(world.layout.houseX, world.layout.houseY)
+            world.update(1f / 60f)
+            seconds += 1f / 60f
+        }
+        assertEquals(1f, world.hunger.level)
+        assertFalse(world.powerUps.isOn(BirdKind.BlueTit.powerUp))
+    }
+
+    @Test
     fun goingIntoTheRoomOfTheTutorialAgainTeachesTheLessonsAgain() {
         val world = returningWorld()
         world.start()
