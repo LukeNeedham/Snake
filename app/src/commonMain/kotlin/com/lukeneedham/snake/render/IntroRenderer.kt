@@ -35,8 +35,8 @@ private fun DrawScope.drawSleepingZs(world: GameWorld) {
     for (i in 0 until sleepZs) {
         val progress = (world.time * sleepZRate + i.toFloat() / sleepZs) % 1f
         val alpha = min(1f, (1f - progress) * 2f)
-        val x = mouthX + 3f + progress * 12f + sin(progress * 2f * PI.toFloat() * 1.5f) * 2f
-        val y = mouthY - 3f - progress * 22f
+        val x = mouthX + 6f + progress * 14f + sin(progress * 2f * PI.toFloat() * 1.5f) * 2f
+        val y = mouthY - 7f - progress * 26f
         val scale = if (progress < 0.5f) 1 else 2
         drawPixelText("Z", x.roundToInt(), y.roundToInt(), sleepColor.copy(alpha = alpha), scale, PixelFont.outline.copy(alpha = alpha))
     }
