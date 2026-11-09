@@ -26,7 +26,8 @@ internal fun DrawScope.drawIntroOverlay(world: GameWorld) {
     if (intro.rumble > 0f) drawRumble(world, intro)
     drawBubbles(world, intro)
     if (intro.popProgress > 0f) drawPop(world, intro)
-    drawWayArrow(world, intro)
+    // The arrows are part of the story: they go when it does, as when the snake leaves the room of the tutorial
+    if (world.isIntro) drawWayArrow(world, intro)
 }
 
 /**

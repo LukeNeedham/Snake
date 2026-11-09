@@ -16,7 +16,7 @@ import kotlin.math.sin
  */
 internal fun DrawScope.drawIntroHud(world: GameWorld, texts: SceneTexts, topInset: Int) {
     val intro = world.intro ?: return
-    if (intro.showsHunger) drawStomach(world, topInset)
+    if (world.showsHunger) drawStomach(world, topInset)
     if (intro.showsSprintButton) drawSprintButton(world)
     if (intro.stage.isLesson) {
         drawEffectBars(world)

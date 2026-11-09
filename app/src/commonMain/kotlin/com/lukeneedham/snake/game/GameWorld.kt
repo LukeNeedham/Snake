@@ -21,7 +21,7 @@ import kotlin.random.Random
  * the path up is blocked by stones, and the snake has to go to the room of the tutorial, to the left, where the lessons are, and come back.
  * The snake can go anywhere on the map ([WorldLayout]); going into the room of the tutorial again teaches the lessons again.
  */
-class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.Oval) {
+class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.Oval, val level: LevelConfig = LevelConfig.first) {
 
     private val hasIntro = opening != Opening.Oval
 
@@ -110,10 +110,27 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     /** Whether the camera shows the room of the tutorial, to the left of the house, and not the house. */
     private var isRoomView = false
 
-    /** Whether the snake was in the room of the tutorial a moment ago: it only teaches the lessons again when it goes in. */
-    /** The room that the head of the snake was last in: on a path it is the room it came from. */
-    private var lastRoom: Room? = Room.House
-    private var wasInStage = false
+    /** The room that the head of the snake is in, or null while it is on a path between two rooms. */
+    var room: Room? = if (hasIntro) Room.House else Room.Stage
+        private set
+
+    private val stageConfig = RoomConfig.stage(level)
+
+    /** The rules of the room that the snake is in: each room has its own, and the stage has the ones of its [level]. */
+    val roomConfig: RoomConfig
+        get() = when (room) {
+            Room.Stage -> stageConfig
+            Room.House -> RoomConfig.house
+            Room.Tutorial -> RoomConfig.tutorial
+            null -> RoomConfig.path
+        }
+
+    /** Whether the hunger bar is on the screen: when the room shows it, and in the room of the tutorial only while a lesson teaches it. */
+    val showsHunger: Boolean
+        get() {
+            val config = roomConfig
+            return config.showsHunger && (!config.isTaught || (isIntro && intro?.showsHunger == true))
+        }
 
     private val mutableCritters = ArrayList<Critter>()
 
@@ -130,7 +147,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
 
     private val random = Random(seed)
     val particleSystem = ParticleSystem(random)
-    private val spawner = CritterSpawner(arena, random).also { it.avoidsPath = !layout.isStageSealed }
+    private val spawner = CritterSpawner(arena, random, level).also { it.avoidsPath = !layout.isStageSealed }
     private val feeding = Feeding(layout.ground)
     private val toadBlast = ToadBlast(particleSystem)
     private val effectParticles = EffectParticleEmitter(particleSystem, random)
@@ -286,23 +303,22 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     }
 
     private fun updateIntro(dt: Float) {
+        val story = intro ?: return
+        val stageBefore = story.stage
+        story.update(dt)
+        if (story.stage != stageBefore) onStageEntered(story.stage)
+        stepSnake(dt, story.snakeSpeed * (1f + boosts.sprintBoost * sprint.level) * boosts.speedFactor)
+        story.trackSprint(sprint.isHeld, dt)
+        trackRoom()
+        // The rooms can end the lessons, or start them again, and so change the story
         val director = intro ?: return
-        val stageBefore = director.stage
-        director.update(dt)
-        if (director.stage != stageBefore) onStageEntered(director.stage)
-        stepSnake(dt, director.snakeSpeed * (1f + boosts.sprintBoost * sprint.level) * boosts.speedFactor)
-        director.trackSprint(sprint.isHeld, dt)
-        // Going into the room again, from the house, starts the lessons over as they were at the start, wherever they had got to
-        if (entersRoom()) {
-            // After the first time there are no lessons on the way, but going into the room starts them, any time
-            if (!director.isTutorial) {
-                startReplay()
-                return
-            }
-            if (director.stage >= IntroStage.Hunger) restartLessons(director)
+        if (phase != GamePhase.Intro) {
+            followSnake(dt)
+            return
         }
+        applyHungerRule(dt)
         if (layout.room.signedDistance(snake.x, snake.y) < -DenTuning.roomDepth) director.enteredRoom()
-        if (director.stage.isLesson) updateLesson(dt, director)
+        if (director.stage.isLesson && room == Room.Tutorial) updateLesson(dt, director)
         // Back in the house the stones that blocked the path up are gone, and it can be taken
         if (director.stage == IntroStage.Return && layout.house.signedDistance(snake.x, snake.y) < -DenTuning.homeDepth) {
             layout.isGateClosed = false
@@ -375,12 +391,12 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
         if (stage == IntroStage.Leaving) {
             layout.isGateClosed = false
             snake = layout.curledSnake()
-            lastRoom = Room.House
+            room = Room.House
             isRoomView = false
             cameraX = 0f
         } else {
             snake = layout.snakeInRoom()
-            lastRoom = Room.Tutorial
+            room = Room.Tutorial
             isRoomView = true
             cameraX = layout.roomCameraX
         }
@@ -412,7 +428,6 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     private fun endReplay() {
         phase = GamePhase.Playing
         mutableCritters.clear()
-        lastRoom = Room.Tutorial
         spawner.reset()
     }
 
@@ -422,17 +437,17 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
         replay.jumpTo(IntroStage.Hunger)
         intro = replay
         phase = GamePhase.Intro
-        resetLessonState()
+        resetSnakeState()
     }
 
     /** The lessons start over from the hunger bar, with everything as it was at the start of them. */
     private fun restartLessons(director: IntroDirector) {
         director.jumpTo(IntroStage.Hunger)
-        resetLessonState()
+        resetSnakeState()
     }
 
-    /** Everything the lessons change goes back to how it was at the start of them: a full belly, no poison, no power up, no animal, no sprint. */
-    private fun resetLessonState() {
+    /** Everything the snake has gathered goes back to how it was at the start of the lessons, and when it leaves the stage: a full belly, no poison, no power up, no animal, no sprint. */
+    private fun resetSnakeState() {
         hunger.refill()
         effects.clear()
         powerUps.clear()
@@ -441,14 +456,50 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     }
 
     /**
-     * Whether the head of the snake has just come into the room of the tutorial, from any other room: that is on the screen of the room, and
-     * the last room it was on the screen of was another. Moving about in the room, or out onto the path and back, is not that.
+     * Works out which room the head of the snake is in, from the screen it is on, and does what changing room does: the lessons end when it
+     * leaves the room of the tutorial (and the state of the snake starts again, as it does when it leaves the stage), and begin when it
+     * comes into it from another room. Moving about in a room, or out onto a path and back, is not changing room.
      */
-    private fun entersRoom(): Boolean {
-        val room = layout.roomAt(snake.x, snake.y) ?: return false
-        val enters = room == Room.Tutorial && lastRoom != Room.Tutorial
-        lastRoom = room
-        return enters
+    private fun trackRoom() {
+        val now = layout.roomAt(snake.x, snake.y)
+        if (now == room) return
+        val before = room
+        room = now
+        if (before == Room.Tutorial) leaveTutorialRoom()
+        if (before == Room.Stage) resetSnakeState()
+        if (now == Room.Tutorial) enterTutorialRoom()
+    }
+
+    /** Whatever the room of the tutorial showed goes away at once: the bar, the arrows, the animals. A lesson that was not finished starts from the walk to the room. */
+    private fun leaveTutorialRoom() {
+        resetSnakeState()
+        val director = intro ?: return
+        if (director.isReplay) {
+            endReplay()
+        } else if (phase == GamePhase.Intro && director.isTutorial && director.stage < IntroStage.Return) {
+            director.jumpTo(IntroStage.Steering)
+        }
+    }
+
+    /** Coming into the room of the tutorial teaches the lessons from the start: after the first time too, and while playing. */
+    private fun enterTutorialRoom() {
+        val director = intro
+        if (director == null || !director.isTutorial || phase == GamePhase.Playing) {
+            startReplay()
+        } else if (director.stage >= IntroStage.Hunger) {
+            restartLessons(director)
+        }
+    }
+
+    /** What the hunger bar does in the room that the snake is in: it is kept full, left to the lessons, or goes down with the game. */
+    private fun applyHungerRule(dt: Float) {
+        when (roomConfig.hungerMode) {
+            HungerMode.Full -> hunger.refill()
+            HungerMode.Manual -> if (phase == GamePhase.Playing) hunger.settle(dt)
+            HungerMode.Drains -> if (phase == GamePhase.Playing) {
+                hunger.update(dt, sprint.level, boosts.sprintDrainFactor, ravenousFactor(), roomConfig.level.hungerDrainPerSecond)
+            }
+        }
     }
 
     /**
@@ -461,17 +512,6 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
         if (arena.signedDistance(snake.x, snake.y) > -DenTuning.exitDepth || arena.signedDistance(tail.x, tail.y) > -sealTailDepth) return
         layout.isStageSealed = true
         spawner.avoidsPath = false
-    }
-
-    /** Whenever the snake leaves the stage, down the path, everything about its state starts again: a full belly, no poison, no power up. */
-    private fun resetWhenLeavingStage() {
-        val depth = arena.signedDistance(snake.x, snake.y)
-        if (depth < -DenTuning.exitDepth) {
-            wasInStage = true
-        } else if (depth > 0f && wasInStage) {
-            wasInStage = false
-            resetLessonState()
-        }
     }
 
     /** The stage has been won: the way in opens again. */
@@ -510,16 +550,16 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     private fun updatePlaying(dt: Float) {
         followSnake(dt)
         sealWhenInside()
-        resetWhenLeavingStage()
-        if (entersRoom()) {
-            startReplay()
-            return
-        }
-        snake.step(dt, (1f + boosts.sprintBoost * sprint.level) * boosts.speedFactor * lazyFactor())
-        hunger.update(dt, sprint.level, boosts.sprintDrainFactor, ravenousFactor())
+        trackRoom()
+        if (phase != GamePhase.Playing) return
+        val config = roomConfig
+        snake.step(dt, (1f + boosts.sprintBoost * sprint.level) * boosts.speedFactor * lazyFactor() * config.snakeSpeedFactor)
+        applyHungerRule(dt)
         val touchedGrass = snake.bounceCount != seenBounces
         dustAtNewBounces()
-        spawner.update(dt, mutableCritters, score, Vec2(snake.x, snake.y), boosts.attractsMice, allowsToads = !boosts.keepsToadsAway)
+        if (config.spawnsCritters) {
+            spawner.update(dt, mutableCritters, score, Vec2(snake.x, snake.y), boosts.attractsMice, allowsToads = !boosts.keepsToadsAway)
+        }
         updateCritters(dt)
         feeding.update(dt, snake, mutableCritters, boosts.mouthFactor, boosts.mouthIsFull).forEach { eat(it) }
         effectParticles.emit(effects, sprint.level, snake, critters)

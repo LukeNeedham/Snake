@@ -362,6 +362,37 @@ class GameWorldIntroTest {
     }
 
     @Test
+    fun leavingTheRoomOfTheTutorialEndsTheLessonsAtOnce() {
+        val world = newWorld()
+        world.start()
+        world.jumpToLesson(IntroStage.Toad)
+        assertEquals(Room.Tutorial, world.room)
+        assertTrue(world.showsHunger)
+        var seconds = 0f
+        while (world.room != Room.House && seconds < 60f) {
+            world.steerToward(world.layout.houseX, world.layout.houseY)
+            world.update(1f / 60f)
+            seconds += 1f / 60f
+        }
+        assertEquals(Room.House, world.room)
+        // The bar, the arrows and the animals of the lesson are gone, and the walk to the room starts again
+        assertEquals(IntroStage.Steering, world.intro!!.stage)
+        assertFalse(world.showsHunger)
+        assertTrue(world.critters.isEmpty())
+        assertEquals(1f, world.hunger.level)
+    }
+
+    @Test
+    fun theHouseKeepsTheBellyFullAndHidden() {
+        val world = returningWorld()
+        world.start()
+        assertEquals(HungerMode.Full, world.roomConfig.hungerMode)
+        assertFalse(world.showsHunger)
+        world.play(IntroTuning.wakeSeconds + 3f)
+        assertEquals(1f, world.hunger.level)
+    }
+
+    @Test
     fun leavingTheStageResetsTheStateOfTheSnake() {
         val world = returningWorld()
         world.start()
@@ -371,7 +402,7 @@ class GameWorldIntroTest {
         world.powerUps.apply(BirdKind.BlueTit)
         world.completeStage()
         var seconds = 0f
-        while (world.arena.signedDistance(world.snake.x, world.snake.y) <= 1f && seconds < 30f) {
+        while (world.room == Room.Stage && seconds < 60f) {
             world.steerToward(world.layout.houseX, world.layout.houseY)
             world.update(1f / 60f)
             seconds += 1f / 60f

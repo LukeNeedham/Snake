@@ -4,10 +4,10 @@ package com.lukeneedham.snake.game
 sealed interface Critter : CritterBody {
     val id: Int
 
-    /** Runs fast for a moment, stands still and looks around, then runs again. */
-    class Mouse(override val id: Int, x: Float, y: Float, lifetime: Float, tameTarget: Vec2? = null) :
+    /** Runs fast for a moment (as fast as the level makes it, by its [speedFactor]), stands still and looks around, then runs again. */
+    class Mouse(override val id: Int, x: Float, y: Float, lifetime: Float, tameTarget: Vec2? = null, speedFactor: Float = 1f) :
         Critter,
-        CritterBody by MouseBody(x, y, lifetime, tameTarget)
+        CritterBody by MouseBody(x, y, lifetime, tameTarget, speedFactor)
 
     /** Sits still, then hops a short way in a random direction. Eating one has the effect of its [kind]. */
     class Toad(override val id: Int, val kind: ToadKind, x: Float, y: Float, lifetime: Float, tameTarget: Vec2? = null) :

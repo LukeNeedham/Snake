@@ -10,7 +10,7 @@ import kotlin.random.Random
  * A snake that carries cheese is the opposite: a roaming mouse smells it from far away, in any direction, runs towards it and
  * stands around the snake. When the cheese is gone the mice are dazed for a moment, so that the snake can eat them.
  */
-internal class MouseGait(private val course: CritterCourse, private val visit: CritterVisit) {
+internal class MouseGait(private val course: CritterCourse, private val visit: CritterVisit, private val speedFactor: Float = 1f) {
 
     var isRunning = false
         private set
@@ -73,7 +73,7 @@ internal class MouseGait(private val course: CritterCourse, private val visit: C
     }
 
     private fun run(dt: Float, arena: Arena, random: Random) {
-        course.moveAlong(if (isFleeing) CritterTuning.fleeSpeed else CritterTuning.mouseSpeed, dt)
+        course.moveAlong((if (isFleeing) CritterTuning.fleeSpeed else CritterTuning.mouseSpeed) * speedFactor, dt)
         if (visit.mode == CritterMode.Roaming && arena.signedDistance(course.x, course.y) > -turnBackDepth && course.isHeadingOut(arena)) {
             course.aimInside(arena, random)
         }

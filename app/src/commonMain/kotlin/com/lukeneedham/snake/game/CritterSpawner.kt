@@ -8,7 +8,7 @@ import kotlin.math.sin
 import kotlin.random.Random
 
 /** Sends mice and toads out of the grass and birds flying in: more mice and toads as the score goes up, and never more than one bird, which only comes once the score is high enough. */
-class CritterSpawner(private val arena: Arena, private val random: Random) {
+class CritterSpawner(private val arena: Arena, private val random: Random, private val level: LevelConfig = LevelConfig.first) {
     private var nextId = 1
     private var mouseTimer = 0f
     private var toadTimer = 0f
@@ -16,9 +16,9 @@ class CritterSpawner(private val arena: Arena, private val random: Random) {
 
     /** Called when the game starts: the first mouse comes quickly, the first toad later, and the first bird later still. */
     fun reset() {
-        mouseTimer = SpawnTuning.firstMouseDelay
-        toadTimer = SpawnTuning.firstToadDelay
-        birdTimer = SpawnTuning.firstBirdDelay
+        mouseTimer = level.mice.firstDelay
+        toadTimer = level.toads.firstDelay
+        birdTimer = level.firstBirdDelay
     }
 
     /**
@@ -41,28 +41,28 @@ class CritterSpawner(private val arena: Arena, private val random: Random) {
         val toads = critters.count { it is Critter.Toad }
         val birds = critters.count { it is Critter.Bird }
         val extraMice = if (attractsMice) PowerUpTuning.cheeseExtraMice else 0
-        if (mice < min(1 + score / SpawnTuning.pointsPerExtraMouse, SpawnTuning.mostMice) + extraMice && mouseTimer <= 0f) {
+        if (mice < min(1 + score / level.mice.pointsPerExtra, level.mice.most) + extraMice && mouseTimer <= 0f) {
             critters.add(newMouse())
-            mouseTimer = between(SpawnTuning.mouseDelayMin, SpawnTuning.mouseDelayMax)
+            mouseTimer = between(level.mice.delayMin, level.mice.delayMax)
         }
-        if (allowsToads && toads < min(1 + score / SpawnTuning.pointsPerExtraToad, SpawnTuning.mostToads) && toadTimer <= 0f) {
+        if (allowsToads && toads < min(1 + score / level.toads.pointsPerExtra, level.toads.most) && toadTimer <= 0f) {
             critters.add(newToad())
-            toadTimer = between(SpawnTuning.toadDelayMin, SpawnTuning.toadDelayMax)
+            toadTimer = between(level.toads.delayMin, level.toads.delayMax)
         }
-        if (birds == 0 && score >= SpawnTuning.firstBirdScore && birdTimer <= 0f) {
+        if (birds == 0 && score >= level.firstBirdScore && birdTimer <= 0f) {
             critters.add(newBird(snakeHead))
-            birdTimer = between(SpawnTuning.birdDelayMin, SpawnTuning.birdDelayMax)
+            birdTimer = between(level.birdDelayMin, level.birdDelayMax)
         }
     }
 
     private fun newMouse(): Critter {
         val spot = spotInTheGrass()
-        return Critter.Mouse(nextId++, spot.x, spot.y, lifetime())
+        return Critter.Mouse(nextId++, spot.x, spot.y, lifetime(), speedFactor = level.mouseSpeedFactor)
     }
 
     private fun newToad(): Critter {
         val spot = spotInTheGrass()
-        val kind = ToadKind.entries[random.nextInt(ToadKind.entries.size)]
+        val kind = level.toadKinds[random.nextInt(level.toadKinds.size)]
         return Critter.Toad(nextId++, kind, spot.x, spot.y, lifetime())
     }
 

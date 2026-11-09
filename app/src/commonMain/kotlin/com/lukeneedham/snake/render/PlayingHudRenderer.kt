@@ -7,7 +7,7 @@ import com.lukeneedham.snake.game.GameWorld
 internal fun DrawScope.drawPlayingHud(world: GameWorld, texts: SceneTexts, topInset: Int) {
     // In the top left corner, with the tiny pause indicator under it
     drawPixelText(world.score.toString(), 4, topInset + 3, HudPalette.white, scale = 2)
-    drawStomach(world, topInset)
+    if (world.showsHunger) drawStomach(world, topInset)
     drawEffectBars(world)
     drawSprintButton(world)
     drawEffectBanner(world, texts)
