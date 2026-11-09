@@ -194,7 +194,7 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
     }
 
     private fun updatePlaying(dt: Float) {
-        snake.step(dt, (1f + boosts.sprintBoost * sprint.level) * boosts.speedFactor * sluggishFactor())
+        snake.step(dt, (1f + boosts.sprintBoost * sprint.level) * boosts.speedFactor * lazyFactor())
         hunger.update(dt, sprint.level, boosts.sprintDrainFactor, ravenousFactor())
         val touchedGrass = snake.bounceCount != seenBounces
         dustAtNewBounces()
@@ -202,14 +202,19 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
         updateCritters(dt)
         feeding.update(dt, snake, mutableCritters, boosts.mouthFactor, boosts.mouthIsFull).forEach { eat(it) }
         effectParticles.emit(effects, sprint.level, snake, critters)
-        if (hunger.isStarving || (effects.isOn(Effect.HayFever) && touchedGrass) || (effects.isOn(Effect.Cannibal) && snake.hitsItself())) endGame()
+        if (hunger.isStarving || (effects.isOn(Effect.Hayfever) && touchedGrass) || (effects.isOn(Effect.Cannibal) && snake.hitsItself())) endGame()
+    }
+
+    /** Feeds the snake: a greedy snake gets only part of it. */
+    private fun feed(amount: Float) {
+        hunger.feed(if (effects.isOn(Effect.Greedy)) amount * EffectTuning.greedyFeedFactor else amount)
     }
 
     /** Ravenous makes the hunger bar drain faster, and fades in and out like its arrow. */
     private fun ravenousFactor(): Float = 1f + (EffectTuning.ravenousDrainFactor - 1f) * effects.level(Effect.Ravenous)
 
-    /** Sluggish slows the snake down, and fades in and out like its bar. */
-    private fun sluggishFactor(): Float = 1f + (EffectTuning.sluggishSpeedFactor - 1f) * effects.level(Effect.Sluggish)
+    /** Lazy slows the snake down, and fades in and out like its bar. */
+    private fun lazyFactor(): Float = 1f + (EffectTuning.lazySpeedFactor - 1f) * effects.level(Effect.Lazy)
 
     private fun dustAtNewBounces() {
         if (snake.bounceCount == seenBounces) return
@@ -237,7 +242,7 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
         when (critter) {
             is Critter.Mouse -> {
                 score++
-                hunger.feed(HungerTuning.mouseFills)
+                feed(HungerTuning.mouseFills)
                 snake.grow(1)
                 snake.addBulge()
                 particleSystem.floatText("+1", snake.x, snake.y - 6f, Color(0xFFFFF3B0))
@@ -248,7 +253,7 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
             }
             is Critter.Bird -> {
                 score += BirdTuning.score
-                hunger.feed(HungerTuning.birdFills)
+                feed(HungerTuning.birdFills)
                 powerUps.apply(critter.kind)
                 if (critter.kind.powerUp == PowerUp.ToadFree) toadBlast.blowUp(mutableCritters)
                 snake.grow(1)
@@ -261,7 +266,7 @@ class GameWorld(val arena: Arena, seed: Int = 1) {
             }
             is Critter.Toad -> {
                 effects.apply(critter.kind)
-                hunger.feed(HungerTuning.toadFills)
+                feed(HungerTuning.toadFills)
                 particleSystem.sparkles(
                     critter.x, critter.y - 3f, 12,
                     listOf(critter.kind.body, critter.kind.light, Color(0xFFFFFFFF)),

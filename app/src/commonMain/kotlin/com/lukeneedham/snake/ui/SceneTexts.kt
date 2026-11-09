@@ -13,12 +13,14 @@ import com.lukeneedham.snake.generated.resources.effect_disguised
 import com.lukeneedham.snake.generated.resources.effect_disguised_description
 import com.lukeneedham.snake.generated.resources.effect_hallucinating
 import com.lukeneedham.snake.generated.resources.effect_hallucinating_description
-import com.lukeneedham.snake.generated.resources.effect_hay_fever
-import com.lukeneedham.snake.generated.resources.effect_hay_fever_description
+import com.lukeneedham.snake.generated.resources.effect_hayfever
+import com.lukeneedham.snake.generated.resources.effect_greedy
+import com.lukeneedham.snake.generated.resources.effect_greedy_description
+import com.lukeneedham.snake.generated.resources.effect_hayfever_description
 import com.lukeneedham.snake.generated.resources.effect_ravenous
 import com.lukeneedham.snake.generated.resources.effect_ravenous_description
-import com.lukeneedham.snake.generated.resources.effect_sluggish
-import com.lukeneedham.snake.generated.resources.effect_sluggish_description
+import com.lukeneedham.snake.generated.resources.effect_lazy
+import com.lukeneedham.snake.generated.resources.effect_lazy_description
 import com.lukeneedham.snake.generated.resources.game_over
 import com.lukeneedham.snake.generated.resources.game_title
 import com.lukeneedham.snake.generated.resources.menu_back
@@ -69,9 +71,10 @@ internal fun sceneTexts(score: Int, bestScore: Int, isNewBest: Boolean): SceneTe
             Effect.Hallucinating -> stringResource(Res.string.effect_hallucinating_description)
             Effect.Disguised -> stringResource(Res.string.effect_disguised_description)
             Effect.Confused -> stringResource(Res.string.effect_confused_description)
-            Effect.HayFever -> stringResource(Res.string.effect_hay_fever_description)
+            Effect.Hayfever -> stringResource(Res.string.effect_hayfever_description)
+            Effect.Greedy -> stringResource(Res.string.effect_greedy_description)
             Effect.Ravenous -> stringResource(Res.string.effect_ravenous_description)
-            Effect.Sluggish -> stringResource(Res.string.effect_sluggish_description)
+            Effect.Lazy -> stringResource(Res.string.effect_lazy_description)
             Effect.Cannibal -> stringResource(Res.string.effect_cannibal_description)
         }
     },
@@ -90,9 +93,10 @@ internal fun sceneTexts(score: Int, bestScore: Int, isNewBest: Boolean): SceneTe
             Effect.Hallucinating -> stringResource(Res.string.effect_hallucinating)
             Effect.Disguised -> stringResource(Res.string.effect_disguised)
             Effect.Confused -> stringResource(Res.string.effect_confused)
-            Effect.HayFever -> stringResource(Res.string.effect_hay_fever)
+            Effect.Hayfever -> stringResource(Res.string.effect_hayfever)
+            Effect.Greedy -> stringResource(Res.string.effect_greedy)
             Effect.Ravenous -> stringResource(Res.string.effect_ravenous)
-            Effect.Sluggish -> stringResource(Res.string.effect_sluggish)
+            Effect.Lazy -> stringResource(Res.string.effect_lazy)
             Effect.Cannibal -> stringResource(Res.string.effect_cannibal)
         }
     },

@@ -19,9 +19,10 @@
     <string name="effect_hallucinating">Trippy!</string>
     <string name="effect_disguised">Mystery!</string>
     <string name="effect_confused">Dizzy!</string>
-    <string name="effect_hay_fever">Hay fever!</string>
+    <string name="effect_hayfever">Hayfever!</string>
+    <string name="effect_greedy">Greedy!</string>
     <string name="effect_ravenous">Ravenous!</string>
-    <string name="effect_sluggish">Sluggish!</string>
+    <string name="effect_lazy">Lazy!</string>
     <string name="effect_cannibal">Cannibal!</string>
     <string name="power_up_zoom">Zoom!</string>
     <string name="power_up_fast_sprint">Sprinter!</string>
@@ -34,9 +35,10 @@
     <string name="effect_hallucinating_description">The whole screen goes wavy.</string>
     <string name="effect_disguised_description">Animals look like other animals.</string>
     <string name="effect_confused_description">The snake ignores your taps.</string>
-    <string name="effect_hay_fever_description">Touch the grass and you die!</string>
+    <string name="effect_hayfever_description">Touch the grass and you die!</string>
+    <string name="effect_greedy_description">Food feeds you only half as much.</string>
     <string name="effect_ravenous_description">The hunger bar drains faster.</string>
-    <string name="effect_sluggish_description">The snake goes much slower.</string>
+    <string name="effect_lazy_description">The snake goes much slower.</string>
     <string name="effect_cannibal_description">Touch yourself and you die!</string>
     <string name="power_up_zoom_description">The snake goes faster.</string>
     <string name="power_up_fast_sprint_description">Sprinting is faster and costs less food.</string>

@@ -35,7 +35,7 @@ into its own doc when work on it starts.
   `pointsPerExtraBird`, so the score never brings a second one), and a lot rarer: much longer waits between birds
   (`firstBirdDelay`, `birdDelayMin` and `birdDelayMax` in `SpawnTuning`). Update the tests in `CritterSpawnerTest` that count two birds.
 - [x] **The snake does not die from touching itself, except under the cannibal effect.** Done: it comes from the brown toad
-  (`ToadKind.Brown`, `Effect.Cannibal`, 12 seconds, "Cannibal!"; the grey toad now gives hay fever, which kills on touching the grass), shown with a bar and a banner like the other effects. The body is drawn
+  (`ToadKind.Brown`, `Effect.Cannibal`, 12 seconds, "Cannibal!"; the grey toad now gives hayfever, which kills on touching the grass), shown with a bar and a banner like the other effects. The body is drawn
   in stretches so that where it crosses itself the part nearer the head lies over the other with a dark edge (`SnakeRenderer`).
   Original brief: Normally the snake can loop over its own body
   and nothing happens (so `snake.hitsItself()` no longer ends the game in `GameWorld.updatePlaying`): the only way to die is to starve.

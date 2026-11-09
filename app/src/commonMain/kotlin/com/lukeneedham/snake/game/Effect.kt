@@ -11,14 +11,17 @@ enum class Effect(val durationSeconds: Float) {
     /** The snake ignores taps. */
     Confused(2.5f),
 
-    /** Hay fever: the snake dies the moment it touches the grass. Without it, it just bounces off the edge of the oval. */
-    HayFever(12f),
+    /** Hayfever: the snake dies the moment it touches the grass. Without it, it just bounces off the edge of the oval. */
+    Hayfever(12f),
 
-    /** Ravenous: the hunger bar drains faster. */
+    /** Greedy: what the snake eats feeds it only half as much. */
+    Greedy(10f),
+
+    /** The hunger bar drains faster. No toad gives it for now, until it gets a better name. */
     Ravenous(10f),
 
-    /** Sluggish: the snake goes slower, both normally and while it sprints. */
-    Sluggish(10f),
+    /** Lazy: the snake goes slower, both normally and while it sprints. */
+    Lazy(10f),
 
     /** Cannibal: the snake dies if it touches itself. Without it, the snake can cross its own body safely. The brown toad gives it. */
     Cannibal(12f),
