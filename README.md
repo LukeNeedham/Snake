@@ -11,7 +11,7 @@ Snake with a twist: one button, a snake that only ever turns, and poisonous toad
 
 Snake is a one-button arcade game in pixel art. The snake never goes straight: it circles around itself, and the only
 thing you can do is tap to change the direction of the turn. Steer it by twisting out of its own spiral, bounce it off the
-edge of the oval, and eat the mice that run out of the tall grass. Each mouse makes the snake one section longer, with
+edge of the oval (a bounce turns it the other way too), and eat the mice that run out of the tall grass. Each mouse makes the snake one section longer, with
 a skin pattern that repeats as it grows. The snake can cross its own body without harm: the only things that kill it are
 hunger and the lupus curse.
 
