@@ -13,10 +13,10 @@ private enum class ArrowDirection { Up, Down, Left, Right }
 
 /**
  * What is on the screen during the story and the lessons at the start. Nothing while the story plays by itself; the lesson of the turn once
- * the bubble has popped, and an arrow to the path to the left; in the room of the tutorial the sprint button, with an arrow and the lesson
- * of the sprint, then the hunger bar, with an arrow and its lesson, and the lessons of the toad and the bird; then an arrow that shows the
- * way back to the house, and one that shows the way up to the stage. The bars and the banners of the effects and the power ups are there once
- * the animals come.
+ * the bubble has popped, and an arrow to the path to the left; in the room of the tutorial the hunger bar, with an arrow and the words that
+ * say that the belly decreases, then the sprint button, with an arrow and the lesson of the sprint, and the words that zooming makes the snake
+ * hungry, then the words of the lessons of the mouse, the toad and the bird; then an arrow that shows the way back to the house, and one
+ * that shows the way up to the stage. The bars and the banners of the effects and the power ups are there once the animals come.
  */
 internal fun DrawScope.drawIntroHud(world: GameWorld, texts: SceneTexts, topInset: Int) {
     val intro = world.intro ?: return
@@ -35,10 +35,14 @@ internal fun DrawScope.drawIntroHud(world: GameWorld, texts: SceneTexts, topInse
             drawCenteredPixelText(texts.tapToTurn, world.arena.width.toInt() / 2, top + bounce, HudPalette.gold, scale = 2)
         }
         IntroStage.Steering -> if (intro.isTutorial) drawEdgeArrow(world, ArrowDirection.Left, topInset)
+        IntroStage.Hunger -> drawHungerLesson(world, texts.bellyDecreases, topInset)
         IntroStage.Sprint -> drawZoomLesson(world, texts)
-        IntroStage.Hunger, IntroStage.Mouse -> drawHungerLesson(world, texts, topInset)
-        IntroStage.Toad, IntroStage.Dizzy -> drawLessonText(world, texts.toadsPoisonYou, topInset)
-        IntroStage.Bird -> drawLessonText(world, texts.birdsGivePowers, topInset)
+        IntroStage.Zoomed -> drawLessonText(world, texts.zoomingMakesHungry, topInset)
+        IntroStage.Mouse -> drawHungerLesson(world, texts.eatToNotStarve, topInset)
+        IntroStage.Toad -> drawLessonText(world, texts.youCanEatToads, topInset)
+        IntroStage.Dizzy -> drawLessonText(world, texts.butTheyPoison, topInset)
+        IntroStage.Bird -> drawLessonText(world, texts.tryToCatchBirds, topInset)
+        IntroStage.Powers -> drawLessonText(world, texts.theyGivePowers, topInset)
         IntroStage.Return -> drawEdgeArrow(world, ArrowDirection.Right, topInset)
         IntroStage.Leaving -> drawEdgeArrow(world, ArrowDirection.Up, topInset)
         else -> Unit
@@ -74,13 +78,13 @@ private fun DrawScope.drawZoomLesson(world: GameWorld, texts: SceneTexts) {
 }
 
 /** A big arrow that bounces under the hunger bar in the top right corner and points up at it, with the words under it. */
-private fun DrawScope.drawHungerLesson(world: GameWorld, texts: SceneTexts, topInset: Int) {
+private fun DrawScope.drawHungerLesson(world: GameWorld, text: String, topInset: Int) {
     val width = world.arena.width.toInt()
     val bounce = (sin(world.time * 6f) * 2f).roundToInt()
     val tipY = topInset + stomachBottom + 3 + bounce
     drawArrow(width - stomachCenterFromEdge, tipY, ArrowDirection.Up)
     val top = tipY + arrowLength + 4
-    texts.eatToNotStarve.lines().forEachIndexed { index, line ->
+    text.lines().forEachIndexed { index, line ->
         drawPixelText(line, width - zoomTextMargin - PixelFont.width(line, 2), top + index * lineHeight, HudPalette.gold, scale = 2)
     }
 }

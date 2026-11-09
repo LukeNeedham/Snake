@@ -14,4 +14,6 @@ data class GameUiState(
     val bestScore: Int,
     /** Whether the score of the game that just ended beats the best one. */
     val isNewBest: Boolean,
+    /** Whether the pause overlay is open, so that the back button closes it instead of leaving the app. */
+    val isMenuOpen: Boolean = false,
 )

@@ -4,8 +4,8 @@ package com.lukeneedham.snake.game
  * The map of the world. The screen is [Arena.width] by [Arena.height]. The oval of the game (the stage) is at the top. A path of bare
  * ground one screen long leads down from it to the snake's house, a misshapen floor of stone ringed with rocks, so that neither can be seen
  * from the other. Another path leads left from the house to the room of the tutorial, an oval just like the stage, which is on the screen
- * to the left of the house. The path up from the house is blocked by a pile of stones at the start of the first game, until the tutorial
- * is done. The camera follows the snake: it shows the house or the room, and the path up between the house and the stage.
+ * to the left of the house. The path up from the house is closed by a line of stones in the wall of the house at the start of the first game,
+ * until the tutorial is done. The camera follows the snake: it shows the house or the room, and the path up between the house and the stage.
  */
 class WorldLayout(val arena: Arena) {
 
@@ -39,7 +39,7 @@ class WorldLayout(val arena: Arena) {
     /** The path from the house to the left, to the room. */
     val pathLeft: BoxBounds
 
-    /** The pile of stones across the path up, while it is closed. */
+    /** The line of stones that closes the path up in the wall of the house, while it is closed. */
     val gate: BoxBounds
 
     /** Whether the stones block the path up: they do until the tutorial is done. */
@@ -65,8 +65,9 @@ class WorldLayout(val arena: Arena) {
         val top = arena.height - WorldTuning.grassDepth - DenTuning.pathOverlap
         pathUp = BoxBounds(arena.centerX, (top + houseY) / 2f, DenTuning.pathHalfWidth, (houseY - top) / 2f)
         pathLeft = BoxBounds((room.centerX + houseX) / 2f, houseY, (houseX - room.centerX) / 2f, DenTuning.leftPathHalfWidth)
-        val gateY = houseY - house.radiusAt(-halfPi) - DenTuning.gateAboveHouse
-        gate = BoxBounds(houseX, gateY, DenTuning.pathHalfWidth + 3f, DenTuning.gateHalfThickness)
+        // The stones close the opening that the path up makes in the wall of the house, along the curve of the wall
+        val edgeY = houseY - house.radiusAt(-halfPi)
+        gate = BoxBounds(houseX, edgeY - DenTuning.gateOutside, DenTuning.pathHalfWidth + 3f, DenTuning.gateHalfThickness)
         terrain = UnionBounds(listOf(arena, pathUp, house, pathLeft, room))
         ground = GateBounds(terrain, gate) { isGateClosed }
     }

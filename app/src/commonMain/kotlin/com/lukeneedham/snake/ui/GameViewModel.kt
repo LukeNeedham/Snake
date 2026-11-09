@@ -10,6 +10,7 @@ import com.lukeneedham.snake.game.GamePhase
 import com.lukeneedham.snake.game.GameWorld
 import com.lukeneedham.snake.game.MenuItem
 import com.lukeneedham.snake.game.Opening
+import com.lukeneedham.snake.game.PausePage
 import com.lukeneedham.snake.game.PressTarget
 import com.lukeneedham.snake.game.SprintSide
 import com.lukeneedham.snake.game.WorldTuning
@@ -71,13 +72,24 @@ class GameViewModel(bestScoreStore: BestScoreStore, private val settingsStore: S
     }
 
     /**
-     * A finger went down on [target]. With the menu open only its buttons do anything (the page opens the settings itself). With it
-     * closed, the button in the corner opens it, and any other finger acts at once: in the sprint zone it sprints while it is held
-     * during a game, anywhere else it turns the snake, or starts, or restarts the game.
+     * A finger pressed [target]. With the pause overlay open only its close button, page dots and buttons do anything (the page opens
+     * the settings itself); the overlay is pressed when the finger lets go, so that a swipe between pages presses nothing. With it
+     * closed, the top left corner opens it, the stomach and the arrows in the bottom right corner open it on their pages, and any other
+     * finger acts at once: in the sprint zone it sprints while it is held during a game, anywhere else it turns the snake, or starts,
+     * or restarts the game.
      */
     fun onPress(pointerId: Long, target: PressTarget) {
         if (world.isMenuOpen) {
-            if (target is PressTarget.Item) onMenuItem(target.item)
+            when (target) {
+                is PressTarget.Item -> onMenuItem(target.item)
+                PressTarget.CloseButton -> world.closeMenu()
+                is PressTarget.PageDot -> world.overlay.goTo(target.page)
+                else -> Unit
+            }
+        } else if (target == PressTarget.StatusCorner && world.phase == GamePhase.Playing) {
+            world.openOverlay(PausePage.Status)
+        } else if (target == PressTarget.Stomach && world.phase == GamePhase.Playing) {
+            world.openOverlay(PausePage.Hunger)
         } else if (target == PressTarget.MenuButton) {
             world.openMenu()
         } else {
@@ -89,6 +101,24 @@ class GameViewModel(bestScoreStore: BestScoreStore, private val settingsStore: S
                 GamePhase.GameOver -> restartIfAllowed()
             }
         }
+        publish()
+    }
+
+    /** The back button was pressed while the pause overlay is open: it closes, and the game carries on if it was paused. */
+    fun onBack() {
+        world.closeMenu()
+        publish()
+    }
+
+    /** A finger drags the pages of the pause overlay by [pages] pages (a fraction of the screen width). */
+    fun onPageDrag(pages: Float) {
+        world.overlay.dragBy(pages)
+        publish()
+    }
+
+    /** The finger that dragged the pages of the overlay let go. */
+    fun onPageRelease() {
+        world.overlay.release()
         publish()
     }
 
@@ -139,6 +169,7 @@ class GameViewModel(bestScoreStore: BestScoreStore, private val settingsStore: S
         score = world.score,
         bestScore = bestScores.best,
         isNewBest = bestScores.isNewBest,
+        isMenuOpen = world.isMenuOpen,
     )
 
     private companion object {

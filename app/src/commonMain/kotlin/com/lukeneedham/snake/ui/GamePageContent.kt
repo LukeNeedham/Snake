@@ -25,6 +25,8 @@ internal fun GamePageContent(
     onRelease: (pointerId: Long) -> Unit,
     onSceneSize: (widthPx: Int, heightPx: Int) -> Unit,
     onOpenSettings: () -> Unit,
+    onPageDrag: (pages: Float) -> Unit = {},
+    onPageRelease: () -> Unit = {},
 ) {
     Box(
         modifier = Modifier
@@ -39,6 +41,8 @@ internal fun GamePageContent(
                 if (target == PressTarget.Item(MenuItem.Settings)) onOpenSettings() else onPress(pointerId, target)
             },
             onRelease = onRelease,
+            onPageDrag = onPageDrag,
+            onPageRelease = onPageRelease,
         )
     }
 }

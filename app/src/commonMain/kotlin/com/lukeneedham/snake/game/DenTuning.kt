@@ -29,9 +29,9 @@ object DenTuning {
     /** How many seconds the snake circles before the intro starts, so that its body already follows the circle. */
     const val warmUpSeconds = 1.6f
 
-    /** The pile of stones that blocks the path up is this far above the house, and this thick. */
-    const val gateAboveHouse = 16f
-    const val gateHalfThickness = 7f
+    /** The stones that block the path up are a line in the wall of the house: the part of the path just outside the edge of the house floor, this thick, is cut off. */
+    const val gateOutside = 4f
+    const val gateHalfThickness = 6f
 
     /** How deep in the room of the tutorial, and in the house, the snake has to be to be there. */
     const val roomDepth = 10f

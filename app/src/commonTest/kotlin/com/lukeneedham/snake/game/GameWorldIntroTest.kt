@@ -30,8 +30,9 @@ class GameWorldIntroTest {
 
     private fun GameWorld.steerUpThePath() = steerToward(arena.centerX, arena.centerY)
 
-    /** Steers for the animal of the lesson if there is one, and otherwise for where the tutorial leads next. */
+    /** Steers for the animal of the lesson if there is one, holds the sprint corner in the lesson of the sprint, and otherwise steers for where the tutorial leads next. */
     private fun GameWorld.steerThroughTheTutorial() {
+        if (intro?.stage == IntroStage.Sprint && !sprint.isHeld) introPress(7L, isInSprintZone = true)
         val animal = critters.firstOrNull()
         when {
             animal != null -> steerToward(animal.x, animal.y)
@@ -178,13 +179,13 @@ class GameWorldIntroTest {
     }
 
     @Test
-    fun thePathToTheLeftLeadsToTheRoomAndTheLessonOfTheSprintBegins() {
+    fun thePathToTheLeftLeadsToTheRoomAndTheLessonOfTheHungerBegins() {
         val world = newWorld()
         world.start()
         world.playTheStory()
         world.tap()
-        world.playUntil(60f) { world.intro!!.stage == IntroStage.Sprint }
-        assertEquals(IntroStage.Sprint, world.intro!!.stage)
+        world.playUntil(60f) { world.intro!!.stage == IntroStage.Hunger }
+        assertEquals(IntroStage.Hunger, world.intro!!.stage)
         assertTrue(world.layout.room.signedDistance(world.snake.x, world.snake.y) < 0f)
         // The camera has gone over to the room
         world.play(2f)
@@ -193,15 +194,35 @@ class GameWorldIntroTest {
     }
 
     @Test
-    fun holdingTheSprintCornerForLongEnoughStartsTheLessonOfTheHunger() {
+    fun theBellyRunsDownByTwoStepsAndThenTheLessonOfTheSprintBegins() {
+        val world = newWorld()
+        world.start()
+        world.jumpToLesson(IntroStage.Hunger)
+        assertEquals(1f, world.hunger.level)
+        assertTrue(world.critters.isEmpty())
+        world.play(IntroTuning.hungerTextSeconds + 1.5f)
+        assertEquals(IntroStage.Sprint, world.intro!!.stage)
+        assertEquals(IntroTuning.hungerDemoLevel, world.hunger.level, 0.02f)
+        assertTrue(world.critters.isEmpty())
+    }
+
+    @Test
+    fun holdingTheSprintCornerForLongEnoughShowsThatZoomingMakesTheSnakeHungry() {
         val world = newWorld()
         world.start()
         world.jumpToLesson(IntroStage.Sprint)
+        val before = world.hunger.level
         world.introPress(7L, isInSprintZone = true)
         world.play(IntroTuning.zoomSeconds - 0.5f)
         assertEquals(IntroStage.Sprint, world.intro!!.stage)
         world.play(1f)
-        assertEquals(IntroStage.Hunger, world.intro!!.stage)
+        assertEquals(IntroStage.Zoomed, world.intro!!.stage)
+        assertTrue(world.hunger.level < before, "the belly did not run down")
+        world.sprintRelease(7L)
+        // And then the mouse
+        world.play(IntroTuning.zoomedSeconds + IntroTuning.mouseDelay + 0.5f)
+        assertEquals(IntroStage.Mouse, world.intro!!.stage)
+        assertTrue(world.critters.single() is Critter.Mouse)
     }
 
     @Test
@@ -219,21 +240,15 @@ class GameWorldIntroTest {
     }
 
     @Test
-    fun theHungerBarRunsDownAndThenAMouseRunsInFromTheGrassToTheMiddleOfTheRoom() {
+    fun aMouseRunsInFromTheGrassToTheMiddleOfTheRoomAndWaits() {
         val world = newWorld()
         world.start()
-        world.jumpToLesson(IntroStage.Hunger)
-        assertEquals(1f, world.hunger.level)
-        assertTrue(world.critters.isEmpty())
-        world.play(IntroTuning.hungerTextSeconds + IntroTuning.mouseDelay + 0.5f)
-        assertEquals(IntroStage.Mouse, world.intro!!.stage)
-        assertTrue(world.hunger.level <= IntroTuning.hungerDemoLevel + 0.01f)
+        world.jumpToLesson(IntroStage.Mouse)
+        world.play(IntroTuning.mouseDelay + 0.2f)
         val mouse = world.critters.single()
         assertTrue(mouse is Critter.Mouse)
         // It starts in the grass, outside the oval of the room
         assertTrue(world.layout.room.signedDistance(mouse.x, mouse.y) > 0f)
-        world.play(0.2f)
-        world.sprintRelease(0L)
         world.play(10f)
         // Unless the snake ate it on the way, it is in the middle and stays there
         val middle = world.layout.room
@@ -245,8 +260,8 @@ class GameWorldIntroTest {
     fun eatingTheMouseFillsTheBarAndLeadsToTheToad() {
         val world = newWorld()
         world.start()
-        world.jumpToLesson(IntroStage.Hunger)
-        world.play(IntroTuning.hungerTextSeconds + IntroTuning.mouseDelay + 0.5f)
+        world.jumpToLesson(IntroStage.Mouse)
+        world.play(IntroTuning.mouseDelay + 0.5f)
         val before = world.hunger.level
         world.playUntil(60f) { world.intro!!.stage != IntroStage.Mouse }
         assertEquals(IntroStage.Toad, world.intro!!.stage)
@@ -294,7 +309,9 @@ class GameWorldIntroTest {
         val world = newWorld()
         world.start()
         world.jumpToLesson(IntroStage.Bird)
-        world.playUntil(120f) { world.intro!!.stage == IntroStage.Return }
+        world.playUntil(120f) { world.intro!!.stage == IntroStage.Powers }
+        assertEquals(IntroStage.Powers, world.intro!!.stage)
+        world.playUntil(10f) { world.intro!!.stage == IntroStage.Return }
         assertEquals(IntroStage.Return, world.intro!!.stage)
         assertTrue(world.layout.isGateClosed)
         world.playUntil(60f) { world.intro!!.stage == IntroStage.Leaving }
@@ -345,7 +362,7 @@ class GameWorldIntroTest {
         }
         assertEquals(GamePhase.Intro, world.phase)
         assertTrue(world.intro!!.isReplay)
-        assertEquals(IntroStage.Sprint, world.intro!!.stage)
+        assertEquals(IntroStage.Hunger, world.intro!!.stage)
         // And when the bird is eaten the snake plays on
         world.jumpToLesson(IntroStage.Bird)
         world.playUntil(120f) { world.phase == GamePhase.Playing }
@@ -368,5 +385,27 @@ class GameWorldIntroTest {
         }
         assertTrue(world.snake.y > world.arena.height + 60f, "the snake only got to ${world.snake.y}")
         assertTrue(world.cameraY > 0f)
+    }
+
+    @Test
+    fun theOvalCarriesOnAsNormalAfterTheSnakeDies() {
+        val world = GameWorld(Arena(108f, 234f), seed = 5)
+        world.start()
+        world.endGame(DeathCause.Starvation)
+        assertEquals(GamePhase.GameOver, world.phase)
+        val x = world.snake.x
+        val y = world.snake.y
+        var mostAtOnce = 0
+        var seenMouse = false
+        repeat(60 * 90) {
+            world.update(1f / 60f)
+            mostAtOnce = maxOf(mostAtOnce, world.critters.size)
+            seenMouse = seenMouse || world.critters.any { it is Critter.Mouse }
+        }
+        // Mice come out of the grass, and the dead snake does not eat them or move
+        assertTrue(seenMouse, "no mouse ever came")
+        assertEquals(x, world.snake.x)
+        assertEquals(y, world.snake.y)
+        assertEquals(GamePhase.GameOver, world.phase)
     }
 }

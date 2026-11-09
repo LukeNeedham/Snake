@@ -7,9 +7,11 @@ import com.lukeneedham.snake.game.Arena
 import com.lukeneedham.snake.game.BirdKind
 import com.lukeneedham.snake.game.BirdLanding
 import com.lukeneedham.snake.game.Critter
+import com.lukeneedham.snake.game.DeathCause
 import com.lukeneedham.snake.game.GameWorld
 import com.lukeneedham.snake.game.IntroStage
 import com.lukeneedham.snake.game.Opening
+import com.lukeneedham.snake.game.PausePage
 import com.lukeneedham.snake.game.ToadKind
 import com.lukeneedham.snake.game.Vec2
 import com.lukeneedham.snake.ui.GamePageContent
@@ -91,11 +93,27 @@ private fun GamePageSteeringScreenshot() {
     AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
 }
 
-/** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageZoom.png. */
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GameTutorialHunger.png. */
 @Preview(widthDp = 360, heightDp = 800)
 @Composable
-private fun GamePageZoomScreenshot() {
-    // In the room of the tutorial the sprint button shows, with an arrow and the words that say to hold it
+private fun GameTutorialHungerScreenshot() {
+    // The hunger bar shows for the first time, with an arrow and the words that the belly decreases, and it runs down
+    val world = remember {
+        GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Tutorial).also {
+            it.start()
+            it.jumpToLesson(IntroStage.Hunger)
+            repeat(90) { _ -> it.update(1f / 60f) }
+        }
+    }
+    val state = GameUiState(world = world, phase = world.phase, score = 0, bestScore = 12, isNewBest = false)
+    AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
+}
+
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GameTutorialZoom.png. */
+@Preview(widthDp = 360, heightDp = 800)
+@Composable
+private fun GameTutorialZoomScreenshot() {
+    // The sprint button shows, with an arrow and the words that say to hold it
     val world = remember {
         GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Tutorial).also {
             it.start()
@@ -107,15 +125,15 @@ private fun GamePageZoomScreenshot() {
     AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
 }
 
-/** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageHunger.png. */
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GameTutorialMouse.png. */
 @Preview(widthDp = 360, heightDp = 800)
 @Composable
-private fun GamePageHungerScreenshot() {
-    // The hunger bar shows for the first time, half empty, with an arrow, and a mouse has run into the room
+private fun GameTutorialMouseScreenshot() {
+    // The words say to eat so as not to starve, and a mouse has run into the middle of the room
     val world = remember {
         GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Tutorial).also {
             it.start()
-            it.jumpToLesson(IntroStage.Hunger)
+            it.jumpToLesson(IntroStage.Mouse)
             repeat(330) { _ -> it.update(1f / 60f) }
         }
     }
@@ -123,11 +141,11 @@ private fun GamePageHungerScreenshot() {
     AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
 }
 
-/** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageToad.png. */
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GameTutorialToad.png. */
 @Preview(widthDp = 360, heightDp = 800)
 @Composable
-private fun GamePageToadScreenshot() {
-    // The pink toad has hopped to the middle of the room, and the words say that toads poison
+private fun GameTutorialToadScreenshot() {
+    // The words say that toads can be eaten, and the pink toad has hopped to the middle of the room
     val world = remember {
         GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Tutorial).also {
             it.start()
@@ -139,11 +157,11 @@ private fun GamePageToadScreenshot() {
     AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
 }
 
-/** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageBird.png. */
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GameTutorialBird.png. */
 @Preview(widthDp = 360, heightDp = 800)
 @Composable
-private fun GamePageBirdScreenshot() {
-    // A bird has flown in to the middle of the room
+private fun GameTutorialBirdScreenshot() {
+    // The words say to catch birds, and a bird has flown in to the middle of the room
     val world = remember {
         GameWorld(Arena(108f, 240f), seed = 7, opening = Opening.Tutorial).also {
             it.start()
@@ -241,6 +259,42 @@ private fun GamePageHallucinatingScreenshot() {
     AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
 }
 
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageHunger.png. */
+@Preview(widthDp = 360, heightDp = 800)
+@Composable
+private fun GamePageHungerScreenshot() {
+    val world = remember {
+        GameWorld(Arena(108f, 240f), seed = 7).also {
+            it.start()
+            repeat(720) { _ -> it.update(1f / 60f) }
+            it.score = 7
+            it.openOverlay(PausePage.Hunger)
+        }
+    }
+    val state = GameUiState(world = world, phase = world.phase, score = world.score, bestScore = 12, isNewBest = false)
+    AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
+}
+
+/** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageStatus.png. */
+@Preview(widthDp = 360, heightDp = 800)
+@Composable
+private fun GamePageStatusScreenshot() {
+    val world = remember {
+        GameWorld(Arena(108f, 240f), seed = 7).also {
+            it.start()
+            repeat(720) { _ -> it.update(1f / 60f) }
+            it.score = 7
+            it.applyEffect(ToadKind.Olive)
+            it.applyEffect(ToadKind.Brown)
+            it.powerUps.apply(BirdKind.BlueTit)
+            repeat(120) { _ -> it.update(1f / 60f) }
+            it.openOverlay(PausePage.Status)
+        }
+    }
+    val state = GameUiState(world = world, phase = world.phase, score = world.score, bestScore = 12, isNewBest = false)
+    AppTheme { GamePageContent(state = state, onPress = { _, _ -> }, onRelease = {}, onSceneSize = { _, _ -> }, onOpenSettings = {}) }
+}
+
 /** Rendered by CI to docs/screenshots/<position in order.txt>-GamePageGameOver.png. */
 @Preview(widthDp = 360, heightDp = 800)
 @Composable
@@ -250,7 +304,7 @@ private fun GamePageGameOverScreenshot() {
             it.start()
             repeat(720) { _ -> it.update(1f / 60f) }
             it.score = 13
-            it.endGame()
+            it.endGame(DeathCause.Starvation)
             repeat(75) { _ -> it.update(1f / 60f) }
         }
     }

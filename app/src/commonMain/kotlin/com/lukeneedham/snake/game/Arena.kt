@@ -12,6 +12,12 @@ class Arena(val width: Float, val height: Float) : Bounds {
 
     private val oval = OvalBounds(centerX, centerY, radiusX, radiusY)
 
+    /**
+     * How much of the bottom of the world is under the navigation bar, in art pixels. The game is drawn edge to edge, behind the
+     * system bars, so what the player touches at the bottom has to sit above this. The scene sets it once it knows the size of the screen.
+     */
+    var bottomInset = 0f
+
     /** How far the point is from the edge of the oval, along the way out: negative inside, positive in the grass. */
     override fun signedDistance(x: Float, y: Float): Float = oval.signedDistance(x, y)
 

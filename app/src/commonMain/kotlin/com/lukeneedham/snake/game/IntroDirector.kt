@@ -56,9 +56,9 @@ class IntroDirector(val isTutorial: Boolean = true, val isReplay: Boolean = fals
         if (stage == IntroStage.Teaching) enter(IntroStage.Steering)
     }
 
-    /** The snake is in the room of the tutorial: the lesson of the sprint begins. */
+    /** The snake is in the room of the tutorial: the lesson of the hunger begins. */
     fun enteredRoom() {
-        if (stage == IntroStage.Steering && isTutorial) enter(IntroStage.Sprint)
+        if (stage == IntroStage.Steering && isTutorial) enter(IntroStage.Hunger)
     }
 
     /** Called every step: [isHeld] is whether a finger is in the sprint corner. Only counts in the lesson of the sprint. */
@@ -67,13 +67,13 @@ class IntroDirector(val isTutorial: Boolean = true, val isReplay: Boolean = fals
         zoomHeldSeconds = if (isHeld) zoomHeldSeconds + dt else 0f
         if (zoomHeldSeconds >= IntroTuning.zoomSeconds) {
             hasZoomed = true
-            enter(IntroStage.Hunger)
+            enter(IntroStage.Zoomed)
         }
     }
 
-    /** Called every step in the lesson of the hunger, with how full the snake is: once the bar has shown for a while and run down, the mouse comes. */
+    /** Called every step in the lesson of the hunger, with how full the snake is: once the bar has shown for a while and run down, the lesson of the sprint begins. */
     fun hungerShown(level: Float) {
-        if (stage == IntroStage.Hunger && stageTime >= IntroTuning.hungerTextSeconds && level <= IntroTuning.hungerDemoLevel) enter(IntroStage.Mouse)
+        if (stage == IntroStage.Hunger && stageTime >= IntroTuning.hungerTextSeconds && level <= IntroTuning.hungerDemoLevel) enter(IntroStage.Sprint)
     }
 
     /** True once, when it is time for the animal of the lesson to come in from the grass. */
@@ -94,7 +94,7 @@ class IntroDirector(val isTutorial: Boolean = true, val isReplay: Boolean = fals
         when {
             stage == IntroStage.Mouse && critter is Critter.Mouse -> enter(IntroStage.Toad)
             stage == IntroStage.Toad && critter is Critter.Toad -> enter(IntroStage.Dizzy)
-            stage == IntroStage.Bird && critter is Critter.Bird -> enter(IntroStage.Return)
+            stage == IntroStage.Bird && critter is Critter.Bird -> enter(IntroStage.Powers)
         }
     }
 
@@ -111,7 +111,7 @@ class IntroDirector(val isTutorial: Boolean = true, val isReplay: Boolean = fals
 
     /** Jumps to a part of the lessons, as if everything before it was done: for the tests and the screenshots. */
     internal fun jumpTo(target: IntroStage) {
-        hasZoomed = target >= IntroStage.Hunger
+        hasZoomed = target >= IntroStage.Zoomed
         enter(target)
     }
 

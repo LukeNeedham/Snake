@@ -20,6 +20,12 @@ class HungerTest {
     }
 
     @Test
+    fun aDrainFactorMakesTheBarDropFaster() {
+        val hunger = Hunger().apply { update(5f, sprintLevel = 0f, drainFactor = 2f) }
+        assertEquals(1f - 5f * HungerTuning.drainPerSecond * 2f, hunger.level, 1e-4f)
+    }
+
+    @Test
     fun sprintingDrainsTheBarFaster() {
         val resting = Hunger().apply { update(5f, sprintLevel = 0f) }
         val sprinting = Hunger().apply { update(5f, sprintLevel = 1f) }
@@ -157,5 +163,14 @@ class HungerTest {
         repeat(60 * 10) { hunger.settle(1f / 60f) }
         assertEquals(0.8f, hunger.level, 1e-3f)
         assertEquals(0.8f, hunger.filled, 1e-3f)
+    }
+
+    @Test
+    fun theSprintDemoOnlyDrainsWhileTheSnakeSprints() {
+        val hunger = Hunger()
+        repeat(60 * 5) { hunger.drainSprintDemo(1f / 60f, 0f, 0.25f) }
+        assertEquals(1f, hunger.level)
+        repeat(60 * 20) { hunger.drainSprintDemo(1f / 60f, 1f, 0.25f) }
+        assertEquals(0.25f, hunger.level, 1e-3f)
     }
 }

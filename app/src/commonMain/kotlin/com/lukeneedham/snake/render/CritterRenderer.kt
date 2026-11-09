@@ -10,6 +10,24 @@ import kotlin.math.sin
 /** Animals deeper in the grass than this are hidden by it. */
 private const val hiddenDepth = 4f
 
+/** While disguised, every animal moves the same way: in jerky steps of this many pixels. */
+private const val shuffleStep = 3f
+
+/** Where an animal is drawn: its feet at [x], [y], with [bounce] pixels of lift. */
+private class Spot(val x: Int, val y: Float, val bounce: Int)
+
+/**
+ * The feet of an animal, and the bounce of its movement. While the snake is disguise-blind every animal shuffles in the same
+ * creepy way instead: it snaps to a coarse grid so that it jerks along in steps, and all of them dip together on the beat.
+ */
+private fun spotOf(critter: Critter, world: GameWorld): Spot {
+    if (!isDisguised(world)) return Spot(critter.x.roundToInt(), critter.y, bounce(critter, world))
+    val dip = if ((world.time * 5f).toInt() % 2 == 0) 0 else -1
+    return Spot(snapToStep(critter.x), snapToStep(critter.y).toFloat(), dip)
+}
+
+private fun snapToStep(value: Float): Int = ((value / shuffleStep).roundToInt() * shuffleStep).roundToInt()
+
 private val shadowColor = Color(0x44000000)
 private val tailColor = Color(0xFFF28FA9)
 
@@ -19,8 +37,9 @@ private fun GameWorld.isHidden(critter: Critter): Boolean = !critter.isAirborne 
 internal fun DrawScope.drawCritterShadows(world: GameWorld) {
     for (critter in world.critters) {
         if (world.isHidden(critter)) continue
-        val x = critter.x.roundToInt()
-        val y = critter.y.roundToInt()
+        val spot = spotOf(critter, world)
+        val x = spot.x
+        val y = spot.y.roundToInt()
         val lift = (critter.height / 3f).roundToInt().coerceAtMost(2)
         pixelRect(x - 3 + lift, y, 7 - lift * 2, 1, shadowColor)
         pixelRect(x - 2 + lift, y + 1, 5 - lift * 2, 1, shadowColor)
@@ -38,9 +57,10 @@ internal fun DrawScope.drawCritters(world: GameWorld) {
             continue
         }
         val art = look.art
-        val left = critter.x.roundToInt() - art.width / 2
-        val top = (critter.y - critter.height).roundToInt() - art.height + 1 - bounce(critter, world)
-        if (art == SpriteArt.Mouse) drawMouseTail(critter, world, top + art.height - 2)
+        val spot = spotOf(critter, world)
+        val left = spot.x - art.width / 2
+        val top = (spot.y - critter.height).roundToInt() - art.height + 1 - spot.bounce
+        if (art == SpriteArt.Mouse) drawMouseTail(critter, world, spot.x, top + art.height - 2)
         drawSprite(art, look.kind, left, top, flip = critter.facing < 0)
     }
 }
@@ -52,9 +72,9 @@ private fun bounce(critter: Critter, world: GameWorld): Int = when (critter) {
     is Critter.Bird -> 0
 }
 
-private fun DrawScope.drawMouseTail(critter: Critter, world: GameWorld, y: Int) {
+private fun DrawScope.drawMouseTail(critter: Critter, world: GameWorld, centerX: Int, y: Int) {
     val back = -critter.facing
-    val x = critter.x.roundToInt() + back * 6
+    val x = centerX + back * 6
     val wag = if (sin(world.time * 9f + critter.id) > 0f) 0 else 1
     pixel(x, y, tailColor)
     pixel(x + back, y - wag, tailColor)

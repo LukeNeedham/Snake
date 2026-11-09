@@ -26,12 +26,15 @@ class Hunger {
 
     private var gainWait = 0f
 
-    /** [sprintLevel] is 0 when the snake does not sprint, 1 when it sprints flat out, and then the bar drains [sprintDrainFactor] times as fast. */
-    fun update(dt: Float, sprintLevel: Float, sprintDrainFactor: Float = HungerTuning.sprintDrainFactor) {
+    /**
+     * [sprintLevel] is 0 when the snake does not sprint, 1 when it sprints flat out, and then the bar drains [sprintDrainFactor] times
+     * as fast. The bar always drains [drainFactor] times as fast on top of that.
+     */
+    fun update(dt: Float, sprintLevel: Float, sprintDrainFactor: Float = HungerTuning.sprintDrainFactor, drainFactor: Float = 1f) {
         if (filled < level) {
             fillIn(dt)
         } else {
-            val rate = HungerTuning.drainPerSecond * (1f + (sprintDrainFactor - 1f) * sprintLevel)
+            val rate = HungerTuning.drainPerSecond * (1f + (sprintDrainFactor - 1f) * sprintLevel) * drainFactor
             level = max(0f, level - rate * dt)
             filled = level
         }
@@ -40,6 +43,16 @@ class Hunger {
     /** Lets what was just eaten fill in, but does not drain the bar: nothing starves in the lessons. */
     fun settle(dt: Float) {
         if (filled < level) fillIn(dt)
+    }
+
+    /** Drains the bar while the snake sprints, down to [floor]: the lesson of the sprint. It does not drain while it does not sprint. */
+    fun drainSprintDemo(dt: Float, sprintLevel: Float, floor: Float) {
+        if (filled < level) {
+            fillIn(dt)
+        } else if (level > floor) {
+            level = max(floor, level - HungerTuning.sprintDemoDrainPerSecond * sprintLevel * dt)
+            filled = level
+        }
     }
 
     /** Drains the bar fast, down to [floor], to show how it goes down: the lesson of the hunger. */

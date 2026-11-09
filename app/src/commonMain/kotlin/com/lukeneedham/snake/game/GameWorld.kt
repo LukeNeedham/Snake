@@ -48,6 +48,10 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     var gameOverTime = 0f
         private set
 
+    /** What the snake died of, once the game is over. */
+    var deathCause: DeathCause? = null
+        private set
+
     /** How hard the screen shakes after the snake hit itself. */
     var shake = 0f
         private set
@@ -56,9 +60,11 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     var rejectedTapTime = 0f
         private set
 
-    /** Whether the menu is over the scene. A paused game always has it open. */
-    var isMenuOpen = false
-        private set
+    /** The pause overlay, which all the menus are pages of. A paused game always has it open. */
+    val overlay = PauseOverlay()
+
+    /** Whether the pause overlay is over the scene. */
+    val isMenuOpen: Boolean get() = overlay.isOpen
 
     /** The corner of the screen that sprints: it comes from the settings. */
     var sprintSide = SprintSide.Left
@@ -98,6 +104,9 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     val critters: List<Critter> get() = mutableCritters
     val effects = EffectTracker()
     val powerUps = PowerUpTracker()
+
+    /** The effects and power ups that are on. */
+    val statuses: List<StatusEntry> get() = ActiveStatuses.of(effects, powerUps)
     private val boosts = PowerUpBoosts(powerUps)
     val hunger = Hunger()
     val sprint = SprintControl()
@@ -109,6 +118,9 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     private val toadBlast = ToadBlast(particleSystem)
     private val effectParticles = EffectParticleEmitter(particleSystem, random)
     private var seenBounces = 0
+
+    /** Whether the result and the settings button of the game over screen show yet. */
+    val isResultShown: Boolean get() = phase == GamePhase.GameOver && gameOverTime > GameOverTuning.resultDelay
 
     val canRestart: Boolean get() = phase == GamePhase.GameOver && gameOverTime > restartDelay
 
@@ -124,12 +136,15 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
         }
     }
 
-    /** Pausing opens the menu: the game (or the story) carries on when it is closed. */
-    fun pause() {
+    /** Pausing opens the overlay: the game (or the story) carries on when it is closed. */
+    fun pause() = openOverlay(PausePage.Pause)
+
+    /** Pauses the game, if it is being played (or the story told), and opens the overlay on [page]. */
+    fun openOverlay(page: PausePage) {
         if (phase != GamePhase.Playing && phase != GamePhase.Intro) return
         phaseBeforePause = phase
         phase = GamePhase.Paused
-        isMenuOpen = true
+        overlay.open(page)
         sprint.clear()
         redraw()
     }
@@ -137,7 +152,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     fun resume() {
         if (phase != GamePhase.Paused) return
         phase = phaseBeforePause
-        isMenuOpen = false
+        overlay.close()
         redraw()
     }
 
@@ -146,7 +161,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
         if (phase == GamePhase.Playing || phase == GamePhase.Intro) {
             pause()
         } else if (phase != GamePhase.Paused) {
-            isMenuOpen = true
+            overlay.open(PausePage.Pause)
             redraw()
         }
     }
@@ -155,7 +170,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
         if (phase == GamePhase.Paused) {
             resume()
         } else {
-            isMenuOpen = false
+            overlay.close()
             redraw()
         }
     }
@@ -215,9 +230,10 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
         mutableCritters.add(critter)
     }
 
-    fun endGame() {
+    fun endGame(cause: DeathCause) {
         if (phase != GamePhase.Playing) return
         phase = GamePhase.GameOver
+        deathCause = cause
         sprint.clear()
         gameOverTime = 0f
         shake = startingShake
@@ -225,7 +241,11 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
     }
 
     fun update(dt: Float) {
-        if (phase == GamePhase.Paused) return
+        overlay.update(dt)
+        if (phase == GamePhase.Paused) {
+            tick++
+            return
+        }
         time += dt
         sprint.update(dt, canSprint = phase == GamePhase.Playing || phase == GamePhase.Intro)
         val isPlayed = phase == GamePhase.Playing || phase == GamePhase.Intro
@@ -238,6 +258,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
             GamePhase.GameOver -> {
                 gameOverTime += dt
                 shake = max(0f, shake - dt * shakeDecay)
+                keepArenaGoing(dt)
             }
             GamePhase.Paused -> Unit
         }
@@ -270,7 +291,12 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
 
     /** One step of the lessons in the room of the tutorial: the hunger bar, and the animals that the snake has to eat to go on. */
     private fun updateLesson(dt: Float, director: IntroDirector) {
-        if (director.stage == IntroStage.Hunger) hunger.drainDemo(dt, IntroTuning.hungerDemoLevel) else hunger.settle(dt)
+        when (director.stage) {
+            // The bar runs down by itself to show it does, and then it runs down while the snake sprints, to show that zooming makes it hungry
+            IntroStage.Hunger -> hunger.drainDemo(dt, IntroTuning.hungerDemoLevel)
+            IntroStage.Sprint -> hunger.drainSprintDemo(dt, sprint.level, IntroTuning.sprintDemoFloor)
+            else -> hunger.settle(dt)
+        }
         director.hungerShown(hunger.level)
         if (director.takeAnimalDue()) placeLessonAnimal(director.stage)
         val snakeHead = Vec2(snake.x, snake.y)
@@ -361,10 +387,10 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
         spawner.reset()
     }
 
-    /** The snake goes into the room of the tutorial: the lessons start again, from the sprint, for as long as it takes to eat the bird. */
+    /** The snake goes into the room of the tutorial: the lessons start again, from the hunger bar, until the bird is eaten. */
     private fun startReplay() {
         val replay = IntroDirector(isTutorial = true, isReplay = true)
-        replay.jumpTo(IntroStage.Sprint)
+        replay.jumpTo(IntroStage.Hunger)
         intro = replay
         phase = GamePhase.Intro
         mutableCritters.clear()
@@ -405,14 +431,34 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
             startReplay()
             return
         }
-        snake.step(dt, (1f + boosts.sprintBoost * sprint.level) * boosts.speedFactor)
-        hunger.update(dt, sprint.level, boosts.sprintDrainFactor)
+        snake.step(dt, (1f + boosts.sprintBoost * sprint.level) * boosts.speedFactor * lazyFactor())
+        hunger.update(dt, sprint.level, boosts.sprintDrainFactor, ravenousFactor())
+        val touchedGrass = snake.bounceCount != seenBounces
         dustAtNewBounces()
         spawner.update(dt, mutableCritters, score, Vec2(snake.x, snake.y), boosts.attractsMice, allowsToads = !boosts.keepsToadsAway)
         updateCritters(dt)
         feeding.update(dt, snake, mutableCritters, boosts.mouthFactor, boosts.mouthIsFull).forEach { eat(it) }
         effectParticles.emit(effects, sprint.level, snake, critters)
-        if (hunger.isStarving || (effects.isOn(Effect.Lupus) && snake.hitsItself())) endGame()
+        causeOfDeath(touchedGrass)?.let { endGame(it) }
+    }
+
+    /** How much of the bar [amount] of food fills right now: a greedy snake gets only part of it. */
+    fun foodValue(amount: Float): Float = if (effects.isOn(Effect.Greedy)) amount * EffectTuning.greedyFeedFactor else amount
+
+    private fun feed(amount: Float) = hunger.feed(foodValue(amount))
+
+    /** Ravenous makes the hunger bar drain faster, and fades in and out like its arrow. */
+    private fun ravenousFactor(): Float = 1f + (EffectTuning.ravenousDrainFactor - 1f) * effects.level(Effect.Ravenous)
+
+    /** Lazy slows the snake down, and fades in and out like its bar. */
+    private fun lazyFactor(): Float = 1f + (EffectTuning.lazySpeedFactor - 1f) * effects.level(Effect.Lazy)
+
+    /** What kills the snake right now, if anything. */
+    private fun causeOfDeath(touchedGrass: Boolean): DeathCause? = when {
+        hunger.isStarving -> DeathCause.Starvation
+        effects.isOn(Effect.Hayfever) && touchedGrass -> DeathCause.Allergies
+        effects.isOn(Effect.Cannibal) && snake.hitsItself() -> DeathCause.Cannibalism
+        else -> null
     }
 
     private fun dustAtNewBounces() {
@@ -421,9 +467,17 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
         particleSystem.dust(snake.lastBounceX, snake.lastBounceY, 6, dustColor)
     }
 
-    private fun updateCritters(dt: Float) {
-        val snakeHead = Vec2(snake.x, snake.y)
-        val aura = boosts.aura
+    /**
+     * The snake is dead, but the oval carries on as normal behind it: mice come and go, toads hop, birds fly in. The animals take no notice
+     * of the dead snake, and it eats nothing.
+     */
+    private fun keepArenaGoing(dt: Float) {
+        spawner.update(dt, mutableCritters, score)
+        updateCritters(dt, snakeHead = null)
+    }
+
+    private fun updateCritters(dt: Float, snakeHead: Vec2? = Vec2(snake.x, snake.y)) {
+        val aura = if (snakeHead == null) SnakeAura.None else boosts.aura
         for (critter in critters) {
             critter.update(dt, arena, random, snakeHead, aura)
             if (critter.landed) {
@@ -441,7 +495,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
         when (critter) {
             is Critter.Mouse -> {
                 score += ScoreTuning.mouse
-                hunger.feed(HungerTuning.mouseFills)
+                feed(HungerTuning.mouseFills)
                 snake.grow(1)
                 snake.addBulge()
                 particleSystem.floatText("+${ScoreTuning.mouse}", snake.x, snake.y - 6f, Color(0xFFFFF3B0))
@@ -452,7 +506,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
             }
             is Critter.Bird -> {
                 score += ScoreTuning.bird
-                hunger.feed(HungerTuning.birdFills)
+                feed(HungerTuning.birdFills)
                 powerUps.apply(critter.kind)
                 if (critter.kind.powerUp == PowerUp.ToadFree) toadBlast.blowUp(mutableCritters)
                 snake.grow(1)
@@ -466,7 +520,7 @@ class GameWorld(val arena: Arena, seed: Int = 1, val opening: Opening = Opening.
             is Critter.Toad -> {
                 score += ScoreTuning.toad
                 effects.apply(critter.kind)
-                hunger.feed(HungerTuning.toadFills)
+                feed(HungerTuning.toadFills)
                 particleSystem.sparkles(
                     critter.x, critter.y - 3f, 12,
                     listOf(critter.kind.body, critter.kind.light, Color(0xFFFFFFFF)),

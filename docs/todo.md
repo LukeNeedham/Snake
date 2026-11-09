@@ -34,8 +34,8 @@ into its own doc when work on it starts.
   Original brief: There are too many birds. At most one bird on the screen at a time (drop `SpawnTuning.mostBirds` and
   `pointsPerExtraBird`, so the score never brings a second one), and a lot rarer: much longer waits between birds
   (`firstBirdDelay`, `birdDelayMin` and `birdDelayMax` in `SpawnTuning`). Update the tests in `CritterSpawnerTest` that count two birds.
-- [x] **The snake does not die from touching itself, except under the lupus curse.** Done: the curse is a fourth toad, the grey
-  one (`ToadKind.Grey`, `Effect.Lupus`, 12 seconds, "Cursed!"), shown with a bar and a banner like the other effects. The body is drawn
+- [x] **The snake does not die from touching itself, except under the cannibal effect.** Done: it comes from the brown toad
+  (`ToadKind.Brown`, `Effect.Cannibal`, 12 seconds, "Cannibal!"; the grey toad now gives hayfever, which kills on touching the grass), shown with a bar and a banner like the other effects. The body is drawn
   in stretches so that where it crosses itself the part nearer the head lies over the other with a dark edge (`SnakeRenderer`).
   Original brief: Normally the snake can loop over its own body
   and nothing happens (so `snake.hitsItself()` no longer ends the game in `GameWorld.updatePlaying`): the only way to die is to starve.
@@ -50,14 +50,15 @@ into its own doc when work on it starts.
   and back. `GamePhase.Intro` plays `IntroDirector`'s stages.
   - The story, in the house: the snake sleeps with its eyes shut and Zs until the player taps to wake it, it wakes up and blinks, sticks its
     tongue out, its stomach rumbles (zigzag lines along the body), three thought bubbles end in a mouse, the bubble pops and the snake starts to
-    circle clockwise, "Tap to turn" (a tap turns it, taps before that do nothing). In the first game (`Opening.Tutorial`) a pile of stones blocks
+    circle clockwise, "Tap to turn" (a tap turns it, taps before that do nothing). In the first game (`Opening.Tutorial`) a line of stones in the wall of the house closes
     the path up (`GateBounds`), and an arrow points to the path to the left.
-  - The lessons, in the room: the sprint button with an arrow and "Hold to zoom" until the corner has been held for 2 seconds; the hunger bar
-    shows for the first time, full, with an arrow and "Eat to not starve", runs down, and a mouse runs in from the grass to the middle of the
-    room to be eaten; the pink (dizzy) toad hops in, "Toads poison you", and has to be eaten and its dizziness has to run out; a bird flies in,
-    "Birds give powers", and has to be eaten. The animals are tame (`tameTarget`, `isTame`): they go to the middle and wait, and do not
-    run, hop or fly off. Nothing starves in the lessons. Then an arrow shows the way back to the house; there the stones are gone and an
-    arrow points up the path to the stage.
+  - The lessons, in the room, one after the other: the hunger bar shows for the first time, full, with an arrow and "Belly decreases over time",
+    and runs down by two steps; the sprint button shows with an arrow and "Hold to zoom" until the corner has been held for 2 seconds, and
+    the bar runs down while it does ("Zooming makes you hungry"); "Eat to not starve" and a mouse runs in from the grass to the middle of the
+    room to be eaten; "You can also eat toads" and the pink (dizzy) toad hops in, and has to be eaten, "But they poison you", and its
+    dizziness has to run out; "Try to catch birds" and a bird flies in and has to be eaten, "They give you powers". The animals are tame
+    (`tameTarget`, `isTame`): they go to the middle and wait, and do not run, hop or fly off. Nothing starves in the lessons. Then an arrow
+    shows the way back to the house; there the stones are gone and an arrow points up the path to the stage.
   - Afterwards: the player has done the tutorial (`SettingsStore.isTutorialDone`), and every game opens in `Opening.Returning`: the snake wakes
     in its house, the path up is open, and no lessons are told. A restart is `Opening.Oval`. The room of the tutorial is the way to do the
     tutorial again: when the snake goes into it, the lessons start again from the sprint (a replay ends once the bird is eaten).

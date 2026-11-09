@@ -18,13 +18,20 @@ object IntroTuning {
     /** How long the rumble takes to fade in and out. */
     const val rumbleFadeSeconds = 0.4f
 
-    /** In the lesson of the hunger the bar is shown for this long before the mouse comes, and runs down to this level. */
-    const val hungerTextSeconds = 2.2f
-    const val hungerDemoLevel = 0.5f
+    /** In the lesson of the hunger the bar is shown for this long, and runs down to this level (two steps of a fifth) to show that it does. */
+    const val hungerTextSeconds = 2.0f
+    const val hungerDemoLevel = 0.6f
+
+    /** The sprint makes the bar run down on its own, but not below this level: nothing starves in the lessons. */
+    const val sprintDemoFloor = 0.25f
+
+    /** How long the words that zooming makes the snake hungry, and that birds give powers, are shown by themselves. */
+    const val zoomedSeconds = 2.8f
+    const val powersSeconds = 3.0f
 
     /** How long after a lesson begins its animal comes in from the grass. */
-    const val mouseDelay = 0.4f
-    const val toadDelay = 1.6f
+    const val mouseDelay = 1.2f
+    const val toadDelay = 1.2f
     const val birdDelay = 1.2f
 
     /** How long the sprint corner has to be held, without letting go, to have learned to zoom. */

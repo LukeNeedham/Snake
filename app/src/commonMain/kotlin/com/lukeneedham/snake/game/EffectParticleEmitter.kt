@@ -16,7 +16,7 @@ class EffectParticleEmitter(private val particles: ParticleSystem, private val r
                 )
             }
         }
-        if (effects.level(Effect.Disguised) > shownLevel && random.nextFloat() < 0.1f && critters.isNotEmpty()) {
+        if (effects.level(Effect.Imposters) > shownLevel && random.nextFloat() < 0.1f && critters.isNotEmpty()) {
             val critter = critters[random.nextInt(critters.size)]
             particles.sparkles(critter.x, critter.y - 6f, 1, listOf(Color(0xFFFFFFFF), Color(0xFFA6EDE2)))
         }
